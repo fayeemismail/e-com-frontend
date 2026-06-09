@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const slides = [
   {
@@ -49,32 +49,26 @@ const AUTOPLAY_INTERVAL = 5000;
 
 export default function Hero() {
   const [current, setCurrent] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [paused, setPaused] = useState(false);
+  const currentRef = useRef(current);
+  currentRef.current = current;
 
-  const goTo = useCallback(
-    (index: number) => {
-      if (isTransitioning || index === current) return;
-      setIsTransitioning(true);
-      setCurrent(index);
-      setTimeout(() => setIsTransitioning(false), 700);
-    },
-    [isTransitioning, current]
-  );
+  // No transitioning guard — just update current directly
+  const goTo = (index: number) => {
+    setCurrent((index + slides.length) % slides.length);
+  };
 
-  const next = useCallback(() => {
-    goTo((current + 1) % slides.length);
-  }, [current, goTo]);
+  const next = () => goTo(currentRef.current + 1);
+  const prev = () => goTo(currentRef.current - 1);
 
-  const prev = useCallback(() => {
-    goTo((current - 1 + slides.length) % slides.length);
-  }, [current, goTo]);
-
+  // Autoplay — stable interval, reads currentRef to avoid stale closure
   useEffect(() => {
     if (paused) return;
-    const timer = setInterval(next, AUTOPLAY_INTERVAL);
+    const timer = setInterval(() => {
+      setCurrent((c) => (c + 1) % slides.length);
+    }, AUTOPLAY_INTERVAL);
     return () => clearInterval(timer);
-  }, [next, paused]);
+  }, [paused]);
 
   return (
     <main
@@ -129,22 +123,24 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Prev / Next arrows — hidden on small mobile, shown md+ */}
+      {/* Prev arrow — always visible */}
       <button
         onClick={prev}
         aria-label="Previous slide"
-        className="hidden sm:flex absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 md:w-10 md:h-10 items-center justify-center text-white/60 hover:text-white transition-colors duration-200"
+        className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors duration-200"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
+
+      {/* Next arrow — always visible */}
       <button
         onClick={next}
         aria-label="Next slide"
-        className="hidden sm:flex absolute right-3 md:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 md:w-10 md:h-10 items-center justify-center text-white/60 hover:text-white transition-colors duration-200"
+        className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors duration-200"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6" />
         </svg>
       </button>
