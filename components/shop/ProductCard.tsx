@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { Product } from "@/types/shop/types"; 
+import Link from "next/link";
+import type { Product } from "@/types/shop/types";
 
 export default function ProductCard({ product }: { product: Product }) {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
-      className="cursor-pointer"
+    <Link
+      href={`/shop/${product.slug}`}
+      className="cursor-pointer no-underline"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -30,15 +32,20 @@ export default function ProductCard({ product }: { product: Product }) {
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${hovered ? "opacity-100" : "opacity-0"}`}
         />
         <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-center py-2.5 bg-white/90 text-[10px] tracking-[0.16em] uppercase text-[#1a1a1a] transition-all duration-300 ${hovered ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"}`}>
-          Quick Add
+          View Product
         </div>
       </div>
 
       {/* Info */}
       <div className="flex items-center justify-between pt-2 gap-2">
         <p className="text-[12px] text-[#1a1a1a] truncate">{product.name}</p>
-        <p className="text-[12px] text-[#1a1a1a] shrink-0">{product.price}</p>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {product.compareAtPrice && (
+            <p className="text-[11px] text-[#aaa] line-through">${product.compareAtPrice}</p>
+          )}
+          <p className="text-[12px] text-[#1a1a1a]">${product.price}</p>
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

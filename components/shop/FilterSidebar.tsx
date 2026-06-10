@@ -25,19 +25,25 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border-t border-[#ebebeb]">
+    <div className="mb-4">
       <button
         onClick={() => onToggle(id)}
-        className="w-full flex items-center justify-between py-3.5 bg-transparent border-none cursor-pointer p-0"
+        className="w-full flex items-center justify-between bg-transparent border-none cursor-pointer p-0 pb-3"
       >
-        <span className="text-[11px] tracking-[0.12em] uppercase text-[#1a1a1a]">{label}</span>
-        <span className={`text-[#1a1a1a] text-sm leading-none transition-transform duration-200 inline-block ${open ? "rotate-45" : ""}`}>
-          +
+        <span className="text-[11px] tracking-[0.14em] uppercase text-[#1a1a1a]">
+          {label}
         </span>
+        <svg
+          width="12" height="12" viewBox="0 0 24 24"
+          fill="none" stroke="#1a1a1a" strokeWidth="1.5"
+          strokeLinecap="round" strokeLinejoin="round"
+          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-64 pb-4" : "max-h-0"}`}>
-        {children}
-      </div>
+      {open && <div className="pb-4">{children}</div>}
+      <div className="h-px bg-[#e8e6e2]" />
     </div>
   );
 }
@@ -56,41 +62,41 @@ export default function FilterSidebar({
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
 
-  const hasActive = selectedTags.length > 0 || priceRange[1] < 1500;
-
   return (
     <aside className="w-full">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3">
-        <span className="text-[11px] tracking-[0.16em] uppercase text-[#1a1a1a]">Filter</span>
-        {hasActive && (
-          <button
-            onClick={onReset}
-            className="text-[10px] tracking-[0.08em] uppercase text-[#aaa] hover:text-[#1a1a1a] transition-colors duration-200 bg-transparent border-none cursor-pointer p-0"
-          >
-            Clear
-          </button>
-        )}
+      <div className="flex items-center justify-between mb-5">
+        <span className="text-[11px] tracking-[0.16em] uppercase text-[#1a1a1a]">Filters</span>
+        <button
+          onClick={onReset}
+          className="text-[10px] tracking-widest uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors duration-200 bg-transparent border-none cursor-pointer p-0"
+        >
+          Clear all
+        </button>
       </div>
+      <div className="h-px bg-[#e8e6e2] mb-4" />
 
       {/* Label */}
       <Section label="Label" id="tag" open={openSections.includes("tag")} onToggle={toggle}>
-        <div className="space-y-1">
+        <div className="space-y-2.5">
           {ALL_TAGS.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => onTagToggle(tag)}
-              className={`w-full text-left text-[12px] py-1 bg-transparent border-none cursor-pointer transition-colors duration-150 ${
-                selectedTags.includes(tag)
-                  ? "text-[#1a1a1a]"
-                  : "text-[#aaa] hover:text-[#1a1a1a]"
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                <span className={`w-1 h-1 rounded-full shrink-0 transition-colors duration-150 ${selectedTags.includes(tag) ? "bg-[#1a1a1a]" : "bg-transparent"}`} />
-                {tag}
-              </span>
-            </button>
+            <label key={tag} className="flex items-center gap-2.5 cursor-pointer group/check">
+              <div
+                onClick={() => onTagToggle(tag)}
+                className={`w-3.5 h-3.5 border flex items-center justify-center shrink-0 transition-colors duration-150 cursor-pointer ${
+                  selectedTags.includes(tag)
+                    ? "bg-[#1a1a1a] border-[#1a1a1a]"
+                    : "border-[#ccc] group-hover/check:border-[#1a1a1a]"
+                }`}
+              >
+                {selectedTags.includes(tag) && (
+                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="1 6 4.5 10 11 2" />
+                  </svg>
+                )}
+              </div>
+              <span className="text-[12px] text-[#5a5a55]">{tag}</span>
+            </label>
           ))}
         </div>
       </Section>
@@ -98,23 +104,19 @@ export default function FilterSidebar({
       {/* Price */}
       <Section label="Price" id="price" open={openSections.includes("price")} onToggle={toggle}>
         <div className="space-y-3">
-          <div className="flex justify-between text-[11px] text-[#aaa]">
-            <span>$10</span>
-            <span className={priceRange[1] < 1500 ? "text-[#1a1a1a]" : "text-[#aaa]"}>
-              ${priceRange[1]}
-            </span>
+          <div className="flex justify-between text-[11px] text-[#5a5a55]">
+            <span>${priceRange[0]}</span>
+            <span>${priceRange[1]}</span>
           </div>
           <input
             type="range"
             min={0} max={1500} step={50}
             value={priceRange[1]}
-            onChange={(e) => onPriceChange([0, Number(e.target.value)])}
-            className="w-full accent-[#1a1a1a] cursor-pointer h-px"
+            onChange={(e) => onPriceChange([priceRange[0], Number(e.target.value)])}
+            className="w-full accent-[#1a1a1a] cursor-pointer"
           />
         </div>
       </Section>
-
-      <div className="border-t border-[#ebebeb]" />
     </aside>
   );
 }
