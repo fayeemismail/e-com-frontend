@@ -2,48 +2,7 @@
 
 import { useState } from "react";
 
-const products = [
-  {
-    id: 1,
-    name: "Hee Lounge Chair",
-    price: "$420",
-    image: "https://images.unsplash.com/photo-1567538096621-38d2284b23ff?w=800&q=80",
-    hoverImage: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80",
-    tag: "New",
-  },
-  {
-    id: 2,
-    name: "Arc Floor Lamp",
-    price: "$185",
-    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80",
-    hoverImage: "https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=800&q=80",
-    tag: null,
-  },
-  {
-    id: 3,
-    name: "Marble Side Table",
-    price: "$310",
-    image: "https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=800&q=80",
-    hoverImage: "https://images.unsplash.com/photo-1619372773893-1d72b0e3cfc3?w=800&q=80",
-    tag: null,
-  },
-  {
-    id: 4,
-    name: "Woven Pendant Light",
-    price: "$260",
-    image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
-    hoverImage: "https://images.unsplash.com/photo-1513506003901-1e6a35f0a89c?w=800&q=80",
-    tag: "Bestseller",
-  },
-  {
-    id: 5,
-    name: "Linen Sofa",
-    price: "$1,290",
-    image: "https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=800&q=80",
-    hoverImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&q=80",
-    tag: null,
-  },
-];
+import { products } from "@/lib/products/data";
 
 function ProductCard({ product }: { product: typeof products[0] }) {
   const [hovered, setHovered] = useState(false);
