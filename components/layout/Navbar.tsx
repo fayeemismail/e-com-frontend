@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 const navLinks = [
@@ -52,7 +53,7 @@ export default function Navbar() {
         <ul className="hidden md:flex items-center gap-7 flex-1 list-none m-0 p-0">
           {navLinks.map((link) => (
             <li key={link.label}>
-              <a
+              <Link 
                 href={link.href}
                 onMouseEnter={() => setActiveMenu(link.label)}
                 onMouseLeave={() => setActiveMenu(null)}
@@ -65,7 +66,7 @@ export default function Navbar() {
                 {activeMenu === link.label && (
                   <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#1a1a1a]" />
                 )}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
