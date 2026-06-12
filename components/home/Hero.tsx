@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
 const slides = [
@@ -113,12 +114,12 @@ export default function Hero() {
             <h2 className="text-white text-3xl sm:text-4xl md:text-5xl font-light tracking-tight leading-tight mb-4 sm:mb-6 font-serif">
               {slide.title}
             </h2>
-            <a
+            <Link
               href={slide.href}
               className="inline-block border border-white text-white text-[10px] sm:text-[11px] tracking-[0.18em] uppercase px-5 sm:px-6 py-2.5 sm:py-3 hover:bg-white hover:text-black transition-colors duration-300 font-light"
             >
               {slide.cta}
-            </a>
+            </Link>
           </div>
         ))}
       </div>

@@ -5,6 +5,7 @@ import ProductCard from "@/components/shop/ProductCard";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductActions from "@/components/product/ProductActions";
 import ProductDetails from "@/components/product/ProductDetails";
+import Link from "next/link";
 
 // Works for both Next.js 14 and 15
 type Props = { params: Promise<{ slug: string }> | { slug: string } };
@@ -23,9 +24,9 @@ export default async function ProductPage({ params }: Props) {
       {/* Breadcrumb */}
       <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-[#ebebeb]">
         <nav className="flex items-center gap-2 text-[11px] text-[#aaa] tracking-[0.06em]">
-          <a href="/" className="hover:text-[#1a1a1a] transition-colors duration-150 no-underline text-[#aaa]">Home</a>
+          <Link href="/" className="hover:text-[#1a1a1a] transition-colors duration-150 no-underline text-[#aaa]">Home</Link>
           <span>/</span>
-          <a href="/shop" className="hover:text-[#1a1a1a] transition-colors duration-150 no-underline text-[#aaa]">Shop</a>
+          <Link href="/shop" className="hover:text-[#1a1a1a] transition-colors duration-150 no-underline text-[#aaa]">Shop</Link>
           <span>/</span>
           <span className="text-[#1a1a1a]">{product.name}</span>
         </nav>

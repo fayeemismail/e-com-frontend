@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 const footerColumns = [
@@ -174,12 +175,12 @@ export default function Footer() {
               <ul className="space-y-2.5 list-none p-0 m-0">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <a
+                    <Link
                       href={link.href}
                       className="text-[13px] text-[#5a5a55] no-underline hover:text-[#1a1a1a] transition-colors duration-200 tracking-[0.02em]"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -195,12 +196,12 @@ export default function Footer() {
               <p>123 Design Street</p>
               <p>New York, NY 10001</p>
               <p>United States</p>
-              <a href="tel:+12125550000" className="block mt-3 text-[#5a5a55] no-underline hover:text-[#1a1a1a] transition-colors duration-200">
+              <Link href="tel:+12125550000" className="block mt-3 text-[#5a5a55] no-underline hover:text-[#1a1a1a] transition-colors duration-200">
                 +1 212 555 0000
-              </a>
-              <a href="mailto:hello@e-com.com" className="block text-[#5a5a55] no-underline hover:text-[#1a1a1a] transition-colors duration-200">
+              </Link>
+              <Link href="mailto:hello@e-com.com" className="block text-[#5a5a55] no-underline hover:text-[#1a1a1a] transition-colors duration-200">
                 hello@e-com.com
-              </a>
+              </Link>
             </address>
           </div>
         </div>
@@ -260,8 +261,8 @@ export default function Footer() {
             <p className="text-[11px] tracking-[0.18em] uppercase mb-3 text-[#1a1a1a]">E-com</p>
             <address className="not-italic text-[13px] text-[#5a5a55] leading-relaxed space-y-0.5">
               <p>123 Design Street, New York, NY 10001</p>
-              <a href="tel:+12125550000" className="block text-[#5a5a55] no-underline">+1 212 555 0000</a>
-              <a href="mailto:hello@e-com.com" className="block text-[#5a5a55] no-underline">hello@e-com.com</a>
+              <Link href="tel:+12125550000" className="block text-[#5a5a55] no-underline">+1 212 555 0000</Link>
+              <Link href="mailto:hello@e-com.com" className="block text-[#5a5a55] no-underline">hello@e-com.com</Link>
             </address>
           </div>
         </div>
