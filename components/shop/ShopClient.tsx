@@ -1,40 +1,73 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type Product, type SortOption } from "@/types/shop/types";
 import ShopToolbar from "@/components/shop/ShopToolBar";
 import FilterSidebar from "@/components/shop/FilterSidebar";
 import ProductGrid from "@/components/shop/ProductGrid";
 
 export default function ShopClient({ products }: { products: Product[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams ? searchParams.get("category") : null;
+
   const [sort, setSort] = useState<SortOption>("featured");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1500]);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Sync category state with query parameter
+  useEffect(() => {
+    setSelectedCategory(categoryParam);
+  }, [categoryParam]);
 
   const toggleTag = (tag: string) =>
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
+
+  const handleCategorySelect = (category: string | null) => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (category) {
+      params.set("category", category);
+    } else {
+      params.delete("category");
+    }
+    router.push(`/shop?${params.toString()}`);
+  };
 
   const resetFilters = () => {
     setSelectedTags([]);
     setPriceRange([0, 1500]);
+    handleCategorySelect(null);
   };
 
   const filtered = useMemo(() => {
     let list = [...products];
+    if (selectedCategory) {
+      list = list.filter(
+        (p) => p.category.toLowerCase() === selectedCategory.toLowerCase(),
+      );
+    }
     if (selectedTags.length > 0)
       list = list.filter((p) => p.tag && selectedTags.includes(p.tag));
-    list = list.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    list = list.filter(
+      (p) => p.price >= priceRange[0] && p.price <= priceRange[1],
+    );
     if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
     if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
     if (sort === "name-asc") list.sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [sort, selectedTags, priceRange, products]);
+  }, [sort, selectedTags, priceRange, selectedCategory, products]);
 
-  const activeFilterCount = selectedTags.length + (priceRange[1] < 1500 ? 1 : 0);
+  const activeFilterCount =
+    selectedTags.length +
+    (priceRange[1] < 1500 ? 1 : 0) +
+    (selectedCategory ? 1 : 0);
 
   return (
     <>
@@ -56,6 +89,8 @@ export default function ShopClient({ products }: { products: Product[] }) {
             onTagToggle={toggleTag}
             priceRange={priceRange}
             onPriceChange={setPriceRange}
+            selectedCategory={selectedCategory}
+            onCategorySelect={handleCategorySelect}
             onReset={resetFilters}
           />
         </div>
@@ -68,13 +103,31 @@ export default function ShopClient({ products }: { products: Product[] }) {
       {/* Mobile filter drawer */}
       {filterOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setFilterOpen(false)} />
+          <div
+            className="absolute inset-0 bg-black/30"
+            onClick={() => setFilterOpen(false)}
+          />
           <div className="absolute top-0 left-0 bottom-0 w-72 bg-white p-6 overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <span className="text-[11px] tracking-[0.18em] uppercase text-[#1a1a1a]">Filter</span>
-              <button onClick={() => setFilterOpen(false)} className="bg-transparent border-none cursor-pointer p-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              <span className="text-[11px] tracking-[0.18em] uppercase text-[#1a1a1a]">
+                Filter
+              </span>
+              <button
+                onClick={() => setFilterOpen(false)}
+                className="bg-transparent border-none cursor-pointer p-0"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
@@ -83,11 +136,14 @@ export default function ShopClient({ products }: { products: Product[] }) {
               onTagToggle={toggleTag}
               priceRange={priceRange}
               onPriceChange={setPriceRange}
+              selectedCategory={selectedCategory}
+              onCategorySelect={handleCategorySelect}
               onReset={resetFilters}
             />
             <button
               onClick={() => setFilterOpen(false)}
-              className="mt-6 w-full py-3 bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase border-none cursor-pointer"
+              className="mt-6 w-full py-3 bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase border-none 
+              cursor-pointer"
             >
               Show {filtered.length} Results
             </button>

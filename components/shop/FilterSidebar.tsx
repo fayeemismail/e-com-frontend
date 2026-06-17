@@ -8,8 +8,12 @@ type Props = {
   onTagToggle: (tag: string) => void;
   priceRange: [number, number];
   onPriceChange: (range: [number, number]) => void;
+  selectedCategory: string | null;
+  onCategorySelect: (category: string | null) => void;
   onReset: () => void;
 };
+
+const CATEGORIES = ["Seating", "Lighting", "Tables", "Storage", "Office"];
 
 function Section({
   label,
@@ -53,9 +57,11 @@ export default function FilterSidebar({
   onTagToggle,
   priceRange,
   onPriceChange,
+  selectedCategory,
+  onCategorySelect,
   onReset,
 }: Props) {
-  const [openSections, setOpenSections] = useState(["tag", "price"]);
+  const [openSections, setOpenSections] = useState(["category", "tag", "price"]);
 
   const toggle = (id: string) =>
     setOpenSections((prev) =>
@@ -69,14 +75,39 @@ export default function FilterSidebar({
         <span className="text-[11px] tracking-[0.16em] uppercase text-[#1a1a1a]">Filters</span>
         <button
           onClick={onReset}
-          className="text-[10px] tracking-widest uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors duration-200 bg-transparent border-none cursor-pointer p-0"
+          className="text-[10px] tracking-widest uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors duration-200 
+          bg-transparent border-none cursor-pointer p-0"
         >
           Clear all
         </button>
       </div>
       <div className="h-px bg-[#e8e6e2] mb-4" />
 
-      {/* Label */}
+      {/* Category Accordion */}
+      <Section label="Category" id="category" open={openSections.includes("category")} onToggle={toggle}>
+        <div className="space-y-2">
+          {CATEGORIES.map((cat) => {
+            const isSelected = selectedCategory?.toLowerCase() === cat.toLowerCase();
+            return (
+              <button
+                key={cat}
+                onClick={() => onCategorySelect(isSelected ? null : cat)}
+                className={`w-full text-left py-1 text-[12px] bg-transparent border-none cursor-pointer transition-colors 
+                  duration-150 flex items-center justify-between group ${
+                  isSelected ? "text-[#1a1a1a] font-medium" : "text-[#5a5a55] hover:text-[#1a1a1a]"
+                }`}
+              >
+                <span>{cat}</span>
+                {isSelected && (
+                  <span className="text-[9px] text-[#9a9a94]">✓</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* Label / Tags Accordion */}
       <Section label="Label" id="tag" open={openSections.includes("tag")} onToggle={toggle}>
         <div className="space-y-2.5">
           {ALL_TAGS.map((tag) => (
@@ -90,7 +121,8 @@ export default function FilterSidebar({
                 }`}
               >
                 {selectedTags.includes(tag) && (
-                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" 
+                  strokeLinejoin="round">
                     <polyline points="1 6 4.5 10 11 2" />
                   </svg>
                 )}
@@ -101,11 +133,11 @@ export default function FilterSidebar({
         </div>
       </Section>
 
-      {/* Price */}
+      {/* Price Accordion */}
       <Section label="Price" id="price" open={openSections.includes("price")} onToggle={toggle}>
         <div className="space-y-3">
           <div className="flex justify-between text-[11px] text-[#5a5a55]">
-            <span>${priceRange[0]}</span>
+            <span>$0</span>
             <span>${priceRange[1]}</span>
           </div>
           <input
