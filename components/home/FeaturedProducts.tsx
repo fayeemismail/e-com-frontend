@@ -121,15 +121,15 @@ export default function FeaturedProducts() {
 
         {/* Filter tabs — scrollable on mobile */}
         {!loading && !error && categories.length > 1 && (
-          <div className="flex items-center gap-1 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible no-scrollbar">
+          <div className="flex items-center gap-1.5 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible no-scrollbar">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActive(cat)}
-                className={`text-[9px] tracking-[0.14em] uppercase px-2.5 sm:px-3 py-1.5 border-none cursor-pointer transition-all duration-200 whitespace-nowrap shrink-0 ${
+                className={`text-[9px] tracking-[0.14em] uppercase px-2.5 sm:px-3 py-1.5 border bg-transparent cursor-pointer transition-all duration-200 whitespace-nowrap shrink-0 ${
                   active === cat
-                    ? "bg-[#111] text-white"
-                    : "bg-transparent text-[#888] hover:text-[#111]"
+                    ? "border-[#111] text-[#111]"
+                    : "border-transparent text-[#888] hover:text-[#111] hover:border-[#ddd]"
                 }`}
               >
                 {cat}
