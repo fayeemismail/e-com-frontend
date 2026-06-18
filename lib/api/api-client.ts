@@ -9,10 +9,33 @@ export interface ApiResponse<T> {
 
 export class ApiError extends Error {
   status: number;
+  title: string;
+
   constructor(message: string, status: number) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+
+    // Determine user-friendly title based on HTTP status code / connection status
+    const lowerMessage = message.toLowerCase();
+    const isOffline =
+      status === 0 ||
+      lowerMessage.includes("fetch") ||
+      lowerMessage.includes("network") ||
+      lowerMessage.includes("connect") ||
+      lowerMessage.includes("unable to connect");
+
+    if (isOffline) {
+      this.title = "Connection Failure";
+    } else if (status === 404) {
+      this.title = "Not Found";
+    } else if (status === 401 || status === 403) {
+      this.title = "Access Denied";
+    } else if (status >= 500) {
+      this.title = "Server Error";
+    } else {
+      this.title = "Something Went Wrong";
+    }
   }
 }
 
@@ -57,10 +80,19 @@ async function request<T>(
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(
-      error instanceof Error ? error.message : "Network error or request failed",
-      500
-    );
+    
+    const rawMessage = error instanceof Error ? error.message : "";
+    const isConnectionError = 
+      rawMessage.toLowerCase().includes("fetch") || 
+      rawMessage.toLowerCase().includes("network") ||
+      rawMessage.toLowerCase().includes("failed to fetch") ||
+      rawMessage.toLowerCase().includes("connection");
+
+    const friendlyMessage = isConnectionError
+      ? "Unable to connect to our servers. Please check your network connection or try again later."
+      : (rawMessage || "An unexpected error occurred");
+
+    throw new ApiError(friendlyMessage, isConnectionError ? 0 : 500);
   }
 }
 

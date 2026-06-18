@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ALL_TAGS } from "@/types/shop/types";
+import { ALL_TAGS } from "@/types/shop/types"; 
+import { BackendCategory } from "@/lib/api/product.service";
 
 type Props = {
   selectedTags: string[];
@@ -11,9 +12,9 @@ type Props = {
   selectedCategory: string | null;
   onCategorySelect: (category: string | null) => void;
   onReset: () => void;
+  maxPrice?: number;
+  dynamicCategories?: BackendCategory[];
 };
-
-const CATEGORIES = ["Seating", "Lighting", "Tables", "Storage", "Office"];
 
 function Section({
   label,
@@ -60,6 +61,8 @@ export default function FilterSidebar({
   selectedCategory,
   onCategorySelect,
   onReset,
+  maxPrice = 1500,
+  dynamicCategories = [],
 }: Props) {
   const [openSections, setOpenSections] = useState(["category", "tag", "price"]);
 
@@ -67,6 +70,10 @@ export default function FilterSidebar({
     setOpenSections((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
+
+  const categoriesList = dynamicCategories.length > 0
+    ? dynamicCategories.map((c) => c.name)
+    : ["Seating", "Lighting", "Tables", "Storage", "Office"];
 
   return (
     <aside className="w-full">
@@ -86,7 +93,7 @@ export default function FilterSidebar({
       {/* Category Accordion */}
       <Section label="Category" id="category" open={openSections.includes("category")} onToggle={toggle}>
         <div className="space-y-2">
-          {CATEGORIES.map((cat) => {
+          {categoriesList.map((cat) => {
             const isSelected = selectedCategory?.toLowerCase() === cat.toLowerCase();
             return (
               <button
@@ -142,7 +149,7 @@ export default function FilterSidebar({
           </div>
           <input
             type="range"
-            min={0} max={1500} step={50}
+            min={0} max={maxPrice} step={50}
             value={priceRange[1]}
             onChange={(e) => onPriceChange([priceRange[0], Number(e.target.value)])}
             className="w-full accent-[#1a1a1a] cursor-pointer"

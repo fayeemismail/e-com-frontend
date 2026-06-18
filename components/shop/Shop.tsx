@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import ShopClient from "./ShopClient";
-import { products } from "@/lib/products/data";
 
 export default function Shop() {
   return (
@@ -19,7 +18,7 @@ export default function Shop() {
           Loading products...
         </div>
       }>
-        <ShopClient products={products} />
+        <ShopClient />
       </Suspense>
     </div>
   );

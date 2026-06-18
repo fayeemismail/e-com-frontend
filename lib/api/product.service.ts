@@ -58,6 +58,13 @@ export const productService = {
     return data.products;
   },
 
+  getProducts: async (limit = 100): Promise<BackendProduct[]> => {
+    const data = await apiClient.get<ProductsResponse>(
+      `/products?limit=${limit}`
+    );
+    return data.products;
+  },
+
   getCategories: async (): Promise<BackendCategory[]> => {
     return apiClient.get<BackendCategory[]>(
       "/categories"

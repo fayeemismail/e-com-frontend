@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { productService } from "@/lib/api/product.service";
 import { ProductViewMapper, DisplayProduct } from "@/lib/mappers/product.mapper";
+import { ApiError } from "@/lib/api/api-client";
 
 export function useFeaturedProducts(limit = 8) {
   const [products, setProducts] = useState<DisplayProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ title: string; message: string } | null>(null);
   const [active, setActive] = useState("All");
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -30,7 +31,14 @@ export function useFeaturedProducts(limit = 8) {
       } catch (err) {
         if (!activeRequest) return;
         console.error("Failed to load featured products:", err);
-        setError(err instanceof Error ? err.message : "Failed to load featured products");
+        if (err instanceof ApiError) {
+          setError({ title: err.title, message: err.message });
+        } else {
+          setError({
+            title: "Something Went Wrong",
+            message: err instanceof Error ? err.message : "Failed to load featured products",
+          });
+        }
       } finally {
         if (activeRequest) {
           setLoading(false);
