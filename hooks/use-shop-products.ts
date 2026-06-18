@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { productService, BackendCategory } from "@/lib/api/product.service";
 import { ProductViewMapper, DisplayProduct } from "@/lib/mappers/product.mapper";
 import { SortOption } from "@/types/shop/types";
@@ -11,29 +12,24 @@ const backendSortMap: Record<SortOption, string> = {
 };
 
 export function useShopProducts(limit = 12) {
+  const searchParams = useSearchParams();
+
+  // Derived values from URL parameters (single source of truth)
+  const pageParam = searchParams ? searchParams.get("page") : null;
+  const page = pageParam ? parseInt(pageParam, 10) : 1;
+
+  const selectedCategory = searchParams ? searchParams.get("category") : null;
+
+  const sortParam = searchParams ? searchParams.get("sort") : null;
+  const sort = (sortParam as SortOption) || "featured";
+
   const [products, setProducts] = useState<DisplayProduct[]>([]);
   const [categories, setCategories] = useState<BackendCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ title: string; message: string } | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
-
-  // Pagination & Filter States
-  const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [sort, setSort] = useState<SortOption>("featured");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  // Sync category or sorting change to reset page back to 1
-  const handleCategoryChange = (cat: string | null) => {
-    setSelectedCategory(cat);
-    setPage(1);
-  };
-
-  const handleSortChange = (s: SortOption) => {
-    setSort(s);
-    setPage(1);
-  };
 
   useEffect(() => {
     let activeRequest = true;
@@ -105,11 +101,6 @@ export function useShopProducts(limit = 12) {
     setRetryCount((prev) => prev + 1);
   };
 
-  const resetFilters = () => {
-    setSelectedCategory(null);
-    setPage(1);
-  };
-
   const totalPages = Math.ceil(totalItems / limit) || 1;
 
   return {
@@ -123,15 +114,11 @@ export function useShopProducts(limit = 12) {
 
     // Pagination
     page,
-    setPage,
     totalPages,
     totalItems,
 
-    // Filter & Sort States & Triggers
+    // Filter & Sort
     sort,
-    setSort: handleSortChange,
     selectedCategory,
-    setSelectedCategory: handleCategoryChange,
-    resetFilters,
   };
 }
