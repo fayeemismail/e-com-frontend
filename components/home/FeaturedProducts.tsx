@@ -112,7 +112,7 @@ export default function FeaturedProducts() {
   } = useFeaturedProducts(8);
 
   return (
-    <section className="bg-[#faf9f6] py-8 sm:py-10 md:py-14 px-4 sm:px-6 md:px-10 min-h-[400px]">
+    <section className="bg-[#faf9f6] py-8 sm:py-10 md:py-14 px-4 sm:px-6 md:px-10 min-h-100">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-0 mb-5 sm:mb-6 border-b border-[#e8e4de] pb-4 sm:pb-5">
         <h2 className="text-[10px] tracking-[0.22em] uppercase text-[#111] font-normal m-0">
