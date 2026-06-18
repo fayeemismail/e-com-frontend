@@ -71,7 +71,7 @@ export default function Navbar() {
         </ul>
 
         {/* ── CENTER: Logo (hidden when mobile search is open) ── */}
-        <a
+        <Link
           href="/"
           className={[
             `absolute left-1/2 -translate-x-1/2 text-[18px] md:text-[20px] font-medium tracking-[0.22em] uppercase
@@ -80,7 +80,7 @@ export default function Navbar() {
           ].join(" ")}
         >
           E-com
-        </a>
+        </Link>
 
         {/* ── RIGHT: Search + Icons ── */}
         <div className="flex items-center gap-3 md:gap-5 flex-1 justify-end">

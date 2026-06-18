@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 
 const slides = [
   {
@@ -51,18 +52,16 @@ const AUTOPLAY_INTERVAL = 5000;
 export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
-  const currentRef = useRef(current);
-  currentRef.current = current;
 
-  // No transitioning guard — just update current directly
-  const goTo = (index: number) => {
-    setCurrent((index + slides.length) % slides.length);
+  const next = () => {
+    setCurrent((c) => (c + 1) % slides.length);
   };
 
-  const next = () => goTo(currentRef.current + 1);
-  const prev = () => goTo(currentRef.current - 1);
+  const prev = () => {
+    setCurrent((c) => (c - 1 + slides.length) % slides.length);
+  };
 
-  // Autoplay — stable interval, reads currentRef to avoid stale closure
+  // Autoplay — stable interval, uses functional update to avoid stale closures
   useEffect(() => {
     if (paused) return;
     const timer = setInterval(() => {
@@ -78,23 +77,34 @@ export default function Hero() {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Slides */}
-      {slides.map((slide, i) => (
-        <div
-          key={slide.id}
-          className={[
-            "absolute inset-0 transition-opacity duration-700 ease-in-out",
-            i === current ? "opacity-100 z-10" : "opacity-0 z-0",
-          ].join(" ")}
-        >
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/15 to-transparent" />
-          <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-transparent" />
-        </div>
-      ))}
+      {slides.map((slide, i) => {
+        const isRendered =
+          i === current ||
+          i === (current + 1) % slides.length ||
+          i === (current - 1 + slides.length) % slides.length;
+        if (!isRendered) return null;
+
+        return (
+          <div
+            key={slide.id}
+            className={[
+              "absolute inset-0 transition-opacity duration-700 ease-in-out",
+              i === current ? "opacity-100 z-10" : "opacity-0 z-0",
+            ].join(" ")}
+          >
+            <Image
+              src={slide.image}
+              alt={slide.title}
+              fill
+              sizes="100vw"
+              priority={i === 0}
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/15 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-transparent" />
+          </div>
+        );
+      })}
 
       {/* Slide content */}
       <div className="absolute bottom-14 sm:bottom-16 left-5 sm:left-8 md:left-10 z-20 max-w-[90%] sm:max-w-md md:max-w-lg">
@@ -151,7 +161,7 @@ export default function Hero() {
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => goTo(i)}
+            onClick={() => setCurrent(i)}
             aria-label={`Go to slide ${i + 1}`}
             className={[
               "transition-all duration-500 rounded-full",
