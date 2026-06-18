@@ -178,10 +178,10 @@ export default function FeaturedProducts() {
           </div>
 
           <h3 className="text-[12px] tracking-[0.22em] uppercase text-[#111] font-normal mb-2.5 font-serif">
-            Something Went Wrong
+            {error.title}
           </h3>
           <p className="text-[11px] leading-relaxed text-[#888] font-light tracking-wide mb-6">
-            {error}
+            {error.message}
           </p>
 
           <button

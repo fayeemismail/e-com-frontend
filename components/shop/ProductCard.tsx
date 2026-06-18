@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { Product } from "@/types/shop/types";
+import Image from "next/image";
+import { DisplayProduct } from "@/lib/mappers/product.mapper";
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({ product }: { product: DisplayProduct }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -76,15 +77,19 @@ export default function ProductCard({ product }: { product: Product }) {
             </svg>
           </button>
         </div>
-        <img
+        <Image
           src={product.image}
           alt={product.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 
             ${hovered ? "opacity-0" : "opacity-100"}`}
         />
-        <img
+        <Image
           src={product.hoverImage}
           alt=""
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 
             ${hovered ? "opacity-100" : "opacity-0"}`}
         />
