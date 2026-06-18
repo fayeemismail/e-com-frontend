@@ -37,7 +37,7 @@ export default function CartPage() {
             Your cart is empty
           </h2>
           <p className="text-xs text-[#9a9a94] tracking-wide leading-relaxed mb-8">
-            Looks like you haven't added anything to your cart yet. Browse our
+            Looks like you haven&apos;t added anything to your cart yet. Browse our
             collections to find your favorites.
           </p>
           <Link

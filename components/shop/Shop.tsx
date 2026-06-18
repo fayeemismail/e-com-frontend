@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import ShopClient from "./ShopClient";
-import { products } from "@/lib/products/data";
 
 export default function Shop() {
   return (
@@ -14,12 +13,8 @@ export default function Shop() {
           All Products
         </h1>
       </div>
-      <Suspense fallback={
-        <div className="px-5 sm:px-8 md:px-12 py-12 text-center text-xs tracking-widest text-[#9a9a94] uppercase font-light">
-          Loading products...
-        </div>
-      }>
-        <ShopClient products={products} />
+      <Suspense fallback={null}>
+        <ShopClient />
       </Suspense>
     </div>
   );

@@ -90,14 +90,23 @@ export default function ShopToolbar({
           {sortOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-7 z-20 bg-white border border-[#e8e6e2] min-w-45 shadow-sm">
+              <div className="absolute right-0 top-8 z-20 bg-white border border-[#e8e6e2] min-w-[180px] py-1 shadow-md rounded-sm">
                 {(Object.keys(SORT_LABELS) as SortOption[]).map((key) => (
                   <button
                     key={key}
                     onClick={() => { onSortChange(key); setSortOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 text-[11px] tracking-[0.08em] uppercase bg-transparent border-none cursor-pointer transition-colors duration-150 ${sort === key ? "text-[#1a1a1a] bg-[#f5f4f0]" : "text-[#5a5a55] hover:bg-[#f5f4f0]"}`}
+                    className={`w-full text-left px-4 py-2.5 text-[10px] tracking-widest uppercase bg-transparent border-none cursor-pointer transition-colors duration-150 flex items-center justify-between group ${
+                      sort === key 
+                        ? "text-[#1a1a1a] bg-[#f5f4f0] font-medium" 
+                        : "text-[#5a5a55] hover:bg-[#f5f4f0] hover:text-[#1a1a1a]"
+                    }`}
                   >
-                    {SORT_LABELS[key]}
+                    <span>{SORT_LABELS[key]}</span>
+                    {sort === key && (
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="text-[#1a1a1a]">
+                        <polyline points="2.5 6 5 8.5 10 3" />
+                      </svg>
+                    )}
                   </button>
                 ))}
               </div>

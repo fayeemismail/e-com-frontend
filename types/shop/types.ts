@@ -1,4 +1,4 @@
-export type SortOption = "featured" | "price-asc" | "price-desc" | "name-asc";
+export type SortOption = "featured" | "name-asc" | "name-desc";
 
 export type Product = {
   id: number;
@@ -59,12 +59,9 @@ export type Product = {
 
 export const SORT_LABELS: Record<SortOption, string> = {
   featured: "Featured",
-  "price-asc": "Price: Low to High",
-  "price-desc": "Price: High to Low",
-  "name-asc": "Name: A–Z",
+  "name-asc": "Alphabetical: A–Z",
+  "name-desc": "Alphabetical: Z–A",
 };
-
-export const ALL_TAGS = ["New", "Bestseller", "Popular", "Sale"];
 
 export function parsePrice(p: string) {
   return parseFloat(p.replace(/[$,]/g, ""));
