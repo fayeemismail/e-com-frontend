@@ -1,7 +1,7 @@
 import { BackendProduct } from "../api/product.service";
 
 export interface DisplayProduct {
-  id: string;
+  id: string | number;
   slug: string;
   name: string;
   price: number;
