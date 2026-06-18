@@ -1,19 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ALL_TAGS } from "@/types/shop/types"; 
 import { BackendCategory } from "@/lib/api/product.service";
 
 type Props = {
-  selectedTags: string[];
-  onTagToggle: (tag: string) => void;
-  priceRange: [number, number];
-  onPriceChange: (range: [number, number]) => void;
   selectedCategory: string | null;
   onCategorySelect: (category: string | null) => void;
   onReset: () => void;
-  maxPrice?: number;
   dynamicCategories?: BackendCategory[];
+  isLoading?: boolean;
 };
 
 function Section({
@@ -54,17 +49,13 @@ function Section({
 }
 
 export default function FilterSidebar({
-  selectedTags,
-  onTagToggle,
-  priceRange,
-  onPriceChange,
   selectedCategory,
   onCategorySelect,
   onReset,
-  maxPrice = 1500,
   dynamicCategories = [],
+  isLoading = false,
 }: Props) {
-  const [openSections, setOpenSections] = useState(["category", "tag", "price"]);
+  const [openSections, setOpenSections] = useState(["category"]);
 
   const toggle = (id: string) =>
     setOpenSections((prev) =>
@@ -73,7 +64,7 @@ export default function FilterSidebar({
 
   const categoriesList = dynamicCategories.length > 0
     ? dynamicCategories.map((c) => c.name)
-    : ["Seating", "Lighting", "Tables", "Storage", "Office"];
+    : [];
 
   return (
     <aside className="w-full">
@@ -93,67 +84,32 @@ export default function FilterSidebar({
       {/* Category Accordion */}
       <Section label="Category" id="category" open={openSections.includes("category")} onToggle={toggle}>
         <div className="space-y-2">
-          {categoriesList.map((cat) => {
-            const isSelected = selectedCategory?.toLowerCase() === cat.toLowerCase();
-            return (
-              <button
-                key={cat}
-                onClick={() => onCategorySelect(isSelected ? null : cat)}
-                className={`w-full text-left py-1 text-[12px] bg-transparent border-none cursor-pointer transition-colors 
-                  duration-150 flex items-center justify-between group ${
-                  isSelected ? "text-[#1a1a1a] font-medium" : "text-[#5a5a55] hover:text-[#1a1a1a]"
-                }`}
-              >
-                <span>{cat}</span>
-                {isSelected && (
-                  <span className="text-[9px] text-[#9a9a94]">✓</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </Section>
-
-      {/* Label / Tags Accordion */}
-      <Section label="Label" id="tag" open={openSections.includes("tag")} onToggle={toggle}>
-        <div className="space-y-2.5">
-          {ALL_TAGS.map((tag) => (
-            <label key={tag} className="flex items-center gap-2.5 cursor-pointer group/check">
-              <div
-                onClick={() => onTagToggle(tag)}
-                className={`w-3.5 h-3.5 border flex items-center justify-center shrink-0 transition-colors duration-150 cursor-pointer ${
-                  selectedTags.includes(tag)
-                    ? "bg-[#1a1a1a] border-[#1a1a1a]"
-                    : "border-[#ccc] group-hover/check:border-[#1a1a1a]"
-                }`}
-              >
-                {selectedTags.includes(tag) && (
-                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" 
-                  strokeLinejoin="round">
-                    <polyline points="1 6 4.5 10 11 2" />
-                  </svg>
-                )}
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="py-1 animate-pulse flex items-center justify-between">
+                <div className="h-3 bg-[#f0eeea] rounded w-2/3" />
               </div>
-              <span className="text-[12px] text-[#5a5a55]">{tag}</span>
-            </label>
-          ))}
-        </div>
-      </Section>
-
-      {/* Price Accordion */}
-      <Section label="Price" id="price" open={openSections.includes("price")} onToggle={toggle}>
-        <div className="space-y-3">
-          <div className="flex justify-between text-[11px] text-[#5a5a55]">
-            <span>$0</span>
-            <span>${priceRange[1]}</span>
-          </div>
-          <input
-            type="range"
-            min={0} max={maxPrice} step={50}
-            value={priceRange[1]}
-            onChange={(e) => onPriceChange([priceRange[0], Number(e.target.value)])}
-            className="w-full accent-[#1a1a1a] cursor-pointer"
-          />
+            ))
+          ) : (
+            categoriesList.map((cat) => {
+              const isSelected = selectedCategory?.toLowerCase() === cat.toLowerCase();
+              return (
+                <button
+                  key={cat}
+                  onClick={() => onCategorySelect(isSelected ? null : cat)}
+                  className={`w-full text-left py-1 text-[12px] bg-transparent border-none cursor-pointer transition-colors 
+                    duration-150 flex items-center justify-between group ${
+                    isSelected ? "text-[#1a1a1a] font-medium" : "text-[#5a5a55] hover:text-[#1a1a1a]"
+                  }`}
+                >
+                  <span>{cat}</span>
+                  {isSelected && (
+                    <span className="text-[9px] text-[#9a9a94]">✓</span>
+                  )}
+                </button>
+              );
+            })
+          )}
         </div>
       </Section>
     </aside>

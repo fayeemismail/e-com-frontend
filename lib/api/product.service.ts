@@ -58,11 +58,17 @@ export const productService = {
     return data.products;
   },
 
-  getProducts: async (limit = 100): Promise<BackendProduct[]> => {
-    const data = await apiClient.get<ProductsResponse>(
-      `/products?limit=${limit}`
-    );
-    return data.products;
+  getProducts: async (options: {
+    page: number;
+    limit: number;
+    categoryId?: string | null;
+    sort?: string;
+  }): Promise<ProductsResponse> => {
+    let url = `/products?page=${options.page}&limit=${options.limit}`;
+    if (options.categoryId)   url += `&categoryId=${options.categoryId}`;
+    if (options.sort) url += `&sort=${options.sort}`;
+
+    return apiClient.get<ProductsResponse>(url);
   },
 
   getCategories: async (): Promise<BackendCategory[]> => {

@@ -7,6 +7,7 @@ import ShopToolbar from "@/components/shop/ShopToolBar";
 import FilterSidebar from "@/components/shop/FilterSidebar";
 import ProductGrid from "@/components/shop/ProductGrid";
 import { useShopProducts } from "@/hooks/use-shop-products";
+import { SortOption } from "@/types/shop/types";
 
 function SkeletonGrid({ view }: { view: "grid" | "list" }) {
   if (view === "list") {
@@ -140,30 +141,39 @@ export default function ShopClient() {
     handleRetry,
     catalogIsEmpty,
 
+    // Pagination
+    page,
+    setPage,
+    totalPages,
+
     // Filter & Sort
     sort,
     setSort,
-    selectedTags,
-    toggleTag,
     selectedCategory,
     setSelectedCategory,
-    priceRange,
-    setPriceRange,
-    maxPriceLimit,
     resetFilters: resetHookFilters,
   } = useShopProducts();
 
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
 
+  const pageParam = searchParams ? searchParams.get("page") : null;
+
   // Sync category state with query parameter
   useEffect(() => {
-    if (categoryParam) {
+    if (categoryParam !== selectedCategory) {
       setSelectedCategory(categoryParam);
-    } else {
-      setSelectedCategory(null);
     }
-  }, [categoryParam, setSelectedCategory]);
+  }, [categoryParam, selectedCategory, setSelectedCategory]);
+
+  // Sync page state with query parameter
+  useEffect(() => {
+    const pageNum = pageParam ? parseInt(pageParam, 10) : 1;
+    const validatedPage = !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
+    if (page !== validatedPage) {
+      setPage(validatedPage);
+    }
+  }, [pageParam, page, setPage]);
 
   const handleCategorySelect = (categoryName: string | null) => {
     if (!searchParams) return;
@@ -173,7 +183,25 @@ export default function ShopClient() {
     } else {
       params.delete("category");
     }
+    params.delete("page");
     router.push(`/shop?${params.toString()}`, { scroll: false });
+  };
+
+  const handlePageChange = (pageNum: number) => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", pageNum.toString());
+    router.push(`/shop?${params.toString()}`, { scroll: true });
+  };
+
+  const handleSortChange = (newSort: SortOption) => {
+    setSort(newSort);
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (params.has("page")) {
+      params.delete("page");
+      router.push(`/shop?${params.toString()}`, { scroll: false });
+    }
   };
 
   const resetFilters = () => {
@@ -181,16 +209,13 @@ export default function ShopClient() {
     handleCategorySelect(null);
   };
 
-  const activeFilterCount =
-    selectedTags.length +
-    (priceRange[1] < maxPriceLimit ? 1 : 0) +
-    (selectedCategory ? 1 : 0);
+  const activeFilterCount = selectedCategory ? 1 : 0;
 
   return (
     <>
       <ShopToolbar
         sort={sort}
-        onSortChange={setSort}
+        onSortChange={handleSortChange}
         view={view}
         onViewChange={setView}
         resultCount={loading ? 0 : filtered.length}
@@ -202,15 +227,11 @@ export default function ShopClient() {
         {/* Desktop sidebar */}
         <div className="hidden md:block w-44 shrink-0">
           <FilterSidebar
-            selectedTags={selectedTags}
-            onTagToggle={toggleTag}
-            priceRange={priceRange}
-            onPriceChange={setPriceRange}
             selectedCategory={selectedCategory}
             onCategorySelect={handleCategorySelect}
             onReset={resetFilters}
-            maxPrice={maxPriceLimit}
             dynamicCategories={categories}
+            isLoading={loading}
           />
         </div>
 
@@ -225,7 +246,43 @@ export default function ShopClient() {
           )}
           {!loading && !error && catalogIsEmpty && <CatalogEmptyState />}
           {!loading && !error && !catalogIsEmpty && (
-            <ProductGrid products={filtered} view={view} onReset={resetFilters} />
+            <>
+              <ProductGrid products={filtered} view={view} onReset={resetFilters} />
+              {totalPages > 1 && filtered.length > 0 && (
+                <div className="flex items-center justify-center gap-2 mt-12 pt-8 border-t border-[#e8e6e2]">
+                  <button 
+                    disabled={page === 1}
+                    onClick={() => handlePageChange(page - 1)}
+                    className="px-4 py-2 border border-[#e8e6e2] text-[10px] text-[#1a1a1a] tracking-widest uppercase disabled:opacity-35 hover:bg-[#1a1a1a] hover:text-white transition-colors duration-200"
+                  >
+                    Prev
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, index) => {
+                    const pNum = index + 1;
+                    return (
+                      <button
+                        key={pNum}
+                        onClick={() => handlePageChange(pNum)}
+                        className={`w-9 h-9 flex items-center justify-center border text-[11px] transition-colors duration-200 ${
+                          page === pNum
+                            ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
+                            : "border-[#e8e6e2] text-[#1a1a1a] hover:bg-[#f5f4f0]"
+                        }`}
+                      >
+                        {pNum}
+                      </button>
+                    );
+                  })}
+                  <button 
+                    disabled={page === totalPages}
+                    onClick={() => handlePageChange(page + 1)}
+                    className="px-4 py-2 border border-[#e8e6e2] text-[10px] text-[#1a1a1a] tracking-widest uppercase disabled:opacity-35 hover:bg-[#1a1a1a] hover:text-white transition-colors duration-200"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -262,15 +319,11 @@ export default function ShopClient() {
               </button>
             </div>
             <FilterSidebar
-              selectedTags={selectedTags}
-              onTagToggle={toggleTag}
-              priceRange={priceRange}
-              onPriceChange={setPriceRange}
               selectedCategory={selectedCategory}
               onCategorySelect={handleCategorySelect}
               onReset={resetFilters}
-              maxPrice={maxPriceLimit}
               dynamicCategories={categories}
+              isLoading={loading}
             />
             <button
               onClick={() => setFilterOpen(false)}
