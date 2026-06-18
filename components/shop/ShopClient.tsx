@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ShopToolbar from "@/components/shop/ShopToolBar";
@@ -130,8 +130,6 @@ function CatalogEmptyState() {
 export default function ShopClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const categoryParam = searchParams ? searchParams.get("category") : null;
-
   const {
     products: filtered,
     categories,
@@ -143,37 +141,15 @@ export default function ShopClient() {
 
     // Pagination
     page,
-    setPage,
     totalPages,
 
     // Filter & Sort
     sort,
-    setSort,
     selectedCategory,
-    setSelectedCategory,
-    resetFilters: resetHookFilters,
   } = useShopProducts();
 
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
-
-  const pageParam = searchParams ? searchParams.get("page") : null;
-
-  // Sync category state with query parameter
-  useEffect(() => {
-    if (categoryParam !== selectedCategory) {
-      setSelectedCategory(categoryParam);
-    }
-  }, [categoryParam, selectedCategory, setSelectedCategory]);
-
-  // Sync page state with query parameter
-  useEffect(() => {
-    const pageNum = pageParam ? parseInt(pageParam, 10) : 1;
-    const validatedPage = !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
-    if (page !== validatedPage) {
-      setPage(validatedPage);
-    }
-  }, [pageParam, page, setPage]);
 
   const handleCategorySelect = (categoryName: string | null) => {
     if (!searchParams) return;
@@ -195,18 +171,15 @@ export default function ShopClient() {
   };
 
   const handleSortChange = (newSort: SortOption) => {
-    setSort(newSort);
     if (!searchParams) return;
     const params = new URLSearchParams(searchParams.toString());
-    if (params.has("page")) {
-      params.delete("page");
-      router.push(`/shop?${params.toString()}`, { scroll: false });
-    }
+    params.set("sort", newSort);
+    params.delete("page");
+    router.push(`/shop?${params.toString()}`, { scroll: false });
   };
 
   const resetFilters = () => {
-    resetHookFilters();
-    handleCategorySelect(null);
+    router.push("/shop", { scroll: false });
   };
 
   const activeFilterCount = selectedCategory ? 1 : 0;
