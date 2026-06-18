@@ -71,7 +71,7 @@ export default function Navbar() {
         </ul>
 
         {/* ── CENTER: Logo (hidden when mobile search is open) ── */}
-        <a
+        <Link
           href="/"
           className={[
             `absolute left-1/2 -translate-x-1/2 text-[18px] md:text-[20px] font-medium tracking-[0.22em] uppercase
@@ -80,7 +80,7 @@ export default function Navbar() {
           ].join(" ")}
         >
           E-com
-        </a>
+        </Link>
 
         {/* ── RIGHT: Search + Icons ── */}
         <div className="flex items-center gap-3 md:gap-5 flex-1 justify-end">
@@ -229,7 +229,7 @@ export default function Navbar() {
       >
         <div
           className="flex items-center border border-[#e2e0db] focus-within:border-[#1a1a1a] 
-        transition-colors duration-200 mx-4 my-2.5 px-3 h-9"
+        transition-colors rounded-lg duration-200 mx-4 my-2.5 px-3 h-9"
         >
           <svg
             width="14"
@@ -281,7 +281,7 @@ export default function Navbar() {
           <ul className="list-none m-0 p-0 py-2">
             {navLinks.map((link, i) => (
               <li key={link.label}>
-                <a
+                <Link
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className="block px-6 py-4 text-[13px] tracking-[0.12em] uppercase text-[#1a1a1a] no-underline border-b 
@@ -291,7 +291,7 @@ export default function Navbar() {
                   }}
                 >
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
             {/* Wishlist in mobile drawer */}
@@ -347,7 +347,7 @@ export default function Navbar() {
             </li>
             {/* Account in mobile drawer */}
             <li>
-              <a
+              <Link
                 href="#"
                 onClick={() => setMobileOpen(false)}
                 className="flex items-center gap-3 px-6 py-4 text-[13px] tracking-[0.12em] uppercase text-[#1a1a1a] 
@@ -367,7 +367,7 @@ export default function Navbar() {
                   <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
                 </svg>
                 Account
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
