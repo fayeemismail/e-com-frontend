@@ -173,7 +173,7 @@ export default function ShopClient() {
     } else {
       params.delete("category");
     }
-    router.push(`/shop?${params.toString()}`);
+    router.push(`/shop?${params.toString()}`, { scroll: false });
   };
 
   const resetFilters = () => {
