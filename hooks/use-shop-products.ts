@@ -142,6 +142,7 @@ export function useShopProducts(limit = 100) {
     error,
     isRetrying,
     handleRetry,
+    catalogIsEmpty: rawProducts.length === 0,
 
     // Filter & Sort States & Triggers
     sort,

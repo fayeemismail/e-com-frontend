@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import ShopToolbar from "@/components/shop/ShopToolBar";
 import FilterSidebar from "@/components/shop/FilterSidebar";
 import ProductGrid from "@/components/shop/ProductGrid";
@@ -103,6 +104,28 @@ function ErrorState({
   );
 }
 
+function CatalogEmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 px-4 text-center max-w-md mx-auto">
+      <div className="mb-5 w-14 h-14 rounded-full bg-[#f3efe6] flex items-center justify-center text-[#c4a882] text-xl select-none">
+        📦
+      </div>
+      <h3 className="text-[12px] tracking-[0.22em] uppercase text-[#111] font-normal mb-2.5 font-serif">
+        Catalog is Empty
+      </h3>
+      <p className="text-[11px] leading-relaxed text-[#888] font-light tracking-wide mb-6">
+        We are currently curating new collections. Please check back shortly or return to the home page.
+      </p>
+      <Link
+        href="/"
+        className="group relative text-[9px] tracking-[0.2em] uppercase bg-[#111] text-white px-6 py-3 border-none cursor-pointer transition-all duration-300 hover:bg-[#c27c5a] no-underline font-light inline-block"
+      >
+        Return to Home
+      </Link>
+    </div>
+  );
+}
+
 export default function ShopClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -115,6 +138,7 @@ export default function ShopClient() {
     error,
     isRetrying,
     handleRetry,
+    catalogIsEmpty,
 
     // Filter & Sort
     sort,
@@ -199,7 +223,8 @@ export default function ShopClient() {
               handleRetry={handleRetry}
             />
           )}
-          {!loading && !error && (
+          {!loading && !error && catalogIsEmpty && <CatalogEmptyState />}
+          {!loading && !error && !catalogIsEmpty && (
             <ProductGrid products={filtered} view={view} onReset={resetFilters} />
           )}
         </div>
