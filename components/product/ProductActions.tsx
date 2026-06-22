@@ -3,8 +3,11 @@
 import { useState } from "react";
 import type { Product } from "@/types/shop/types";
 import type { BackendSku } from "@/lib/api/product.service";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductActions({ product }: { product: Product }) {
+  const { addToCart, isAddingToCart } = useCart();
+
   // 1. Set the initial selected SKU
   const [selectedSku, setSelectedSku] = useState<BackendSku | null>(
     product.skus && product.skus.length > 0 ? product.skus[0] : null
@@ -12,6 +15,21 @@ export default function ProductActions({ product }: { product: Product }) {
 
   // 2. Track rental duration
   const [selectedDuration, setSelectedDuration] = useState<"7_days" | "30_days" | "90_days">("7_days");
+
+  const handleActionClick = () => {
+    if (!selectedSku) return;
+    
+    const durationDays = selectedType === "rent" 
+      ? (selectedDuration === "7_days" ? 7 : selectedDuration === "30_days" ? 30 : 90)
+      : undefined;
+
+    addToCart({
+      sku: selectedSku.sku,
+      quantity: 1,
+      transactionType: selectedType,
+      rentalDurationDays: durationDays,
+    });
+  };
 
   // 3. Derive current values based on selected SKU
   const selectedType = selectedSku?.type || "buy";
@@ -154,17 +172,27 @@ export default function ProductActions({ product }: { product: Product }) {
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
           <button
-            disabled={stock === 0}
-            onClick={() => {}}
+            disabled={stock === 0 || isAddingToCart}
+            onClick={handleActionClick}
             className="flex-1 py-3.5 bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] 
             cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-35 
-            disabled:cursor-not-allowed disabled:hover:bg-[#1a1a1a] disabled:hover:text-white font-light rounded-[4px]"
+            disabled:cursor-not-allowed disabled:hover:bg-[#1a1a1a] disabled:hover:text-white font-light rounded-[4px] flex items-center justify-center gap-2"
           >
-            {stock === 0
-              ? "Out of Stock"
-              : selectedType === "buy"
-              ? `Add to Cart — $${calculatedPrice}`
-              : `Rent Now — $${calculatedPrice}`}
+            {stock === 0 ? (
+              "Out of Stock"
+            ) : isAddingToCart ? (
+              <>
+                <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Adding...
+              </>
+            ) : selectedType === "buy" ? (
+              `Add to Cart — $${calculatedPrice}`
+            ) : (
+              `Add to Cart (Rent) — $${calculatedPrice}`
+            )}
           </button>
           
           <button
