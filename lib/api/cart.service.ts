@@ -19,6 +19,8 @@ export interface CartValidationItem {
   itemDepositTotal: number;
   inStock: boolean;
   availableStock: number;
+  productId?: string;
+  image?: string;
 }
 
 export interface CartValidationSummary {
@@ -57,6 +59,10 @@ export const cartService = {
     return apiClient.delete<{ email: string; itemCount: number }>("/cart", {
       body: JSON.stringify({ sku }),
     });
+  },
+
+  updateCartItemQuantity: async (sku: string, quantity: number): Promise<{ email: string; itemCount: number }> => {
+    return apiClient.put<{ email: string; itemCount: number }>("/cart", { sku, quantity });
   },
 };
 
