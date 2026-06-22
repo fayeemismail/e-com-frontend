@@ -45,7 +45,7 @@ export default function SessionModal({ isOpen, onClose, onSubmit }: SessionModal
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]">
+    <div className="fixed inset-0 z-100 flex items-center justify-center animate-[fadeIn_0.2s_ease-out]">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/45 backdrop-blur-[3px] transition-opacity duration-300"
