@@ -14,7 +14,30 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState(0);
   const [shippingMethod, setShippingMethod] = useState("standard");
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+
+  // Controlled states for contact details
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  // Controlled states for shipping address
+  const [addressLine1, setAddressLine1] = useState("");
+  const [addressLine2, setAddressLine2] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [country, setCountry] = useState("");
+
+  // Sync session email when it's available
+  useEffect(() => {
+    if (sessionEmail) {
+      setTimeout(() => {
+        setEmail(sessionEmail);
+      }, 0);
+    }
+  }, [sessionEmail]);
 
   // Route protection: redirect if unauthenticated or cart is empty
   useEffect(() => {
@@ -85,14 +108,14 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Contact</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
-                      { label: "First Name", placeholder: "Amara", full: false },
-                      { label: "Last Name", placeholder: "Singh", full: false },
-                      { label: "Email", placeholder: sessionEmail || "amara.singh@email.com", full: true },
-                      { label: "Phone", placeholder: "+91 98765 43210", full: true },
-                    ].map(({ label, placeholder, full }) => (
+                      { label: "First Name", value: firstName, onChange: (val: string) => setFirstName(val), placeholder: "First name", full: false },
+                      { label: "Last Name", value: lastName, onChange: (val: string) => setLastName(val), placeholder: "Last name", full: false },
+                      { label: "Email", value: email, onChange: (val: string) => setEmail(val), placeholder: "Email address", full: true },
+                      { label: "Phone", value: phone, onChange: (val: string) => setPhone(val), placeholder: "Phone number", full: true },
+                    ].map(({ label, value, onChange, placeholder, full }) => (
                       <div key={label} className={full ? "sm:col-span-2" : ""}>
                         <label className="block text-[10px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1.5">{label}</label>
-                        <input defaultValue={placeholder} className="w-full border border-[#e8e6e2] px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors" />
+                        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full border border-[#e8e6e2] px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]" />
                       </div>
                     ))}
                   </div>
@@ -103,16 +126,16 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Shipping Address</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
-                      { label: "Address Line 1", placeholder: "42 Prestige Gardens", full: true },
-                      { label: "Address Line 2", placeholder: "Apt 7B (optional)", full: true },
-                      { label: "City", placeholder: "Mumbai" },
-                      { label: "State", placeholder: "Maharashtra" },
-                      { label: "Postal Code", placeholder: "400001" },
-                      { label: "Country", placeholder: "India" },
-                    ].map(({ label, placeholder, full }) => (
+                      { label: "Address Line 1", value: addressLine1, onChange: (val: string) => setAddressLine1(val), placeholder: "Street address, P.O. box", full: true },
+                      { label: "Address Line 2", value: addressLine2, onChange: (val: string) => setAddressLine2(val), placeholder: "Apartment, suite, unit (optional)", full: true },
+                      { label: "City", value: city, onChange: (val: string) => setCity(val), placeholder: "City" },
+                      { label: "State", value: state, onChange: (val: string) => setState(val), placeholder: "State" },
+                      { label: "Postal Code", value: postalCode, onChange: (val: string) => setPostalCode(val), placeholder: "Postal code" },
+                      { label: "Country", value: country, onChange: (val: string) => setCountry(val), placeholder: "Country" },
+                    ].map(({ label, value, onChange, placeholder, full }) => (
                       <div key={label} className={full ? "sm:col-span-2" : ""}>
                         <label className="block text-[10px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1.5">{label}</label>
-                        <input defaultValue={placeholder} className="w-full border border-[#e8e6e2] px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors" />
+                        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full border border-[#e8e6e2] px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]" />
                       </div>
                     ))}
                   </div>
@@ -123,23 +146,49 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Shipping Method</p>
                   <div className="space-y-3">
                     {[
-                      { id: "standard", label: "Standard Shipping", sub: "5–7 business days", price: baseShipping === 0 ? "Complimentary" : `$${baseShipping.toFixed(2)}` },
-                      { id: "express", label: "Express Shipping", sub: "2–3 business days", price: `$${(baseShipping + 18).toFixed(2)}` },
-                    ].map(({ id, label, sub, price }) => (
-                      <label key={id} className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${shippingMethod === id ? "border-[#1a1a1a]" : "border-[#e8e6e2] hover:border-[#9a9a94]"}`}>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${shippingMethod === id ? "border-[#1a1a1a]" : "border-[#c5c5bf]"}`}>
-                            {shippingMethod === id && <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />}
+                      { id: "standard", label: "Standard Shipping", sub: "5–7 business days", price: baseShipping === 0 ? "Complimentary" : `$${baseShipping.toFixed(2)}`, disabled: false },
+                      { id: "express", label: "Express Shipping", sub: "2–3 business days", price: `$${(baseShipping + 18).toFixed(2)}`, disabled: true, note: "Unavailable for this region" },
+                    ].map(({ id, label, sub, price, disabled, note }) => {
+                      const isSelected = shippingMethod === id;
+                      return (
+                        <label
+                          key={id}
+                          className={`flex items-center justify-between p-4 border transition-colors ${
+                            disabled
+                              ? "border-[#e8e6e2] bg-[#fafaf9] cursor-not-allowed opacity-60"
+                              : isSelected
+                              ? "border-[#1a1a1a] cursor-default"
+                              : "border-[#e8e6e2] hover:border-[#9a9a94] cursor-pointer"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                isSelected ? "border-[#1a1a1a]" : "border-[#c5c5bf]"
+                              }`}
+                            >
+                              {isSelected && <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />}
+                            </div>
+                            <div>
+                              <p className={`text-xs tracking-wide ${disabled ? "text-[#9a9a94]" : "text-[#1a1a1a]"}`}>
+                                {label} {disabled && <span className="lowercase text-[9px] text-[#9a9a94] tracking-normal">({note})</span>}
+                              </p>
+                              <p className="text-[10px] text-[#9a9a94] tracking-wide">{sub}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs text-[#1a1a1a] tracking-wide">{label}</p>
-                            <p className="text-[10px] text-[#9a9a94] tracking-wide">{sub}</p>
-                          </div>
-                        </div>
-                        <p className="text-xs text-[#1a1a1a] tracking-wide">{price}</p>
-                        <input type="radio" name="shipping" value={id} checked={shippingMethod === id} onChange={() => setShippingMethod(id)} className="sr-only" />
-                      </label>
-                    ))}
+                          <p className="text-xs text-[#1a1a1a] tracking-wide">{price}</p>
+                          <input
+                            type="radio"
+                            name="shipping"
+                            value={id}
+                            checked={isSelected}
+                            disabled={disabled}
+                            onChange={() => !disabled && setShippingMethod(id)}
+                            className="sr-only"
+                          />
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -159,8 +208,9 @@ export default function CheckoutPage() {
                 <div className="mb-8 p-4 bg-[#faf9f7] border border-[#e8e6e2] flex items-start justify-between rounded-[4px]">
                   <div>
                     <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] mb-1">Ships to</p>
-                    <p className="text-xs text-[#1a1a1a] tracking-wide">42 Prestige Gardens, Apt 7B</p>
-                    <p className="text-xs text-[#1a1a1a] tracking-wide">Mumbai, 400001, India</p>
+                    <p className="text-xs text-[#1a1a1a] tracking-wide">{firstName} {lastName}</p>
+                    <p className="text-xs text-[#1a1a1a] tracking-wide">{addressLine1}{addressLine2 ? `, ${addressLine2}` : ""}</p>
+                    <p className="text-xs text-[#1a1a1a] tracking-wide">{city}, {state} {postalCode}, {country}</p>
                   </div>
                   <button onClick={() => setStep(0)} className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors shrink-0">
                     Edit
@@ -172,16 +222,24 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Payment Method</p>
                   <div className="flex gap-3 mb-6">
                     {[
-                      { id: "card", label: "Card" },
-                      { id: "upi", label: "UPI" },
-                      { id: "cod", label: "Cash on Delivery" },
-                    ].map(({ id, label }) => (
+                      { id: "card", label: "Card", disabled: true, note: "Unavailable" },
+                      { id: "upi", label: "UPI", disabled: true, note: "Unavailable" },
+                      { id: "cod", label: "Cash on Delivery", disabled: false },
+                    ].map(({ id, label, disabled, note }) => (
                       <button
                         key={id}
-                        onClick={() => setPaymentMethod(id)}
-                        className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors rounded-[4px] cursor-pointer ${paymentMethod === id ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"}`}
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => !disabled && setPaymentMethod(id)}
+                        className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors rounded-[4px] ${
+                          paymentMethod === id
+                            ? "border-[#1a1a1a] bg-[#1a1a1a] text-white cursor-default"
+                            : disabled
+                            ? "border-[#e8e6e2] text-[#c5c5bf] bg-[#fafaf9] cursor-not-allowed"
+                            : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] cursor-pointer"
+                        }`}
                       >
-                        {label}
+                        {label} {disabled && <span className="lowercase text-[8px] tracking-normal text-[#9a9a94] inline-block ml-0.5">({note})</span>}
                       </button>
                     ))}
                   </div>
@@ -216,7 +274,7 @@ export default function CheckoutPage() {
                   )}
                   {paymentMethod === "cod" && (
                     <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
-                      <p className="text-xs text-[#6b6b65] tracking-wide leading-relaxed font-light">Pay in cash when your order arrives. Please keep exact change ready. A handling fee of ₹50 applies.</p>
+                      <p className="text-xs text-[#6b6b65] tracking-wide leading-relaxed font-light">Pay in cash when your order arrives. Please keep exact change ready.</p>
                     </div>
                   )}
                 </div>
@@ -278,7 +336,11 @@ export default function CheckoutPage() {
                       <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">Ships to</p>
                       <button onClick={() => setStep(0)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent border-none p-0">Edit</button>
                     </div>
-                    <p className="text-xs text-[#1a1a1a] leading-relaxed tracking-wide font-light">42 Prestige Gardens, Apt 7B<br />Mumbai, 400001, India</p>
+                    <p className="text-xs text-[#1a1a1a] leading-relaxed tracking-wide font-light">
+                      {firstName} {lastName}<br />
+                      {addressLine1}{addressLine2 ? `, ${addressLine2}` : ""}<br />
+                      {city}, {state} {postalCode}, {country}
+                    </p>
                     <p className="text-[10px] text-[#9a9a94] mt-2 tracking-wide capitalize font-light">{shippingMethod} shipping</p>
                   </div>
                   <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
@@ -286,9 +348,9 @@ export default function CheckoutPage() {
                       <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">Payment</p>
                       <button onClick={() => setStep(1)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent border-none p-0">Edit</button>
                     </div>
-                    {paymentMethod === "card" && <p className="text-xs text-[#1a1a1a] tracking-wide font-light">Visa ending in 4242</p>}
-                    {paymentMethod === "upi" && <p className="text-xs text-[#1a1a1a] tracking-wide font-light">UPI · amara@okicici</p>}
-                    {paymentMethod === "cod" && <p className="text-xs text-[#1a1a1a] tracking-wide font-light">Cash on Delivery</p>}
+                    <p className="text-xs text-[#1a1a1a] tracking-wide font-light">
+                      {paymentMethod === "cod" ? "Cash on Delivery" : paymentMethod}
+                    </p>
                   </div>
                 </div>
 
