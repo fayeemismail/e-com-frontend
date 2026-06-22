@@ -76,4 +76,8 @@ export const productService = {
       "/categories"
     );
   },
+
+  getProductById: async (id: string): Promise<BackendProduct> => {
+    return apiClient.get<BackendProduct>(`/products/${id}`);
+  },
 };

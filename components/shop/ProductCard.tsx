@@ -10,7 +10,7 @@ export default function ProductCard({ product }: { product: DisplayProduct }) {
 
   return (
     <Link
-      href={`/shop/${product.slug}`}
+      href={`/shop/${product.id}`}
       className="cursor-pointer no-underline block group"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

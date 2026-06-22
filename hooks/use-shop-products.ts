@@ -36,7 +36,9 @@ export function useShopProducts(limit = 12) {
 
     async function loadData() {
       try {
-        setLoading(true);
+        if (!isRetrying) {
+          setLoading(true);
+        }
         
         // 1. Fetch categories if not loaded yet
         let cats = categories;

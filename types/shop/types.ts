@@ -1,7 +1,10 @@
+import type { BackendSku } from "@/lib/api/product.service";
+
 export type SortOption = "featured" | "name-asc" | "name-desc";
 
 export type Product = {
-  id: number;
+  id: string | number;
+  skus?: BackendSku[];
   slug: string;
   name: string;
 
