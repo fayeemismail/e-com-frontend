@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 const navLinks = [
   { label: "New", href: "#" },
@@ -15,6 +16,7 @@ export default function Navbar() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const { cartCount, sessionEmail, clearSession, setShowSessionModal } = useCart();
 
   return (
     <>
@@ -150,25 +152,53 @@ export default function Navbar() {
           </button>
 
           {/* Account — hidden on mobile to save space */}
-          <button
-            aria-label="Account"
-            className="hidden sm:flex items-center bg-transparent border-none cursor-pointer p-0 text-[#1a1a1a] 
-            transition-opacity duration-200 hover:opacity-50"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-            </svg>
-          </button>
+          <div className="hidden sm:flex items-center gap-2">
+            {sessionEmail ? (
+              <button
+                onClick={clearSession}
+                title={`Sign out of guest session (${sessionEmail})`}
+                className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer p-0 text-[#1a1a1a] 
+                transition-opacity duration-200 hover:opacity-50 text-[11px] font-light tracking-[0.04em]"
+              >
+                <span className="text-[#9a9a94] font-mono truncate max-w-[80px]">{sessionEmail.split("@")[0]}</span>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowSessionModal(true)}
+                title="Initialize Guest Session"
+                className="flex items-center bg-transparent border-none cursor-pointer p-0 text-[#1a1a1a] 
+                transition-opacity duration-200 hover:opacity-50"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+              </button>
+            )}
+          </div>
 
           {/* Wishlist */}
           <Link
@@ -215,6 +245,11 @@ export default function Navbar() {
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
+            {cartCount > 0 && (
+              <span className="text-[10px] font-medium font-mono text-[#1a1a1a] select-none ml-0.5">
+                ({cartCount})
+              </span>
+            )}
           </Link>
         </div>
       </nav>
@@ -342,32 +377,60 @@ export default function Navbar() {
                   <line x1="3" y1="6" x2="21" y2="6" />
                   <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
-                Cart
+                Cart {cartCount > 0 && `(${cartCount})`}
               </Link>
             </li>
             {/* Account in mobile drawer */}
             <li>
-              <Link
-                href="#"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-6 py-4 text-[13px] tracking-[0.12em] uppercase text-[#1a1a1a] 
-                no-underline hover:bg-[#fafaf9] transition-colors duration-150"
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              {sessionEmail ? (
+                <button
+                  onClick={() => {
+                    clearSession();
+                    setMobileOpen(false);
+                  }}
+                  className="w-full text-left flex items-center gap-3 px-6 py-4 text-[13px] tracking-[0.12em] uppercase text-[#1a1a1a] 
+                  bg-transparent border-none cursor-pointer border-b border-[#f0eeea] hover:bg-[#fafaf9] transition-colors duration-150"
                 >
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                </svg>
-                Account
-              </Link>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                  </svg>
+                  Sign Out ({sessionEmail.split("@")[0]})
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setShowSessionModal(true);
+                    setMobileOpen(false);
+                  }}
+                  className="w-full text-left flex items-center gap-3 px-6 py-4 text-[13px] tracking-[0.12em] uppercase text-[#1a1a1a] 
+                  bg-transparent border-none cursor-pointer border-b border-[#f0eeea] hover:bg-[#fafaf9] transition-colors duration-150"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                  </svg>
+                  Sign In / Session
+                </button>
+              )}
             </li>
           </ul>
         </div>

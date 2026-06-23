@@ -53,6 +53,7 @@ async function request<T>(
   const config: RequestInit = {
     ...options,
     headers,
+    credentials: "include",
   };
 
   try {
