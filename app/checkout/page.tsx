@@ -30,6 +30,46 @@ export default function CheckoutPage() {
   const [postalCode, setPostalCode] = useState("");
   const [country, setCountry] = useState("");
 
+  // Validation errors state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateShipping = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!firstName.trim()) newErrors.firstName = "First name is required";
+    if (!lastName.trim()) newErrors.lastName = "Last name is required";
+    
+    if (!email.trim()) {
+      newErrors.email = "Email address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    
+    if (!phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\+?[\d\s-]{8,15}$/.test(phone)) {
+      newErrors.phone = "Please enter a valid phone number (8-15 digits)";
+    }
+    
+    if (!addressLine1.trim()) newErrors.addressLine1 = "Address is required";
+    if (!city.trim()) newErrors.city = "City is required";
+    if (!state.trim()) newErrors.state = "State is required";
+    if (!postalCode.trim()) newErrors.postalCode = "Postal code is required";
+    if (!country.trim()) newErrors.country = "Country is required";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleContinueToPayment = () => {
+    if (validateShipping()) {
+      setStep(1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   // Sync session email when it's available
   useEffect(() => {
     if (sessionEmail) {
@@ -108,14 +148,15 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Contact</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
-                      { label: "First Name", value: firstName, onChange: (val: string) => setFirstName(val), placeholder: "First name", full: false },
-                      { label: "Last Name", value: lastName, onChange: (val: string) => setLastName(val), placeholder: "Last name", full: false },
-                      { label: "Email", value: email, onChange: (val: string) => setEmail(val), placeholder: "Email address", full: true },
-                      { label: "Phone", value: phone, onChange: (val: string) => setPhone(val), placeholder: "Phone number", full: true },
-                    ].map(({ label, value, onChange, placeholder, full }) => (
+                      { key: "firstName", label: "First Name", value: firstName, onChange: (val: string) => { setFirstName(val); if (errors.firstName) setErrors(prev => { const n = {...prev}; delete n.firstName; return n; }); }, placeholder: "First name", full: false },
+                      { key: "lastName", label: "Last Name", value: lastName, onChange: (val: string) => { setLastName(val); if (errors.lastName) setErrors(prev => { const n = {...prev}; delete n.lastName; return n; }); }, placeholder: "Last name", full: false },
+                      { key: "email", label: "Email", value: email, onChange: (val: string) => { setEmail(val); if (errors.email) setErrors(prev => { const n = {...prev}; delete n.email; return n; }); }, placeholder: "Email address", full: true },
+                      { key: "phone", label: "Phone", value: phone, onChange: (val: string) => { setPhone(val); if (errors.phone) setErrors(prev => { const n = {...prev}; delete n.phone; return n; }); }, placeholder: "Phone number", full: true },
+                    ].map(({ key, label, value, onChange, placeholder, full }) => (
                       <div key={label} className={full ? "sm:col-span-2" : ""}>
                         <label className="block text-[10px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1.5">{label}</label>
-                        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full border border-[#e8e6e2] px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]" />
+                        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`w-full border ${errors[key] ? "border-[#d32f2f]" : "border-[#e8e6e2]"} px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]`} />
+                        {errors[key] && <span className="text-[10px] text-[#d32f2f] mt-1 block font-light tracking-wide">{errors[key]}</span>}
                       </div>
                     ))}
                   </div>
@@ -126,16 +167,17 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Shipping Address</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
-                      { label: "Address Line 1", value: addressLine1, onChange: (val: string) => setAddressLine1(val), placeholder: "Street address, P.O. box", full: true },
-                      { label: "Address Line 2", value: addressLine2, onChange: (val: string) => setAddressLine2(val), placeholder: "Apartment, suite, unit (optional)", full: true },
-                      { label: "City", value: city, onChange: (val: string) => setCity(val), placeholder: "City" },
-                      { label: "State", value: state, onChange: (val: string) => setState(val), placeholder: "State" },
-                      { label: "Postal Code", value: postalCode, onChange: (val: string) => setPostalCode(val), placeholder: "Postal code" },
-                      { label: "Country", value: country, onChange: (val: string) => setCountry(val), placeholder: "Country" },
-                    ].map(({ label, value, onChange, placeholder, full }) => (
+                      { key: "addressLine1", label: "Address Line 1", value: addressLine1, onChange: (val: string) => { setAddressLine1(val); if (errors.addressLine1) setErrors(prev => { const n = {...prev}; delete n.addressLine1; return n; }); }, placeholder: "Street address, P.O. box", full: true },
+                      { key: "addressLine2", label: "Address Line 2", value: addressLine2, onChange: (val: string) => setAddressLine2(val), placeholder: "Apartment, suite, unit (optional)", full: true },
+                      { key: "city", label: "City", value: city, onChange: (val: string) => { setCity(val); if (errors.city) setErrors(prev => { const n = {...prev}; delete n.city; return n; }); }, placeholder: "City" },
+                      { key: "state", label: "State", value: state, onChange: (val: string) => { setState(val); if (errors.state) setErrors(prev => { const n = {...prev}; delete n.state; return n; }); }, placeholder: "State" },
+                      { key: "postalCode", label: "Postal Code", value: postalCode, onChange: (val: string) => { setPostalCode(val); if (errors.postalCode) setErrors(prev => { const n = {...prev}; delete n.postalCode; return n; }); }, placeholder: "Postal code" },
+                      { key: "country", label: "Country", value: country, onChange: (val: string) => { setCountry(val); if (errors.country) setErrors(prev => { const n = {...prev}; delete n.country; return n; }); }, placeholder: "Country" },
+                    ].map(({ key, label, value, onChange, placeholder, full }) => (
                       <div key={label} className={full ? "sm:col-span-2" : ""}>
                         <label className="block text-[10px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1.5">{label}</label>
-                        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full border border-[#e8e6e2] px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]" />
+                        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className={`w-full border ${errors[key] ? "border-[#d32f2f]" : "border-[#e8e6e2]"} px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]`} />
+                        {errors[key] && <span className="text-[10px] text-[#d32f2f] mt-1 block font-light tracking-wide">{errors[key]}</span>}
                       </div>
                     ))}
                   </div>
@@ -192,7 +234,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <button onClick={() => setStep(1)} className="w-full sm:w-auto bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px]">
+                <button onClick={handleContinueToPayment} className="w-full sm:w-auto bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px]">
                   Continue to Payment
                 </button>
               </div>
