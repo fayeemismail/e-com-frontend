@@ -242,7 +242,11 @@ export default function CartPage() {
                         </p>
                       )}
 
-                      {item.availableStock === 0 ? (
+                      {item.isActive === false ? (
+                        <p className="text-[10px] text-[#d32f2f] mt-1.5 font-medium tracking-wide">
+                          This item is no longer available
+                        </p>
+                      ) : item.availableStock === 0 ? (
                         <p className="text-[10px] text-[#d32f2f] mt-1.5 font-medium tracking-wide">
                           Out of Stock
                         </p>
@@ -253,7 +257,7 @@ export default function CartPage() {
                       ) : null}
                     </div>
                   </div>
-
+ 
                   {/* Quantity Controls & Totals */}
                   <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
                     
@@ -261,20 +265,20 @@ export default function CartPage() {
                     <div className="flex items-center border border-[#e8e6e2] rounded-[4px] bg-[#fafaf9] h-9">
                       <button
                         onClick={() => updateQuantity(item.sku, item.quantity - 1)}
-                        disabled={item.quantity <= 1 || item.availableStock === 0}
+                        disabled={item.quantity <= 1 || item.availableStock === 0 || item.isActive === false}
                         aria-label="Decrease quantity"
                         className="px-2.5 py-2 text-[#9a9a94] hover:text-[#1a1a1a] disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors h-full flex items-center justify-center bg-transparent border-none"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
                       <div className="w-7 flex items-center justify-center">
-                        <span className={`text-xs font-mono font-medium ${item.quantity === 0 ? "text-[#d32f2f] font-bold" : "text-[#1a1a1a]"}`}>
+                        <span className={`text-xs font-mono font-medium ${item.quantity === 0 || item.isActive === false ? "text-[#d32f2f] font-bold" : "text-[#1a1a1a]"}`}>
                           {item.quantity}
                         </span>
                       </div>
                       <button
                         onClick={() => updateQuantity(item.sku, item.quantity + 1)}
-                        disabled={item.quantity >= item.availableStock || item.availableStock === 0}
+                        disabled={item.quantity >= item.availableStock || item.availableStock === 0 || item.isActive === false}
                         aria-label="Increase quantity"
                         className="px-2.5 py-2 text-[#9a9a94] hover:text-[#1a1a1a] disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors h-full flex items-center justify-center bg-transparent border-none"
                       >
