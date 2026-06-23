@@ -33,9 +33,9 @@ function recalculateCartTotals(items: CartValidationItem[]): CartValidationRespo
     };
   });
 
-  const TAX_RATE = 0.1;
-  const SHIPPING_FLAT_RATE = 15.0;
-  const FREE_SHIPPING_THRESHOLD = 150.0;
+  const TAX_RATE = 0.0;
+  const SHIPPING_FLAT_RATE = 0.0;
+  const FREE_SHIPPING_THRESHOLD = 0.0;
 
   const tax = subtotal * TAX_RATE;
   const shippingCost = (subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD) ? 0 : SHIPPING_FLAT_RATE;

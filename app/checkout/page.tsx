@@ -13,7 +13,6 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const [step, setStep] = useState(0);
-  const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("cod");
 
   // Controlled states for contact details
@@ -103,10 +102,7 @@ export default function CheckoutPage() {
   const items = cart.items;
   const subtotal = cart.summary.subtotal;
   const securityDeposits = cart.summary.totalSecurityDeposits;
-  const tax = cart.summary.tax;
-  const baseShipping = cart.summary.shippingCost;
-  const shipping = shippingMethod === "express" ? baseShipping + 18 : baseShipping;
-  const total = subtotal + securityDeposits + tax + shipping;
+  const total = subtotal + securityDeposits;
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -180,57 +176,6 @@ export default function CheckoutPage() {
                         {errors[key] && <span className="text-[10px] text-[#d32f2f] mt-1 block font-light tracking-wide">{errors[key]}</span>}
                       </div>
                     ))}
-                  </div>
-                </div>
-
-                {/* Shipping Method */}
-                <div className="mb-8">
-                  <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Shipping Method</p>
-                  <div className="space-y-3">
-                    {[
-                      { id: "standard", label: "Standard Shipping", sub: "5–7 business days", price: baseShipping === 0 ? "Complimentary" : `$${baseShipping.toFixed(2)}`, disabled: false },
-                      { id: "express", label: "Express Shipping", sub: "2–3 business days", price: `$${(baseShipping + 18).toFixed(2)}`, disabled: true, note: "Unavailable for this region" },
-                    ].map(({ id, label, sub, price, disabled, note }) => {
-                      const isSelected = shippingMethod === id;
-                      return (
-                        <label
-                          key={id}
-                          className={`flex items-center justify-between p-4 border transition-colors ${
-                            disabled
-                              ? "border-[#e8e6e2] bg-[#fafaf9] cursor-not-allowed opacity-60"
-                              : isSelected
-                              ? "border-[#1a1a1a] cursor-default"
-                              : "border-[#e8e6e2] hover:border-[#9a9a94] cursor-pointer"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                                isSelected ? "border-[#1a1a1a]" : "border-[#c5c5bf]"
-                              }`}
-                            >
-                              {isSelected && <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />}
-                            </div>
-                            <div>
-                              <p className={`text-xs tracking-wide ${disabled ? "text-[#9a9a94]" : "text-[#1a1a1a]"}`}>
-                                {label} {disabled && <span className="lowercase text-[9px] text-[#9a9a94] tracking-normal">({note})</span>}
-                              </p>
-                              <p className="text-[10px] text-[#9a9a94] tracking-wide">{sub}</p>
-                            </div>
-                          </div>
-                          <p className="text-xs text-[#1a1a1a] tracking-wide">{price}</p>
-                          <input
-                            type="radio"
-                            name="shipping"
-                            value={id}
-                            checked={isSelected}
-                            disabled={disabled}
-                            onChange={() => !disabled && setShippingMethod(id)}
-                            className="sr-only"
-                          />
-                        </label>
-                      );
-                    })}
                   </div>
                 </div>
 
@@ -383,7 +328,6 @@ export default function CheckoutPage() {
                       {addressLine1}{addressLine2 ? `, ${addressLine2}` : ""}<br />
                       {city}, {state} {postalCode}, {country}
                     </p>
-                    <p className="text-[10px] text-[#9a9a94] mt-2 tracking-wide capitalize font-light">{shippingMethod} shipping</p>
                   </div>
                   <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
                     <div className="flex items-center justify-between mb-2">
@@ -455,13 +399,6 @@ export default function CheckoutPage() {
                     <span>Refundable Deposits</span><span>${securityDeposits.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
-                  <span>Estimated Tax (10%)</span><span>${tax.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
-                  <span>Shipping</span>
-                  <span>{shipping === 0 ? "Complimentary" : `$${shipping.toFixed(2)}`}</span>
-                </div>
               </div>
               
               <div className="border-t border-[#e8e6e2] pt-4 flex justify-between">

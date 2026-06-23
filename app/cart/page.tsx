@@ -329,22 +329,6 @@ export default function CartPage() {
                     <span className="text-[#1a1a1a] font-medium">${summary.totalSecurityDeposits.toFixed(2)}</span>
                   </div>
                 )}
-                
-                <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
-                  <span>Estimated Tax (10%)</span>
-                  <span className="text-[#1a1a1a] font-medium">${summary.tax.toFixed(2)}</span>
-                </div>
-                
-                <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
-                  <span>Shipping Cost</span>
-                  <span className="text-[#1a1a1a] font-medium">
-                    {summary.shippingCost === 0 ? (
-                      <span className="text-[#1e4620] bg-[#edf7ed] px-1.5 py-0.5 rounded font-mono text-[9px] font-semibold">Complimentary</span>
-                    ) : (
-                      `$${summary.shippingCost.toFixed(2)}`
-                    )}
-                  </span>
-                </div>
               </div>
 
               {/* Promo Code Form */}
