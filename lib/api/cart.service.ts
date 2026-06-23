@@ -21,6 +21,7 @@ export interface CartValidationItem {
   availableStock: number;
   productId?: string;
   image?: string;
+  isActive?: boolean;
 }
 
 export interface CartValidationSummary {
