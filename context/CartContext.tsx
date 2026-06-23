@@ -82,6 +82,7 @@ interface CartContextType {
   initializeSession: (email: string) => Promise<void>;
   clearSession: () => Promise<void>;
   setShowSessionModal: (open: boolean) => void;
+  refreshCart: () => Promise<void>;
 }
 
 
@@ -349,6 +350,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         initializeSession,
         clearSession,
         setShowSessionModal,
+        refreshCart: loadCartData,
       }}
     >
       {children}

@@ -5,15 +5,21 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { orderService, OrderResponse } from "@/lib/api/order.service";
+import { ApiError } from "@/lib/api/api-client";
 
 const steps = ["Shipping", "Payment", "Review"];
 
 export default function CheckoutPage() {
-  const { cart, loading, sessionEmail } = useCart();
+  const { cart, loading, sessionEmail, refreshCart } = useCart();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("cod");
+
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  const [placedOrder, setPlacedOrder] = useState<OrderResponse | null>(null);
 
   // Controlled states for contact details
   const [firstName, setFirstName] = useState("");
@@ -69,6 +75,60 @@ export default function CheckoutPage() {
     }
   };
 
+  const handlePlaceOrder = async () => {
+    if (!cart) return;
+
+    setOrderError(null);
+    setIsPlacingOrder(true);
+
+    try {
+      const payload = {
+        customerInfo: {
+          name: `${firstName} ${lastName}`.trim(),
+          phone: phone.trim(),
+        },
+        shippingAddress: {
+          street: `${addressLine1}${addressLine2 ? `, ${addressLine2}` : ""}`.trim(),
+          city: city.trim(),
+          state: state.trim(),
+          zipCode: postalCode.trim(),
+          country: country.trim(),
+        },
+        billingAddress: {
+          street: `${addressLine1}${addressLine2 ? `, ${addressLine2}` : ""}`.trim(),
+          city: city.trim(),
+          state: state.trim(),
+          zipCode: postalCode.trim(),
+          country: country.trim(),
+        },
+        paymentMethod: paymentMethod as "cod" | "card" | "upi" | "paypal",
+      };
+
+      console.log("Placing guest checkout order. Payload:", payload);
+      const result = await orderService.createOrder(payload);
+      console.log("Guest checkout order placed successfully. Response:", result);
+      setPlacedOrder(result);
+      await refreshCart();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("Order placement failed:", err);
+      if (err instanceof ApiError) {
+        setOrderError(err.message);
+      } else if (err instanceof Error) {
+        setOrderError(err.message);
+      } else {
+        setOrderError("An unexpected error occurred while placing your order.");
+      }
+      try {
+        await refreshCart();
+      } catch (refreshErr) {
+        console.warn("Failed to refresh cart after order failure:", refreshErr);
+      }
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  };
+
   // Sync session email when it's available
   useEffect(() => {
     if (sessionEmail) {
@@ -80,15 +140,15 @@ export default function CheckoutPage() {
 
   // Route protection: redirect if unauthenticated, cart is empty, or cart is invalid
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !placedOrder) {
       if (!sessionEmail || !cart || cart.items.length === 0 || !cart.isValid) {
         router.replace("/cart");
       }
     }
-  }, [loading, sessionEmail, cart, router]);
+  }, [loading, sessionEmail, cart, router, placedOrder]);
 
   // Loading state
-  if (loading || !cart || cart.items.length === 0 || !cart.isValid) {
+  if ((loading || !cart || cart.items.length === 0 || !cart.isValid) && !placedOrder) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -97,6 +157,137 @@ export default function CheckoutPage() {
         </div>
       </div>
     );
+  }
+
+  if (placedOrder) {
+    return (
+      <div className="min-h-screen bg-white pb-20 animate-[fadeIn_0.5s_ease-out]">
+        {/* Top bar */}
+        <div className="border-b border-[#e8e6e2] px-5 sm:px-8 md:px-12 py-5 flex items-center justify-between">
+          <Link href="/" className="text-sm font-light font-serif tracking-widest text-[#1a1a1a]">MAISON</Link>
+          <Link href="/" className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors">
+            Return to shop
+          </Link>
+        </div>
+
+        <div className="px-5 sm:px-8 md:px-12 pt-16 max-w-2xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#faf9f7] border border-[#e8e6e2] mb-6">
+            <svg
+              className="w-8 h-8 text-[#c4a882]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+
+          <p className="text-[10px] tracking-[0.25em] uppercase text-[#9a9a94] mb-2 font-light">Thank you for your order</p>
+          <h1 className="text-3xl font-light font-serif text-[#1a1a1a] tracking-tight mb-3">Order Confirmed</h1>
+          <p className="text-xs text-[#6b6b65] tracking-wide max-w-md mx-auto mb-8 font-light leading-relaxed">
+            Your order has been placed successfully. A confirmation email has been sent to <span className="font-medium text-[#1a1a1a]">{placedOrder.email}</span> with your tracking details.
+          </p>
+
+          {/* Order Details Card */}
+          <div className="border border-[#e8e6e2] rounded-[4px] text-left mb-10 overflow-hidden">
+            <div className="bg-[#faf9f7] px-6 py-4 border-b border-[#e8e6e2] flex flex-wrap justify-between items-center gap-2">
+              <div>
+                <p className="text-[9px] tracking-wider uppercase text-[#9a9a94]">Order Reference</p>
+                <p className="text-sm font-mono font-medium text-[#1a1a1a] mt-0.5">{placedOrder.orderId}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[9px] tracking-wider uppercase text-[#9a9a94]">Status</p>
+                <span className="inline-block text-[9px] tracking-[0.14em] uppercase bg-[#e8e6e2] text-[#1a1a1a] px-2 py-0.5 mt-0.5 rounded-[2px] font-medium">
+                  {placedOrder.orderStatus}
+                </span>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Items Summary */}
+              <div>
+                <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-3 pb-1 border-b border-[#faf9f7] font-semibold">Items Purchased</p>
+                <div className="divide-y divide-[#e8e6e2]/50">
+                  {placedOrder.items.map((item) => (
+                    <div key={item.sku} className="py-3 flex justify-between items-center gap-4 text-xs">
+                      <div className="min-w-0">
+                        <p className="font-light font-serif text-[#1a1a1a] truncate">{item.name}</p>
+                        <p className="text-[9px] text-[#9a9a94] uppercase tracking-wider mt-0.5">
+                          {item.transactionType === "rent" ? `Rent / ${item.rentalDurationDays} days` : "Buy"} · Qty {item.quantity}
+                        </p>
+                      </div>
+                      <p className="text-[#1a1a1a] font-medium shrink-0">
+                        ${(item.price * item.quantity * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1)).toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-[#e8e6e2]/60">
+                {/* Shipping info */}
+                <div>
+                  <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-2 font-semibold">Shipping Address</p>
+                  <p className="text-xs text-[#6b6b65] leading-relaxed font-light">
+                    {placedOrder.customerInfo.name}<br />
+                    {placedOrder.shippingAddress.street}<br />
+                    {placedOrder.shippingAddress.city}, {placedOrder.shippingAddress.state} {placedOrder.shippingAddress.zipCode}<br />
+                    {placedOrder.shippingAddress.country}
+                  </p>
+                </div>
+                {/* Payment info */}
+                <div>
+                  <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-2 font-semibold">Payment Details</p>
+                  <p className="text-xs text-[#6b6b65] leading-relaxed font-light mb-1">
+                    Method: <span className="uppercase font-medium text-[#1a1a1a]">{placedOrder.paymentMethod === 'cod' ? 'Cash on Delivery' : placedOrder.paymentMethod}</span>
+                  </p>
+                  <p className="text-xs text-[#6b6b65] leading-relaxed font-light">
+                    Status: <span className="capitalize font-medium text-[#1a1a1a]">{placedOrder.paymentStatus}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Pricing breakdown */}
+              <div className="pt-4 border-t border-[#e8e6e2]/60 space-y-2">
+                <div className="flex justify-between text-xs text-[#6b6b65]">
+                  <span>Subtotal</span>
+                  <span>${placedOrder.pricingSummary.subtotal.toFixed(2)}</span>
+                </div>
+                {placedOrder.pricingSummary.totalSecurityDeposits > 0 && (
+                  <div className="flex justify-between text-xs text-[#6b6b65]">
+                    <span>Refundable Deposits</span>
+                    <span>${placedOrder.pricingSummary.totalSecurityDeposits.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm text-[#1a1a1a] font-medium pt-2 border-t border-[#e8e6e2]/30">
+                  <span className="font-serif font-light">Total Paid</span>
+                  <span>${placedOrder.pricingSummary.totalAmount.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/" className="bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-4 hover:bg-[#333] transition-colors rounded-[4px] text-center">
+              Continue Shopping
+            </Link>
+          </div>
+        </div>
+
+        {/* Global style for fade-in animation */}
+        <style jsx global>{`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (!cart) {
+    return null;
   }
 
   const items = cart.items;
@@ -341,13 +532,30 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => setStep(1)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-[4px] cursor-pointer bg-transparent">
+                  <button onClick={() => setStep(1)} disabled={isPlacingOrder} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-[4px] cursor-pointer bg-transparent disabled:opacity-50 disabled:cursor-not-allowed">
                     ← Back
                   </button>
-                  <button className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px] cursor-pointer">
-                    Place Order · ${total.toFixed(2)}
+                  <button
+                    onClick={handlePlaceOrder}
+                    disabled={isPlacingOrder}
+                    className="grow sm:grow-0 bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px] cursor-pointer disabled:bg-[#9a9a94] disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isPlacingOrder ? (
+                      <>
+                        <Loader2 className="animate-spin h-3.5 w-3.5" />
+                        Processing...
+                      </>
+                    ) : (
+                      `Place Order · $${total.toFixed(2)}`
+                    )}
                   </button>
                 </div>
+
+                {orderError && (
+                  <div className="mt-4 p-4 border border-[#d32f2f]/20 bg-[#d32f2f]/5 text-[#d32f2f] text-xs rounded-[4px] font-light tracking-wide">
+                    {orderError}
+                  </div>
+                )}
 
                 <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
                   {[
