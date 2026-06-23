@@ -1,24 +1,49 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-
-const orderItems = [
-  { id: 1, name: "Linen Oversized Blazer", variant: "Ivory / S", price: 289, qty: 1, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=300&q=80" },
-  { id: 2, name: "Silk Slip Dress", variant: "Sage / XS", price: 195, qty: 1, image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=300&q=80" },
-  { id: 3, name: "Cashmere Ribbed Knit", variant: "Oat / M", price: 340, qty: 2, image: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=300&q=80" },
-];
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 
 const steps = ["Shipping", "Payment", "Review"];
 
 export default function CheckoutPage() {
+  const { cart, loading, sessionEmail } = useCart();
+  const router = useRouter();
+
   const [step, setStep] = useState(0);
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
 
-  const subtotal = orderItems.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = shippingMethod === "express" ? 18 : 0;
-  const total = subtotal + shipping;
+  // Route protection: redirect if unauthenticated or cart is empty
+  useEffect(() => {
+    if (!loading) {
+      if (!sessionEmail || !cart || cart.items.length === 0) {
+        router.replace("/cart");
+      }
+    }
+  }, [loading, sessionEmail, cart, router]);
+
+  // Loading state
+  if (loading || !cart || cart.items.length === 0) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="animate-spin h-6 w-6 text-[#1a1a1a] mx-auto" />
+          <p className="text-xs text-[#9a9a94] tracking-wide">Loading checkout details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const items = cart.items;
+  const subtotal = cart.summary.subtotal;
+  const securityDeposits = cart.summary.totalSecurityDeposits;
+  const tax = cart.summary.tax;
+  const baseShipping = cart.summary.shippingCost;
+  const shipping = shippingMethod === "express" ? baseShipping + 18 : baseShipping;
+  const total = subtotal + securityDeposits + tax + shipping;
 
   return (
     <div className="min-h-screen bg-white pb-20">
@@ -62,7 +87,7 @@ export default function CheckoutPage() {
                     {[
                       { label: "First Name", placeholder: "Amara", full: false },
                       { label: "Last Name", placeholder: "Singh", full: false },
-                      { label: "Email", placeholder: "amara.singh@email.com", full: true },
+                      { label: "Email", placeholder: sessionEmail || "amara.singh@email.com", full: true },
                       { label: "Phone", placeholder: "+91 98765 43210", full: true },
                     ].map(({ label, placeholder, full }) => (
                       <div key={label} className={full ? "sm:col-span-2" : ""}>
@@ -98,8 +123,8 @@ export default function CheckoutPage() {
                   <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Shipping Method</p>
                   <div className="space-y-3">
                     {[
-                      { id: "standard", label: "Standard Shipping", sub: "5–7 business days", price: "Complimentary" },
-                      { id: "express", label: "Express Shipping", sub: "2–3 business days", price: "$18" },
+                      { id: "standard", label: "Standard Shipping", sub: "5–7 business days", price: baseShipping === 0 ? "Complimentary" : `$${baseShipping.toFixed(2)}` },
+                      { id: "express", label: "Express Shipping", sub: "2–3 business days", price: `$${(baseShipping + 18).toFixed(2)}` },
                     ].map(({ id, label, sub, price }) => (
                       <label key={id} className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${shippingMethod === id ? "border-[#1a1a1a]" : "border-[#e8e6e2] hover:border-[#9a9a94]"}`}>
                         <div className="flex items-center gap-3">
@@ -118,7 +143,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <button onClick={() => setStep(1)} className="w-full sm:w-auto bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors">
+                <button onClick={() => setStep(1)} className="w-full sm:w-auto bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px]">
                   Continue to Payment
                 </button>
               </div>
@@ -131,7 +156,7 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-light font-serif text-[#1a1a1a] tracking-tight mb-8">Payment</h2>
 
                 {/* Shipping summary */}
-                <div className="mb-8 p-4 bg-[#faf9f7] border border-[#e8e6e2] flex items-start justify-between">
+                <div className="mb-8 p-4 bg-[#faf9f7] border border-[#e8e6e2] flex items-start justify-between rounded-[4px]">
                   <div>
                     <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] mb-1">Ships to</p>
                     <p className="text-xs text-[#1a1a1a] tracking-wide">42 Prestige Gardens, Apt 7B</p>
@@ -154,7 +179,7 @@ export default function CheckoutPage() {
                       <button
                         key={id}
                         onClick={() => setPaymentMethod(id)}
-                        className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors ${paymentMethod === id ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"}`}
+                        className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors rounded-[4px] cursor-pointer ${paymentMethod === id ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"}`}
                       >
                         {label}
                       </button>
@@ -190,17 +215,17 @@ export default function CheckoutPage() {
                     </div>
                   )}
                   {paymentMethod === "cod" && (
-                    <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
-                      <p className="text-xs text-[#6b6b65] tracking-wide leading-relaxed">Pay in cash when your order arrives. Please keep exact change ready. A handling fee of ₹50 applies.</p>
+                    <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
+                      <p className="text-xs text-[#6b6b65] tracking-wide leading-relaxed font-light">Pay in cash when your order arrives. Please keep exact change ready. A handling fee of ₹50 applies.</p>
                     </div>
                   )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => setStep(0)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors">
+                  <button onClick={() => setStep(0)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-[4px] cursor-pointer bg-transparent">
                     ← Back
                   </button>
-                  <button onClick={() => setStep(2)} className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors">
+                  <button onClick={() => setStep(2)} className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px] cursor-pointer">
                     Review Order
                   </button>
                 </div>
@@ -215,57 +240,76 @@ export default function CheckoutPage() {
 
                 {/* Items */}
                 <div className="mb-8">
-                  <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Items ({orderItems.length})</p>
+                  <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">Items ({items.length})</p>
                   <div className="divide-y divide-[#e8e6e2]">
-                    {orderItems.map((item) => (
-                      <div key={item.id} className="py-5 flex items-center gap-4">
-                        <div className="w-14 h-16 bg-[#f5f4f1] overflow-hidden shrink-0">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    {items.map((item) => {
+                      const typeLabel = item.transactionType === "rent" ? `Rent / ${item.rentalDurationDays} days` : "Buy";
+                      const defaultImage = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
+                      const itemImage = item.image || defaultImage;
+                      
+                      return (
+                        <div key={item.sku} className="py-5 flex items-center gap-4">
+                          <div className="w-14 h-16 bg-[#f5f4f1] border border-[#e8e6e2] overflow-hidden shrink-0 rounded-[2px]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-light font-serif text-[#1a1a1a] tracking-wide">{item.name}</p>
+                            <p className="text-[10px] text-[#9a9a94] tracking-wider uppercase mt-1">
+                              {typeLabel} · Qty {item.quantity}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-[#1a1a1a] font-medium">${item.itemTotal.toFixed(2)}</p>
+                            {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
+                              <p className="text-[9px] text-[#9a9a94] mt-0.5">${item.itemDepositTotal.toFixed(2)} dep.</p>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-light font-serif text-[#1a1a1a] tracking-wide">{item.name}</p>
-                          <p className="text-[10px] text-[#9a9a94] tracking-widest uppercase">{item.variant} · Qty {item.qty}</p>
-                        </div>
-                        <p className="text-xs text-[#1a1a1a]">${item.price * item.qty}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Shipping + Payment summary */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
+                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">Ships to</p>
-                      <button onClick={() => setStep(0)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors">Edit</button>
+                      <button onClick={() => setStep(0)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent border-none p-0">Edit</button>
                     </div>
-                    <p className="text-xs text-[#1a1a1a] leading-relaxed tracking-wide">42 Prestige Gardens, Apt 7B<br />Mumbai, 400001, India</p>
-                    <p className="text-[10px] text-[#9a9a94] mt-2 tracking-wide capitalize">{shippingMethod} shipping</p>
+                    <p className="text-xs text-[#1a1a1a] leading-relaxed tracking-wide font-light">42 Prestige Gardens, Apt 7B<br />Mumbai, 400001, India</p>
+                    <p className="text-[10px] text-[#9a9a94] mt-2 tracking-wide capitalize font-light">{shippingMethod} shipping</p>
                   </div>
-                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
+                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">Payment</p>
-                      <button onClick={() => setStep(1)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors">Edit</button>
+                      <button onClick={() => setStep(1)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent border-none p-0">Edit</button>
                     </div>
-                    {paymentMethod === "card" && <p className="text-xs text-[#1a1a1a] tracking-wide">Visa ending in 4242</p>}
-                    {paymentMethod === "upi" && <p className="text-xs text-[#1a1a1a] tracking-wide">UPI · amara@okicici</p>}
-                    {paymentMethod === "cod" && <p className="text-xs text-[#1a1a1a] tracking-wide">Cash on Delivery</p>}
+                    {paymentMethod === "card" && <p className="text-xs text-[#1a1a1a] tracking-wide font-light">Visa ending in 4242</p>}
+                    {paymentMethod === "upi" && <p className="text-xs text-[#1a1a1a] tracking-wide font-light">UPI · amara@okicici</p>}
+                    {paymentMethod === "cod" && <p className="text-xs text-[#1a1a1a] tracking-wide font-light">Cash on Delivery</p>}
                   </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => setStep(1)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors">
+                  <button onClick={() => setStep(1)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-[4px] cursor-pointer bg-transparent">
                     ← Back
                   </button>
-                  <button className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors">
-                    Place Order · ${total.toLocaleString()}
+                  <button className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px] cursor-pointer">
+                    Place Order · ${total.toFixed(2)}
                   </button>
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-                  {["SSL encrypted", "Free 30-day returns", "Authenticity guaranteed"].map((t) => (
-                    <p key={t} className="text-[10px] tracking-widest text-[#9a9a94] flex items-center gap-1.5">
-                      <span className="text-[#1a1a1a]">—</span>{t}
+                  {[
+                    { label: "SSL encrypted", icon: ShieldCheck },
+                    { label: "Free 30-day returns", icon: RefreshCw },
+                    { label: "Authenticity guaranteed", icon: Truck },
+                  ].map(({ label, icon: Icon }) => (
+                    <p key={label} className="text-[10px] tracking-widest text-[#9a9a94] flex items-center gap-1.5 uppercase font-light">
+                      <Icon className="w-3.5 h-3.5 text-[#1a1a1a]" />
+                      {label}
                     </p>
                   ))}
                 </div>
@@ -274,35 +318,51 @@ export default function CheckoutPage() {
 
           </div>
 
-          {/* Right — Order summary */}
+          {/* Right — Order summary sidebar */}
           <div className="lg:w-72 xl:w-80 shrink-0">
-            <div className="sticky top-8 border border-[#e8e6e2] p-6">
-              <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-5">Order Summary</p>
+            <div className="sticky top-8 border border-[#e8e6e2] p-6 rounded-[4px]">
+              <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-5 font-serif font-semibold">Order Summary</p>
               <div className="space-y-3 mb-5">
-                {orderItems.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3">
-                    <div className="w-10 h-12 bg-[#f5f4f1] shrink-0 overflow-hidden">
-                      <img src={item.image} alt="" className="w-full h-full object-cover" />
+                {items.map((item) => {
+                  const defaultImage = "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
+                  const itemImage = item.image || defaultImage;
+                  return (
+                    <div key={item.sku} className="flex items-center gap-3">
+                      <div className="w-10 h-12 bg-[#f5f4f1] border border-[#e8e6e2] shrink-0 overflow-hidden rounded-[2px]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={itemImage} alt="" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] text-[#1a1a1a] tracking-wide truncate font-serif">{item.name}</p>
+                        <p className="text-[10px] text-[#9a9a94]">Qty {item.quantity}</p>
+                      </div>
+                      <p className="text-[11px] text-[#1a1a1a] shrink-0 font-medium">${item.itemTotal.toFixed(2)}</p>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] text-[#1a1a1a] tracking-wide truncate">{item.name}</p>
-                      <p className="text-[10px] text-[#9a9a94]">Qty {item.qty}</p>
-                    </div>
-                    <p className="text-[11px] text-[#1a1a1a] shrink-0">${item.price * item.qty}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+              
               <div className="border-t border-[#e8e6e2] pt-4 space-y-2.5 mb-4">
                 <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
-                  <span>Subtotal</span><span>${subtotal.toLocaleString()}</span>
+                  <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
+                </div>
+                {securityDeposits > 0 && (
+                  <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
+                    <span>Refundable Deposits</span><span>${securityDeposits.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
+                  <span>Estimated Tax (10%)</span><span>${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
-                  <span>Shipping</span><span>{shipping === 0 ? "Complimentary" : `$${shipping}`}</span>
+                  <span>Shipping</span>
+                  <span>{shipping === 0 ? "Complimentary" : `$${shipping.toFixed(2)}`}</span>
                 </div>
               </div>
+              
               <div className="border-t border-[#e8e6e2] pt-4 flex justify-between">
                 <span className="text-sm font-light font-serif text-[#1a1a1a]">Total</span>
-                <span className="text-sm font-light text-[#1a1a1a]">${total.toLocaleString()}</span>
+                <span className="text-sm font-medium text-[#1a1a1a]">${total.toFixed(2)}</span>
               </div>
             </div>
           </div>

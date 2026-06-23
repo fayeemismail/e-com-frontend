@@ -1,9 +1,71 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { cartService, CartItemInput, CartValidationResponse } from "@/lib/api/cart.service";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import { cartService, CartItemInput, CartValidationResponse, CartValidationItem } from "@/lib/api/cart.service";
 import SessionModal from "@/components/common/SessionModal";
 import { ApiError } from "@/lib/api/api-client";
+
+// Pure client-side helper to recalculate cart totals matching backend business rules
+function recalculateCartTotals(items: CartValidationItem[]): CartValidationResponse {
+  let subtotal = 0;
+  let totalSecurityDeposits = 0;
+
+  const updatedItems = items.map((item) => {
+    let itemTotal = 0;
+    let itemDepositTotal = 0;
+
+    if (item.transactionType === "buy") {
+      itemTotal = item.price * item.quantity;
+    } else if (item.transactionType === "rent") {
+      const duration = item.rentalDurationDays || 1;
+      itemTotal = item.price * duration * item.quantity;
+      itemDepositTotal = (item.securityDeposit || 0) * item.quantity;
+    }
+
+    subtotal += itemTotal;
+    totalSecurityDeposits += itemDepositTotal;
+
+    return {
+      ...item,
+      itemTotal,
+      itemDepositTotal,
+      inStock: item.availableStock >= item.quantity,
+    };
+  });
+
+  const TAX_RATE = 0.1;
+  const SHIPPING_FLAT_RATE = 15.0;
+  const FREE_SHIPPING_THRESHOLD = 150.0;
+
+  const tax = subtotal * TAX_RATE;
+  const shippingCost = (subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD) ? 0 : SHIPPING_FLAT_RATE;
+  const totalAmount = subtotal + totalSecurityDeposits + tax + shippingCost;
+
+  const errors: string[] = [];
+  const isValid = updatedItems.every((item) => item.inStock);
+  if (updatedItems.length === 0) {
+    errors.push("Your cart is empty");
+  } else {
+    updatedItems.forEach((item) => {
+      if (!item.inStock) {
+        errors.push(`Insufficient stock for ${item.name}. Available: ${item.availableStock}, Requested: ${item.quantity}`);
+      }
+    });
+  }
+
+  return {
+    items: updatedItems,
+    summary: {
+      subtotal: parseFloat(subtotal.toFixed(2)),
+      totalSecurityDeposits: parseFloat(totalSecurityDeposits.toFixed(2)),
+      tax: parseFloat(tax.toFixed(2)),
+      shippingCost: parseFloat(shippingCost.toFixed(2)),
+      totalAmount: parseFloat(totalAmount.toFixed(2)),
+    },
+    isValid,
+    errors,
+  };
+}
 
 interface CartContextType {
   cart: CartValidationResponse | null;
@@ -12,13 +74,16 @@ interface CartContextType {
   sessionEmail: string | null;
   showSessionModal: boolean;
   isAddingToCart: boolean;
+  isSyncing: boolean;
   toast: { visible: boolean; message: string } | null;
   addToCart: (item: CartItemInput) => Promise<void>;
   removeFromCart: (sku: string) => Promise<void>;
+  updateQuantity: (sku: string, quantity: number) => Promise<void>;
   initializeSession: (email: string) => Promise<void>;
   clearSession: () => Promise<void>;
   setShowSessionModal: (open: boolean) => void;
 }
+
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -29,6 +94,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [showSessionModal, setShowSessionModal] = useState<boolean>(false);
   const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  
+  const lastSyncedCartRef = useRef<CartValidationResponse | null>(null);
+  const debounceTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const requestSequenceRef = useRef<number>(0);
   
   // Pending action buffer to auto-retry after log-in
   const [pendingItem, setPendingItem] = useState<CartItemInput | null>(null);
@@ -46,6 +116,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       const data = await cartService.validateCart();
       setCart(data);
+      lastSyncedCartRef.current = data;
       const count = data.items.reduce((sum, item) => sum + item.quantity, 0);
       setCartCount(count);
     } catch (err) {
@@ -58,6 +129,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     let active = true;
@@ -91,6 +164,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // Load cart immediately after session is set
       const data = await cartService.validateCart();
       setCart(data);
+      lastSyncedCartRef.current = data;
       const count = data.items.reduce((sum, item) => sum + item.quantity, 0);
       setCartCount(count);
 
@@ -158,17 +232,104 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Remove item from cart
   const removeFromCart = async (sku: string) => {
+    if (!cart) return;
+
+    const targetItem = cart.items.find((item) => item.sku === sku);
+    if (!targetItem) return;
+
+    // Increment request sequence to drop older out-of-order backend responses
+    const seq = ++requestSequenceRef.current;
+    const rollbackCart = lastSyncedCartRef.current || cart;
+
+    // Optimistic Update
+    const updatedItems = cart.items.filter((item) => item.sku !== sku);
+    const optimisticCart = recalculateCartTotals(updatedItems);
+    setCart(optimisticCart);
+    setCartCount(optimisticCart.items.reduce((sum, item) => sum + item.quantity, 0));
+
+    setIsSyncing(true);
+
     try {
-      setLoading(true);
       await cartService.removeFromCart(sku);
-      showNotification("Removed item from cart.");
-      await loadCartData();
+      const freshData = await cartService.validateCart();
+      
+      if (seq === requestSequenceRef.current) {
+        setCart(freshData);
+        lastSyncedCartRef.current = freshData;
+        setCartCount(freshData.items.reduce((sum, item) => sum + item.quantity, 0));
+      }
     } catch (err) {
       console.error("Failed to remove item from cart:", err);
-      showNotification("Failed to remove item.");
+      if (seq === requestSequenceRef.current) {
+        setCart(rollbackCart);
+        setCartCount(rollbackCart.items.reduce((sum, item) => sum + item.quantity, 0));
+        showNotification("Failed to remove item.");
+      }
     } finally {
-      setLoading(false);
+      // If there are no other pending debounced syncs, set syncing to false
+      const hasPendingSyncs = Object.keys(debounceTimeoutsRef.current).length > 0;
+      if (!hasPendingSyncs) {
+        setIsSyncing(false);
+      }
     }
+  };
+
+  // Update item quantity in cart
+  const updateQuantity = async (sku: string, quantity: number) => {
+    if (!cart) return;
+
+    const targetItem = cart.items.find((item) => item.sku === sku);
+    if (!targetItem) return;
+
+    if (quantity > targetItem.availableStock) {
+      showNotification(`Cannot exceed available stock of ${targetItem.availableStock}.`);
+      return;
+    }
+
+    // Increment request sequence to drop older out-of-order backend responses
+    const seq = ++requestSequenceRef.current;
+    const rollbackCart = lastSyncedCartRef.current || cart;
+
+    // Optimistic Update
+    const updatedItems = cart.items.map((item) =>
+      item.sku === sku ? { ...item, quantity } : item
+    );
+    const optimisticCart = recalculateCartTotals(updatedItems);
+    setCart(optimisticCart);
+    setCartCount(optimisticCart.items.reduce((sum, item) => sum + item.quantity, 0));
+
+    setIsSyncing(true);
+
+    // Debounce the backend sync call
+    if (debounceTimeoutsRef.current[sku]) {
+      clearTimeout(debounceTimeoutsRef.current[sku]);
+    }
+
+    debounceTimeoutsRef.current[sku] = setTimeout(async () => {
+      try {
+        await cartService.updateCartItemQuantity(sku, quantity);
+        const freshData = await cartService.validateCart();
+        
+        if (seq === requestSequenceRef.current) {
+          setCart(freshData);
+          lastSyncedCartRef.current = freshData;
+          setCartCount(freshData.items.reduce((sum, item) => sum + item.quantity, 0));
+        }
+      } catch (err) {
+        console.error("Failed to update cart item quantity:", err);
+        if (seq === requestSequenceRef.current) {
+          setCart(rollbackCart);
+          setCartCount(rollbackCart.items.reduce((sum, item) => sum + item.quantity, 0));
+          showNotification(err instanceof Error ? err.message : "Failed to update quantity.");
+        }
+      } finally {
+        delete debounceTimeoutsRef.current[sku];
+        const hasPendingSyncs = Object.keys(debounceTimeoutsRef.current).length > 0;
+        if (!hasPendingSyncs) {
+          setIsSyncing(false);
+        }
+      }
+    }, 400); // 400ms debounce window
   };
 
   return (
@@ -180,9 +341,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         sessionEmail,
         showSessionModal,
         isAddingToCart,
+        isSyncing,
         toast,
         addToCart,
         removeFromCart,
+        updateQuantity,
         initializeSession,
         clearSession,
         setShowSessionModal,
