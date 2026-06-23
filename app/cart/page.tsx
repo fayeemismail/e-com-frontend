@@ -241,6 +241,16 @@ export default function CartPage() {
                           +${item.securityDeposit} deposit per unit (refundable)
                         </p>
                       )}
+
+                      {item.availableStock === 0 ? (
+                        <p className="text-[10px] text-[#d32f2f] mt-1.5 font-medium tracking-wide">
+                          Out of Stock
+                        </p>
+                      ) : !item.inStock ? (
+                        <p className="text-[10px] text-orange-600 mt-1.5 font-medium tracking-wide">
+                          Only {item.availableStock} available (Requested: {item.quantity})
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
@@ -251,20 +261,20 @@ export default function CartPage() {
                     <div className="flex items-center border border-[#e8e6e2] rounded-[4px] bg-[#fafaf9] h-9">
                       <button
                         onClick={() => updateQuantity(item.sku, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
+                        disabled={item.quantity <= 1 || item.availableStock === 0}
                         aria-label="Decrease quantity"
                         className="px-2.5 py-2 text-[#9a9a94] hover:text-[#1a1a1a] disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors h-full flex items-center justify-center bg-transparent border-none"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
                       <div className="w-7 flex items-center justify-center">
-                        <span className="text-xs text-[#1a1a1a] font-mono font-medium">
+                        <span className={`text-xs font-mono font-medium ${item.quantity === 0 ? "text-[#d32f2f] font-bold" : "text-[#1a1a1a]"}`}>
                           {item.quantity}
                         </span>
                       </div>
                       <button
                         onClick={() => updateQuantity(item.sku, item.quantity + 1)}
-                        disabled={item.quantity >= item.availableStock}
+                        disabled={item.quantity >= item.availableStock || item.availableStock === 0}
                         aria-label="Increase quantity"
                         className="px-2.5 py-2 text-[#9a9a94] hover:text-[#1a1a1a] disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed transition-colors h-full flex items-center justify-center bg-transparent border-none"
                       >
@@ -372,6 +382,19 @@ export default function CartPage() {
                   <Loader2 className="animate-spin h-3.5 w-3.5 text-[#9a9a94]" />
                   Syncing Bag...
                 </button>
+              ) : !cart.isValid ? (
+                <div className="space-y-3">
+                  <button
+                    disabled
+                    className="w-full bg-[#fafaf9] text-[#9a9a94] text-[11px] tracking-[0.18em] uppercase border border-[#e8e6e2] 
+                    rounded-[4px] flex items-center justify-center h-12 font-light cursor-not-allowed"
+                  >
+                    Proceed to Checkout
+                  </button>
+                  <p className="text-[10px] text-[#d32f2f] text-center font-light leading-relaxed">
+                    Please resolve stock issues or remove unavailable items before checking out.
+                  </p>
+                </div>
               ) : (
                 <Link
                   href="/checkout"

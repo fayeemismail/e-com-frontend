@@ -79,17 +79,17 @@ export default function CheckoutPage() {
     }
   }, [sessionEmail]);
 
-  // Route protection: redirect if unauthenticated or cart is empty
+  // Route protection: redirect if unauthenticated, cart is empty, or cart is invalid
   useEffect(() => {
     if (!loading) {
-      if (!sessionEmail || !cart || cart.items.length === 0) {
+      if (!sessionEmail || !cart || cart.items.length === 0 || !cart.isValid) {
         router.replace("/cart");
       }
     }
   }, [loading, sessionEmail, cart, router]);
 
   // Loading state
-  if (loading || !cart || cart.items.length === 0) {
+  if (loading || !cart || cart.items.length === 0 || !cart.isValid) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center space-y-4">
