@@ -143,7 +143,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <button onClick={() => setStep(1)} className="w-full sm:w-auto bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px]">
+                <button onClick={() => setStep(1)} className="w-full sm:w-auto bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-sm">
                   Continue to Payment
                 </button>
               </div>
@@ -156,7 +156,7 @@ export default function CheckoutPage() {
                 <h2 className="text-xl font-light font-serif text-[#1a1a1a] tracking-tight mb-8">Payment</h2>
 
                 {/* Shipping summary */}
-                <div className="mb-8 p-4 bg-[#faf9f7] border border-[#e8e6e2] flex items-start justify-between rounded-[4px]">
+                <div className="mb-8 p-4 bg-[#faf9f7] border border-[#e8e6e2] flex items-start justify-between rounded-sm">
                   <div>
                     <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] mb-1">Ships to</p>
                     <p className="text-xs text-[#1a1a1a] tracking-wide">42 Prestige Gardens, Apt 7B</p>
@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                       <button
                         key={id}
                         onClick={() => setPaymentMethod(id)}
-                        className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors rounded-[4px] cursor-pointer ${paymentMethod === id ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"}`}
+                        className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors rounded-sm cursor-pointer ${paymentMethod === id ? "border-[#1a1a1a] bg-[#1a1a1a] text-white" : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"}`}
                       >
                         {label}
                       </button>
@@ -215,17 +215,17 @@ export default function CheckoutPage() {
                     </div>
                   )}
                   {paymentMethod === "cod" && (
-                    <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
+                    <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-sm">
                       <p className="text-xs text-[#6b6b65] tracking-wide leading-relaxed font-light">Pay in cash when your order arrives. Please keep exact change ready. A handling fee of ₹50 applies.</p>
                     </div>
                   )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => setStep(0)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-[4px] cursor-pointer bg-transparent">
+                  <button onClick={() => setStep(0)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-sm cursor-pointer bg-transparent">
                     ← Back
                   </button>
-                  <button onClick={() => setStep(2)} className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px] cursor-pointer">
+                  <button onClick={() => setStep(2)} className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-sm cursor-pointer">
                     Review Order
                   </button>
                 </div>
@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                       
                       return (
                         <div key={item.sku} className="py-5 flex items-center gap-4">
-                          <div className="w-14 h-16 bg-[#f5f4f1] border border-[#e8e6e2] overflow-hidden shrink-0 rounded-[2px]">
+                          <div className="w-14 h-16 bg-[#f5f4f1] border border-[#e8e6e2] overflow-hidden shrink-0 rounded-xs">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
                           </div>
@@ -273,7 +273,7 @@ export default function CheckoutPage() {
 
                 {/* Shipping + Payment summary */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
+                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-sm">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">Ships to</p>
                       <button onClick={() => setStep(0)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent border-none p-0">Edit</button>
@@ -281,7 +281,7 @@ export default function CheckoutPage() {
                     <p className="text-xs text-[#1a1a1a] leading-relaxed tracking-wide font-light">42 Prestige Gardens, Apt 7B<br />Mumbai, 400001, India</p>
                     <p className="text-[10px] text-[#9a9a94] mt-2 tracking-wide capitalize font-light">{shippingMethod} shipping</p>
                   </div>
-                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-[4px]">
+                  <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2] rounded-sm">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">Payment</p>
                       <button onClick={() => setStep(1)} className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent border-none p-0">Edit</button>
@@ -293,10 +293,10 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => setStep(1)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-[4px] cursor-pointer bg-transparent">
+                  <button onClick={() => setStep(1)} className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors rounded-sm cursor-pointer bg-transparent">
                     ← Back
                   </button>
-                  <button className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-[4px] cursor-pointer">
+                  <button className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors rounded-sm cursor-pointer">
                     Place Order · ${total.toFixed(2)}
                   </button>
                 </div>
@@ -320,7 +320,7 @@ export default function CheckoutPage() {
 
           {/* Right — Order summary sidebar */}
           <div className="lg:w-72 xl:w-80 shrink-0">
-            <div className="sticky top-8 border border-[#e8e6e2] p-6 rounded-[4px]">
+            <div className="sticky top-8 border border-[#e8e6e2] p-6 rounded-sm">
               <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-5 font-serif font-semibold">Order Summary</p>
               <div className="space-y-3 mb-5">
                 {items.map((item) => {
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
                   const itemImage = item.image || defaultImage;
                   return (
                     <div key={item.sku} className="flex items-center gap-3">
-                      <div className="w-10 h-12 bg-[#f5f4f1] border border-[#e8e6e2] shrink-0 overflow-hidden rounded-[2px]">
+                      <div className="w-10 h-12 bg-[#f5f4f1] border border-[#e8e6e2] shrink-0 overflow-hidden rounded-xs">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={itemImage} alt="" className="w-full h-full object-cover" />
                       </div>
