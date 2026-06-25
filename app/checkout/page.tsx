@@ -58,6 +58,51 @@ export default function CheckoutPage() {
   const [isPlacing, setIsPlacing] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
   const [placedOrder, setPlacedOrder] = useState<OrderResponse | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // Load checkout state from localStorage on mount (client-side only)
+  useEffect(() => {
+    const savedStep = localStorage.getItem("checkout_step");
+    const savedShipping = localStorage.getItem("checkout_shipping");
+    const savedPayment = localStorage.getItem("checkout_payment");
+
+    if (savedStep !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStep(Number(savedStep));
+    }
+    if (savedShipping !== null) {
+      try {
+        setShipping(JSON.parse(savedShipping));
+      } catch (e) {
+        console.error("Failed to parse saved shipping data:", e);
+      }
+    }
+    if (savedPayment !== null) {
+      setPaymentMethod(savedPayment);
+    }
+    setLoaded(true);
+  }, []);
+
+  // Save checkout step to localStorage
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem("checkout_step", String(step));
+    }
+  }, [step, loaded]);
+
+  // Save shipping data to localStorage
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem("checkout_shipping", JSON.stringify(shipping));
+    }
+  }, [shipping, loaded]);
+
+  // Save payment method to localStorage
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem("checkout_payment", paymentMethod);
+    }
+  }, [paymentMethod, loaded]);
 
   // Sync session email
   useEffect(() => {
@@ -123,6 +168,12 @@ export default function CheckoutPage() {
         paymentMethod: paymentMethod as "cod" | "card" | "upi" | "paypal",
       });
       setPlacedOrder(result);
+
+      // Clear checkout data from localStorage upon successful order placement
+      localStorage.removeItem("checkout_step");
+      localStorage.removeItem("checkout_shipping");
+      localStorage.removeItem("checkout_payment");
+
       await refreshCart();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
