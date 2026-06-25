@@ -75,7 +75,7 @@ export default function ProductActions({ product }: { product: Product }) {
                   key={s.sku}
                   type="button"
                   onClick={() => setSelectedSku(s)}
-                  className={`w-full text-left p-3.5 border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 rounded-[4px] ${
+                  className={`w-full text-left p-3.5 border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 rounded-sm ${
                     isSelected
                       ? "border-[#1a1a1a] bg-[#fafaf9] shadow-[0_1px_4px_rgba(0,0,0,0.02)]"
                       : "border-[#e8e6e2] bg-white hover:border-[#aaa]"
@@ -154,7 +154,7 @@ export default function ProductActions({ product }: { product: Product }) {
                   key={opt.duration}
                   type="button"
                   onClick={() => setSelectedDuration(opt.duration as "7_days" | "30_days" | "90_days")}
-                  className={`text-[11px] py-2.5 border bg-transparent cursor-pointer transition-all duration-150 rounded-[4px] font-light tracking-[0.06em] ${
+                  className={`text-[11px] py-2.5 border bg-transparent cursor-pointer transition-all duration-150 rounded-sm font-light tracking-[0.06em] ${
                     isSelected
                       ? "border-[#1a1a1a] text-[#1a1a1a] bg-[#fafaf9] font-medium"
                       : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#aaa] hover:text-[#1a1a1a]"
@@ -176,7 +176,7 @@ export default function ProductActions({ product }: { product: Product }) {
             onClick={handleActionClick}
             className="flex-1 py-3.5 bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] 
             cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-35 
-            disabled:cursor-not-allowed disabled:hover:bg-[#1a1a1a] disabled:hover:text-white font-light rounded-[4px] flex items-center justify-center gap-2"
+            disabled:cursor-not-allowed disabled:hover:bg-[#1a1a1a] disabled:hover:text-white font-light rounded-sm flex items-center justify-center gap-2"
           >
             {stock === 0 ? (
               "Out of Stock"
@@ -199,7 +199,7 @@ export default function ProductActions({ product }: { product: Product }) {
             onClick={() => {}}
             aria-label="Toggle Wishlist"
             className="px-4 py-3.5 border border-[#e8e6e2] text-[#1a1a1a] hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white 
-            cursor-pointer transition-colors duration-200 bg-transparent flex items-center justify-center shrink-0 rounded-[4px]"
+            cursor-pointer transition-colors duration-200 bg-transparent flex items-center justify-center shrink-0 rounded-sm"
           >
             <svg
               width="16"
