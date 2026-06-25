@@ -10,7 +10,6 @@ type Props = {
 
 export default function CheckoutField({
   label,
-  fieldKey,
   value,
   onChange,
   placeholder,

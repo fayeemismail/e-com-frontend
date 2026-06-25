@@ -2,7 +2,6 @@
 
 import { Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import type { ShippingData } from "./ShippingStep";
-import type { OrderItem } from "@/lib/api/order.service";
 
 type CartItem = {
   sku: string;
@@ -44,8 +43,6 @@ export default function ReviewStep({
   items,
   shipping,
   paymentMethod,
-  subtotal,
-  securityDeposits,
   total,
   isPlacing,
   orderError,

@@ -38,6 +38,7 @@ export interface BackendCategory {
   parentId?: string | null;
   childId?: string[];
   isActive: boolean;
+  isFeatured?: boolean;
   images?: string[];
   createdAt: string;
   updatedAt: string;
@@ -71,10 +72,12 @@ export const productService = {
     return apiClient.get<ProductsResponse>(url);
   },
 
-  getCategories: async (): Promise<BackendCategory[]> => {
-    return apiClient.get<BackendCategory[]>(
-      "/categories"
-    );
+  getCategories: async (options?: { featured?: boolean }): Promise<BackendCategory[]> => {
+    let url = "/categories";
+    if (options?.featured !== undefined) {
+      url += `?featured=${options.featured}`;
+    }
+    return apiClient.get<BackendCategory[]>(url);
   },
 
   getProductById: async (id: string): Promise<BackendProduct> => {
