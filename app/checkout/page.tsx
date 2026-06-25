@@ -61,7 +61,13 @@ export default function CheckoutPage() {
 
   // Sync session email
   useEffect(() => {
-    if (sessionEmail) setShipping((prev) => ({ ...prev, email: sessionEmail }));
+    if (sessionEmail) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShipping((prev) => {
+        if (prev.email === sessionEmail) return prev;
+        return { ...prev, email: sessionEmail };
+      });
+    }
   }, [sessionEmail]);
 
   // Redirect if cart invalid
