@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 const tabs = ["Overview", "Orders", "Wishlist", "Settings"];
 
@@ -105,8 +106,8 @@ export default function ProfilePage() {
                 <div className="divide-y divide-[#e8e6e2]">
                   {dummyOrders.slice(0, 2).map((order) => (
                     <div key={order.id} className="py-5 flex items-center gap-5">
-                      <div className="w-14 h-16 shrink-0 bg-[#f5f4f1] overflow-hidden">
-                        <img src={order.image} alt="" className="w-full h-full object-cover" />
+                      <div className="w-14 h-16 shrink-0 bg-[#f5f4f1] overflow-hidden relative">
+                        <Image src={order.image} alt="" fill className="object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-light text-[#1a1a1a] tracking-wide mb-0.5">{order.id}</p>
@@ -132,8 +133,8 @@ export default function ProfilePage() {
                 <div className="divide-y divide-[#e8e6e2]">
                   {dummyOrders.map((order) => (
                     <div key={order.id} className="py-6 flex items-center gap-5">
-                      <div className="w-16 h-20 shrink-0 bg-[#f5f4f1] overflow-hidden">
-                        <img src={order.image} alt="" className="w-full h-full object-cover" />
+                      <div className="w-16 h-20 shrink-0 bg-[#f5f4f1] overflow-hidden relative">
+                        <Image src={order.image} alt="" fill className="object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-light font-serif text-[#1a1a1a] mb-1">{order.id}</p>
@@ -160,7 +161,7 @@ export default function ProfilePage() {
                   {dummyWishlist.map((item) => (
                     <div key={item.id} className="group">
                       <div className="aspect-3/4 bg-[#f5f4f1] overflow-hidden mb-3 relative">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <Image src={item.image} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                         <button className="absolute top-3 right-3 w-7 h-7 bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-[#9a9a94] hover:text-[#c44]">
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                         </button>

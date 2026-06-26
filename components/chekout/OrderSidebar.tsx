@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
 
@@ -32,11 +34,13 @@ export default function OrderSidebar({
       <div className="space-y-3 mb-5">
         {items.map((item) => (
           <div key={item.sku} className="flex items-center gap-3">
-            <div className="w-10 h-12 bg-[#f5f4f1] border border-[#e8e6e2] shrink-0 overflow-hidden">
-              <img
+            <div className="w-10 h-12 bg-[#f5f4f1] border border-[#e8e6e2] shrink-0 overflow-hidden relative">
+              <Image
                 src={item.image || FALLBACK_IMG}
                 alt=""
-                className="w-full h-full object-cover"
+                fill
+                sizes="40px"
+                className="object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">

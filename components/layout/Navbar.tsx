@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
@@ -218,9 +219,11 @@ export default function Navbar() {
                           className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#fafaf9] transition-colors duration-150 group"
                         >
                           <div className="w-10 h-12 bg-[#f0eeea] rounded overflow-hidden shrink-0 relative">
-                            <img
+                            <Image
                               src={item.image}
                               alt={item.name}
+                              width={40}
+                              height={48}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           </div>
@@ -244,7 +247,7 @@ export default function Navbar() {
                       <Link
                         href={`/shop?search=${encodeURIComponent(desktopQuery.trim())}`}
                         onClick={() => setDesktopIsOpen(false)}
-                        className="block text-center text-[10px] tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#c27c5a] transition-colors duration-150 py-1 font-medium"
+                        className="block text-center text-[10px] tracking-widest uppercase text-[#1a1a1a] hover:text-[#c27c5a] transition-colors duration-150 py-1 font-medium"
                       >
                         View All Results
                       </Link>
@@ -498,9 +501,11 @@ export default function Navbar() {
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#fafaf9] transition-colors duration-150 group"
                       >
                         <div className="w-10 h-12 bg-[#f0eeea] rounded overflow-hidden shrink-0 relative">
-                          <img
+                          <Image
                             src={item.image}
                             alt={item.name}
+                            width={40}
+                            height={48}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -527,7 +532,7 @@ export default function Navbar() {
                         setMobileIsOpen(false);
                         setMobileSearchOpen(false);
                       }}
-                      className="block text-center text-[10px] tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#c27c5a] transition-colors duration-150 py-1 font-medium"
+                      className="block text-center text-[10px] tracking-widest uppercase text-[#1a1a1a] hover:text-[#c27c5a] transition-colors duration-150 py-1 font-medium"
                     >
                       View All Results
                     </Link>

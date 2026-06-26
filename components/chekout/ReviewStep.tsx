@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import type { ShippingData } from "./ShippingStep";
 
@@ -68,11 +69,13 @@ export default function ReviewStep({
         <div className="divide-y divide-[#e8e6e2]">
           {items.map((item) => (
             <div key={item.sku} className="py-5 flex items-center gap-4">
-              <div className="w-14 h-16 bg-[#f5f4f1] border border-[#e8e6e2] overflow-hidden shrink-0">
-                <img
+              <div className="w-14 h-16 bg-[#f5f4f1] border border-[#e8e6e2] overflow-hidden shrink-0 relative">
+                <Image
                   src={item.image || FALLBACK_IMG}
                   alt={item.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="56px"
+                  className="object-cover"
                 />
               </div>
               <div className="flex-1 min-w-0">
