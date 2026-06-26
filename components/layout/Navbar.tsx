@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useSearchAutosuggest } from "@/hooks/use-search-autosuggest";
 
 const navLinks = [
   { label: "New", href: "#" },
@@ -13,10 +16,50 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const { cartCount, sessionEmail, clearSession, setShowSessionModal } = useCart();
+
+  const {
+    query: desktopQuery,
+    setQuery: setDesktopQuery,
+    suggestions: desktopSuggestions,
+    isLoading: desktopIsLoading,
+    isOpen: desktopIsOpen,
+    setIsOpen: setDesktopIsOpen,
+    containerRef: desktopContainerRef,
+    clearQuery: clearDesktopQuery,
+  } = useSearchAutosuggest();
+
+  const {
+    query: mobileQuery,
+    setQuery: setMobileQuery,
+    suggestions: mobileSuggestions,
+    isLoading: mobileIsLoading,
+    isOpen: mobileIsOpen,
+    setIsOpen: setMobileIsOpen,
+    containerRef: mobileContainerRef,
+    clearQuery: clearMobileQuery,
+  } = useSearchAutosuggest();
+
+  const handleDesktopSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (desktopQuery.trim().length >= 2) {
+      router.push(`/shop?search=${encodeURIComponent(desktopQuery.trim())}`);
+      setDesktopIsOpen(false);
+    }
+  };
+
+  const handleMobileSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mobileQuery.trim().length >= 2) {
+      router.push(`/shop?search=${encodeURIComponent(mobileQuery.trim())}`);
+      setMobileIsOpen(false);
+      setMobileSearchOpen(false);
+    }
+  };
 
   return (
     <>
@@ -87,30 +130,132 @@ export default function Navbar() {
         {/* ── RIGHT: Search + Icons ── */}
         <div className="flex items-center gap-3 md:gap-5 flex-1 justify-end">
           {/* Desktop / md+ search input — always visible */}
-          <div
-            className="hidden md:flex items-center border border-[#e2e0db] rounded-xl focus-within:border-[#1a1a1a] 
-          transition-colors duration-200 px-3 h-8 w-44 lg:w-56"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-[#aaa] shrink-0"
+          <div ref={desktopContainerRef} className="hidden md:block relative">
+            <form
+              onSubmit={handleDesktopSearchSubmit}
+              className="flex items-center border border-[#e2e0db] rounded-xl focus-within:border-[#1a1a1a] 
+              transition-colors duration-200 px-3 h-8 w-44 lg:w-56 bg-white"
             >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="16.5" y1="16.5" x2="22" y2="22" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search"
-              className="flex-1 bg-transparent border-none outline-none text-[12px] tracking-[0.04em] text-[#1a1a1a]
-               placeholder-[#bbb] px-2"
-            />
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-[#aaa] shrink-0"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <line x1="16.5" y1="16.5" x2="22" y2="22" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search"
+                value={desktopQuery}
+                onChange={(e) => {
+                  setDesktopQuery(e.target.value);
+                  setDesktopIsOpen(true);
+                }}
+                onFocus={() => setDesktopIsOpen(true)}
+                className="flex-1 bg-transparent border-none outline-none text-[12px] tracking-[0.04em] text-[#1a1a1a]
+                 placeholder-[#bbb] px-2"
+              />
+              {desktopQuery && (
+                <button
+                  type="button"
+                  onClick={clearDesktopQuery}
+                  className="bg-transparent border-none cursor-pointer text-[#aaa] hover:text-[#1a1a1a] p-0 flex items-center shrink-0"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </form>
+
+            {/* Suggestions Dropdown */}
+            {desktopIsOpen && desktopQuery.trim().length >= 2 && (
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white border border-[#e8e6e2] rounded-xl shadow-xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                {desktopIsLoading ? (
+                  <div className="divide-y divide-[#f5f4f0]">
+                    {Array.from({ length: 3 }).map((_, idx) => (
+                      <div key={idx} className="flex items-center gap-3 px-4 py-2.5 animate-pulse">
+                        <div className="w-10 h-12 bg-[#f0eeea] rounded shrink-0" />
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="h-3 bg-[#e8e6e2] rounded w-3/4" />
+                          <div className="h-2.5 bg-[#e8e6e2] rounded w-1/2" />
+                        </div>
+                        <div className="w-8 h-3 bg-[#e8e6e2] rounded shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                ) : desktopSuggestions.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-[#888] text-[11px] font-light tracking-wide">
+                    No results found for “{desktopQuery}”
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-[9px] tracking-[0.15em] uppercase text-[#9a9a94] px-4 py-1 border-b border-[#fafaf9] font-medium">
+                      Suggestions
+                    </p>
+                    <div className="max-h-72 overflow-y-auto divide-y divide-[#f5f4f0]">
+                      {desktopSuggestions.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={`/shop/${item.id}`}
+                          onClick={() => setDesktopIsOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#fafaf9] transition-colors duration-150 group"
+                        >
+                          <div className="w-10 h-12 bg-[#f0eeea] rounded overflow-hidden shrink-0 relative">
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              width={40}
+                              height={48}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-[12px] font-light text-[#1a1a1a] truncate group-hover:text-[#c27c5a] transition-colors duration-150">
+                              {item.name}
+                            </h4>
+                            {item.author && (
+                              <p className="text-[10px] text-[#888] font-light truncate mt-0.5">
+                                {item.author}
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-[11px] font-light text-[#1a1a1a] shrink-0">
+                            ${item.price.toFixed(2)}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="border-t border-[#e8e6e2] mt-1 pt-2 px-4">
+                      <Link
+                        href={`/shop?search=${encodeURIComponent(desktopQuery.trim())}`}
+                        onClick={() => setDesktopIsOpen(false)}
+                        className="block text-center text-[10px] tracking-widest uppercase text-[#1a1a1a] hover:text-[#c27c5a] transition-colors duration-150 py-1 font-medium"
+                      >
+                        View All Results
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile search toggle */}
@@ -256,37 +401,146 @@ export default function Navbar() {
 
       {/* ── MOBILE SEARCH BAR — slides down below navbar ── */}
       <div
+        ref={mobileContainerRef}
         className={[
           `fixed top-13 left-0 right-0 z-40 md:hidden bg-white border-b border-[#e8e6e2] 
-          overflow-hidden transition-all duration-300`,
-          mobileSearchOpen ? "max-h-16 opacity-100" : "max-h-0 opacity-0",
+          transition-all duration-300`,
+          mobileSearchOpen ? "max-h-16 opacity-100 overflow-visible" : "max-h-0 opacity-0 overflow-hidden pointer-events-none",
         ].join(" ")}
       >
-        <div
-          className="flex items-center border border-[#e2e0db] focus-within:border-[#1a1a1a] 
-        transition-colors rounded-lg duration-200 mx-4 my-2.5 px-3 h-9"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-[#aaa] shrink-0"
+        <div className="relative mx-4 my-2.5">
+          <form
+            onSubmit={handleMobileSearchSubmit}
+            className="flex items-center border border-[#e2e0db] focus-within:border-[#1a1a1a] 
+            transition-colors rounded-lg duration-200 px-3 h-9 bg-white"
           >
-            <circle cx="11" cy="11" r="7" />
-            <line x1="16.5" y1="16.5" x2="22" y2="22" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search products"
-            autoFocus={mobileSearchOpen}
-            className="flex-1 bg-transparent border-none outline-none text-[13px] tracking-[0.02em] text-[#1a1a1a] 
-            placeholder-[#bbb] px-2"
-          />
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-[#aaa] shrink-0"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.5" y1="16.5" x2="22" y2="22" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search products"
+              autoFocus={mobileSearchOpen}
+              value={mobileQuery}
+              onChange={(e) => {
+                setMobileQuery(e.target.value);
+                setMobileIsOpen(true);
+              }}
+              onFocus={() => setMobileIsOpen(true)}
+              className="flex-1 bg-transparent border-none outline-none text-[13px] tracking-[0.02em] text-[#1a1a1a] 
+              placeholder-[#bbb] px-2"
+            />
+            {mobileQuery && (
+              <button
+                type="button"
+                onClick={clearMobileQuery}
+                className="bg-transparent border-none cursor-pointer text-[#aaa] hover:text-[#1a1a1a] p-0 flex items-center shrink-0"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+          </form>
+
+          {/* Mobile Suggestions Dropdown */}
+          {mobileIsOpen && mobileQuery.trim().length >= 2 && (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#e8e6e2] rounded-xl shadow-xl z-50 overflow-hidden py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+              {mobileIsLoading ? (
+                <div className="divide-y divide-[#f5f4f0]">
+                  {Array.from({ length: 3 }).map((_, idx) => (
+                    <div key={idx} className="flex items-center gap-3 px-4 py-2.5 animate-pulse">
+                      <div className="w-10 h-12 bg-[#f0eeea] rounded shrink-0" />
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="h-3 bg-[#e8e6e2] rounded w-3/4" />
+                        <div className="h-2.5 bg-[#e8e6e2] rounded w-1/2" />
+                      </div>
+                      <div className="w-8 h-3 bg-[#e8e6e2] rounded shrink-0" />
+                    </div>
+                  ))}
+                </div>
+              ) : mobileSuggestions.length === 0 ? (
+                <div className="px-4 py-6 text-center text-[#888] text-[11px] font-light tracking-wide">
+                  No results found for “{mobileQuery}”
+                </div>
+              ) : (
+                <div>
+                  <p className="text-[9px] tracking-[0.15em] uppercase text-[#9a9a94] px-4 py-1 border-b border-[#fafaf9] font-medium">
+                    Suggestions
+                  </p>
+                  <div className="max-h-60 overflow-y-auto divide-y divide-[#f5f4f0]">
+                    {mobileSuggestions.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`/shop/${item.id}`}
+                        onClick={() => {
+                          setMobileIsOpen(false);
+                          setMobileSearchOpen(false);
+                        }}
+                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#fafaf9] transition-colors duration-150 group"
+                      >
+                        <div className="w-10 h-12 bg-[#f0eeea] rounded overflow-hidden shrink-0 relative">
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={40}
+                            height={48}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-[12px] font-light text-[#1a1a1a] truncate">
+                            {item.name}
+                          </h4>
+                          {item.author && (
+                            <p className="text-[10px] text-[#888] font-light truncate mt-0.5">
+                              {item.author}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-light text-[#1a1a1a] shrink-0">
+                          ${item.price.toFixed(2)}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="border-t border-[#e8e6e2] mt-1 pt-2 px-4">
+                    <Link
+                      href={`/shop?search=${encodeURIComponent(mobileQuery.trim())}`}
+                      onClick={() => {
+                        setMobileIsOpen(false);
+                        setMobileSearchOpen(false);
+                      }}
+                      className="block text-center text-[10px] tracking-widest uppercase text-[#1a1a1a] hover:text-[#c27c5a] transition-colors duration-150 py-1 font-medium"
+                    >
+                      View All Results
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

@@ -64,10 +64,12 @@ export const productService = {
     limit: number;
     categoryId?: string | null;
     sort?: string;
+    search?: string;
   }): Promise<ProductsResponse> => {
     let url = `/products?page=${options.page}&limit=${options.limit}`;
     if (options.categoryId)   url += `&categoryId=${options.categoryId}`;
     if (options.sort) url += `&sort=${options.sort}`;
+    if (options.search) url += `&search=${encodeURIComponent(options.search)}`;
 
     return apiClient.get<ProductsResponse>(url);
   },
