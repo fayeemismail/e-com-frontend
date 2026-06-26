@@ -43,7 +43,35 @@ function SkeletonGrid({ view }: { view: "grid" | "list" }) {
   );
 }
 
-function CatalogEmptyState() {
+function CatalogEmptyState({
+  search,
+  onReset,
+}: {
+  search: string | null;
+  onReset: () => void;
+}) {
+  if (search) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 px-4 text-center max-w-md mx-auto">
+        <div className="mb-5 w-14 h-14 rounded-full bg-[#f3efe6] flex items-center justify-center text-[#c4a882] text-xl select-none">
+          🔍
+        </div>
+        <h3 className="text-[12px] tracking-[0.22em] uppercase text-[#111] font-normal mb-2.5 font-serif">
+          No Results Found
+        </h3>
+        <p className="text-[11px] leading-relaxed text-[#888] font-light tracking-wide mb-6">
+          We couldn&apos;t find any products matching “{search}”. Try checking your spelling or using different keywords.
+        </p>
+        <button
+          onClick={onReset}
+          className="group relative text-[9px] tracking-[0.2em] uppercase bg-[#111] text-white px-6 py-3 border-none cursor-pointer transition-all duration-300 hover:bg-[#c27c5a] no-underline font-light inline-block font-sans"
+        >
+          Clear Search
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center justify-center py-20 px-4 text-center max-w-md mx-auto">
       <div className="mb-5 w-14 h-14 rounded-full bg-[#f3efe6] flex items-center justify-center text-[#c4a882] text-xl select-none">
@@ -84,6 +112,7 @@ export default function ShopClient() {
     // Filter & Sort
     sort,
     selectedCategory,
+    search,
   } = useShopProducts();
 
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -120,10 +149,50 @@ export default function ShopClient() {
     router.push("/shop", { scroll: false });
   };
 
-  const activeFilterCount = selectedCategory ? 1 : 0;
+  const handleClearSearch = () => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("search");
+    params.delete("page");
+    router.push(`/shop?${params.toString()}`, { scroll: false });
+  };
+
+  const activeFilterCount = (selectedCategory ? 1 : 0) + (search ? 1 : 0);
+
+  // Render Dynamic Header Info
+  const getHeaderInfo = () => {
+    if (search) {
+      return {
+        label: "Search Results",
+        title: `“${search}”`,
+      };
+    }
+    if (selectedCategory) {
+      return {
+        label: "Category",
+        title: selectedCategory,
+      };
+    }
+    return {
+      label: "Collection",
+      title: "All Products",
+    };
+  };
+
+  const { label, title } = getHeaderInfo();
 
   return (
     <>
+      {/* Page Header */}
+      <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2]">
+        <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">
+          {label}
+        </p>
+        <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">
+          {title}
+        </h1>
+      </div>
+
       <ShopToolbar
         sort={sort}
         onSortChange={handleSortChange}
@@ -155,7 +224,9 @@ export default function ShopClient() {
               handleRetry={handleRetry}
             />
           )}
-          {!loading && !error && catalogIsEmpty && <CatalogEmptyState />}
+          {!loading && !error && catalogIsEmpty && (
+            <CatalogEmptyState search={search} onReset={handleClearSearch} />
+          )}
           {!loading && !error && !catalogIsEmpty && (
             <>
               <ProductGrid products={filtered} view={view} onReset={resetFilters} />

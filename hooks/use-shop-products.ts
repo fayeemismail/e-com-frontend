@@ -19,6 +19,7 @@ export function useShopProducts(limit = 12) {
   const page = pageParam ? parseInt(pageParam, 10) : 1;
 
   const selectedCategory = searchParams ? searchParams.get("category") : null;
+  const searchQuery = searchParams ? searchParams.get("search") : null;
 
   const sortParam = searchParams ? searchParams.get("sort") : null;
   const sort = (sortParam as SortOption) || "featured";
@@ -61,6 +62,7 @@ export function useShopProducts(limit = 12) {
           limit,
           categoryId,
           sort: backendSortMap[sort],
+          search: searchQuery || undefined,
         });
 
         if (!activeRequest) return;
@@ -96,7 +98,7 @@ export function useShopProducts(limit = 12) {
       activeRequest = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, selectedCategory, sort, limit, retryCount]);
+  }, [page, selectedCategory, sort, limit, retryCount, searchQuery]);
 
   const handleRetry = () => {
     setIsRetrying(true);
@@ -112,7 +114,7 @@ export function useShopProducts(limit = 12) {
     error,
     isRetrying,
     handleRetry,
-    catalogIsEmpty: totalItems === 0 && selectedCategory === null,
+    catalogIsEmpty: totalItems === 0 && selectedCategory === null && searchQuery === null,
 
     // Pagination
     page,
@@ -122,5 +124,6 @@ export function useShopProducts(limit = 12) {
     // Filter & Sort
     sort,
     selectedCategory,
+    search: searchQuery,
   };
 }
