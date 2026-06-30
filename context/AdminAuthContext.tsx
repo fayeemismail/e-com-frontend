@@ -32,7 +32,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
           setAdminEmail(response.email);
           setIsAdminAuthenticated(true);
         }
-      } catch (err) {
+      } catch {
         if (active) {
           setAdminEmail(null);
           setIsAdminAuthenticated(false);

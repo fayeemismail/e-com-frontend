@@ -3,14 +3,12 @@
 import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
-  Search,
   ChevronDown,
   ChevronUp,
   CheckCircle2,
   XCircle,
   Truck,
   RotateCcw,
-  Clock,
   PackageCheck,
 } from "lucide-react";
 
@@ -251,20 +249,13 @@ function OrderRow({
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>(INITIAL_ORDERS);
   const [filter, setFilter] = useState<OrderStatus | "All">("All");
-  const [search, setSearch] = useState("");
 
   const updateStatus = (id: string, status: OrderStatus) => {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
   };
 
   const filtered = orders.filter((o) => {
-    const matchFilter = filter === "All" || o.status === filter;
-    const matchSearch =
-      !search ||
-      o.id.toLowerCase().includes(search.toLowerCase()) ||
-      o.customer.toLowerCase().includes(search.toLowerCase()) ||
-      o.email.toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
+    return filter === "All" || o.status === filter;
   });
 
   const counts: Record<string, number> = {};
@@ -279,7 +270,7 @@ export default function AdminOrdersPage() {
           <h1 className="text-2xl font-light font-serif text-[#1a1a1a]">Orders</h1>
         </div>
 
-        {/* Filter tabs + search */}
+        {/* Filter tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
           {/* Tabs */}
           <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
@@ -301,18 +292,6 @@ export default function AdminOrdersPage() {
                 ) : null}
               </button>
             ))}
-          </div>
-
-          {/* Search */}
-          <div className="sm:ml-auto flex items-center border border-[#e8e6e2] focus-within:border-[#1a1a1a] transition-colors px-3 h-8 w-full sm:w-56">
-            <Search size={13} strokeWidth={1.4} className="text-[#bbb] shrink-0" />
-            <input
-              type="text"
-              placeholder="Search orders…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none text-[11px] text-[#1a1a1a] placeholder-[#bbb] px-2"
-            />
           </div>
         </div>
 
