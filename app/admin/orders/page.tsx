@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminOrders } from "@/hooks/use-admin-orders";
 import { AdminOrder } from "@/types/admin/types";
@@ -369,6 +370,11 @@ function OrderRow({
                     <span>Total Amount</span>
                     <span>${order.total.toFixed(2)}</span>
                   </div>
+                  <div className="mt-3 pt-3">
+                    <Link href={`/admin/orders/${order.id}`} className="block w-full text-center py-2 bg-[#1a1a1a] text-white text-[10px] uppercase tracking-wider font-semibold rounded-sm hover:bg-[#333] transition-colors">
+                      View Full Details →
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -583,7 +589,7 @@ function AdminOrdersContent() {
                       </td>
                     </tr>
                   ) : (
-                    orders.map((o) => (
+                    orders.map((o: AdminOrder) => (
                       <OrderRow
                         key={o.id}
                         order={o}

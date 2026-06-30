@@ -39,6 +39,13 @@ export const adminService = {
   },
 
   /**
+   * Fetch a single order's deep details by ID
+   */
+  getOrder: async (orderId: string): Promise<OrderResponse> => {
+    return apiClient.get(`/admin/orders/${orderId}`);
+  },
+
+  /**
    * Mutate administrative status flags on a customer order
    */
   updateOrderStatus: async (
