@@ -48,6 +48,7 @@ export interface OrderResponse {
   paymentStatus: string;
   rentalReturnStatus: string;
   paymentMethod: "cod" | "card" | "upi" | "paypal";
+  transactionId?: string;
   createdAt: string;
 }
 

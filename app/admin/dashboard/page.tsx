@@ -1,6 +1,7 @@
 "use client";
 
 import AdminLayout from "@/components/admin/AdminLayout";
+import Link from "next/link";
 import {
   ShoppingBag,
   DollarSign,
@@ -120,9 +121,9 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 bg-white border border-[#e8e6e2]">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#f0eeea]">
               <p className="text-[11px] tracking-[0.14em] uppercase text-[#1a1a1a]">Recent Orders</p>
-              <a href="/admin/orders" className="text-[10px] tracking-widest uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors no-underline">
+              <Link href="/admin/orders" className="text-[10px] tracking-widest uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors no-underline">
                 View all
-              </a>
+              </Link>
             </div>
             <div className="divide-y divide-[#f4f2ee]">
               {RECENT_ORDERS.map((o) => (
