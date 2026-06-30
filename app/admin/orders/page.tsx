@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { createPortal } from "react-dom";
+import { useRouter, useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminOrders } from "@/hooks/use-admin-orders";
 import { AdminOrder } from "@/types/admin/types";
@@ -378,27 +379,50 @@ function OrderRow({
   );
 }
 
-export default function AdminOrdersPage() {
+function AdminOrdersContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const ordersPerPage = 10;
   const {
     orders,
     loading,
     error,
     filter,
-    currentPage,
+    page: currentPage,
     totalPages,
     totalCount,
-    setCurrentPage,
-    handleFilterChange,
     handleFlagChange,
     refresh,
-  } = useAdminOrders(1, ordersPerPage);
+  } = useAdminOrders(ordersPerPage);
+
+  const handleFilterChange = (newFilter: string) => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (newFilter && newFilter !== "all") {
+      params.set("status", newFilter);
+    } else {
+      params.delete("status");
+    }
+    params.delete("page");
+    router.push(`/admin/orders?${params.toString()}`, { scroll: false });
+  };
+
+  const handlePageChange = (pageNum: number) => {
+    if (!searchParams) return;
+    const params = new URLSearchParams(searchParams.toString());
+    if (pageNum > 1) {
+      params.set("page", pageNum.toString());
+    } else {
+      params.delete("page");
+    }
+    router.push(`/admin/orders?${params.toString()}`, { scroll: true });
+  };
 
   const shownCountStart = totalCount > 0 ? (currentPage - 1) * ordersPerPage + 1 : 0;
   const shownCountEnd = Math.min(currentPage * ordersPerPage, totalCount);
 
   return (
-    <AdminLayout>
+    <>
       <div className="px-6 md:px-8 py-8">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
@@ -577,14 +601,14 @@ export default function AdminOrdersPage() {
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                     className="relative inline-flex items-center rounded-md border border-[#e8e6e2] bg-white px-4 py-2 text-xs font-medium text-[#1a1a1a] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed select-none"
                   >
                     Previous
                   </button>
                   <button
                     disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                     className="relative ml-3 inline-flex items-center rounded-md border border-[#e8e6e2] bg-white px-4 py-2 text-xs font-medium text-[#1a1a1a] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed select-none"
                   >
                     Next
@@ -601,7 +625,7 @@ export default function AdminOrdersPage() {
                     <nav className="isolate inline-flex -space-x-px" aria-label="Pagination">
                       <button
                         disabled={currentPage === 1}
-                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                         className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                       >
                         Previous
@@ -611,7 +635,7 @@ export default function AdminOrdersPage() {
                         return (
                           <button
                             key={pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
+                            onClick={() => handlePageChange(pageNum)}
                             className={`relative inline-flex items-center px-3 py-2 text-[11px] font-medium transition-colors border-none cursor-pointer bg-transparent ${
                               currentPage === pageNum
                                 ? "text-[#1a1a1a] font-bold border-b border-[#1a1a1a]"
@@ -624,7 +648,7 @@ export default function AdminOrdersPage() {
                       })}
                       <button
                         disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                         className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                       >
                         Next
@@ -646,6 +670,24 @@ export default function AdminOrdersPage() {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { scrollbar-width: none; }
       `}</style>
+    </>
+  );
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <AdminLayout>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center py-40">
+            <span className="text-[11px] tracking-wider uppercase text-[#9a9a94]">
+              Loading orders interface...
+            </span>
+          </div>
+        }
+      >
+        <AdminOrdersContent />
+      </Suspense>
     </AdminLayout>
   );
 }

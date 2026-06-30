@@ -1,15 +1,23 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { adminService } from "@/lib/api/admin.service";
 import { AdminOrderMapper } from "@/lib/mappers/admin.mapper";
 import { AdminOrder } from "@/types/admin/types";
 import { ApiError } from "@/lib/api/api-client";
 
-export function useAdminOrders(initialPage = 1, initialLimit = 10) {
+export function useAdminOrders(limit = 10) {
+  const searchParams = useSearchParams();
+
+  // Derived values from URL parameters (single source of truth)
+  const pageParam = searchParams ? searchParams.get("page") : null;
+  const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
+
+  const filterParam = searchParams ? searchParams.get("status") : null;
+  const filter = filterParam || "all";
+
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<string>("all");
-  const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [reloadTrigger, setReloadTrigger] = useState(0);
@@ -21,7 +29,7 @@ export function useAdminOrders(initialPage = 1, initialLimit = 10) {
       setError(null);
       try {
         const backendStatus = filter === "all" ? undefined : filter;
-        const res = await adminService.getOrders(currentPage, initialLimit, backendStatus);
+        const res = await adminService.getOrders(page, limit, backendStatus);
         if (active) {
           const mapped = AdminOrderMapper.toAdminOrderList(res.orders);
           setOrders(mapped);
@@ -46,12 +54,7 @@ export function useAdminOrders(initialPage = 1, initialLimit = 10) {
     return () => {
       active = false;
     };
-  }, [currentPage, filter, initialLimit, reloadTrigger]);
-
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    setCurrentPage(1);
-  };
+  }, [page, filter, limit, reloadTrigger]);
 
   const handleFlagChange = async (
     id: string,
@@ -74,11 +77,9 @@ export function useAdminOrders(initialPage = 1, initialLimit = 10) {
     loading,
     error,
     filter,
-    currentPage,
+    page,
     totalPages,
     totalCount,
-    setCurrentPage,
-    handleFilterChange,
     handleFlagChange,
     refresh,
   };
