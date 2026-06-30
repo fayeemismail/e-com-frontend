@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
+import { AdminAuthProvider } from "@/context/AdminAuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +33,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen">
-        <CartProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </CartProvider>
+        <AdminAuthProvider>
+          <CartProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </CartProvider>
+        </AdminAuthProvider>
       </body>
     </html>
   );

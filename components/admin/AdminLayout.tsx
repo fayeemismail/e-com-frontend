@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useAdminAuth } from "@/context/AdminAuthContext";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -10,6 +11,7 @@ import {
   Users,
   Settings,
   LogOut,
+  Loader2,
 } from "lucide-react";
 
 const NAV = [
@@ -23,17 +25,31 @@ const NAV = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { isAdminAuthenticated, loading, logout } = useAdminAuth();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !sessionStorage.getItem("admin_auth")) {
+    if (!loading && !isAdminAuthenticated) {
       router.replace("/admin/login");
     }
-  }, [router]);
+  }, [loading, isAdminAuthenticated, router]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("admin_auth");
+  const handleLogout = async () => {
+    await logout();
     router.push("/admin/login");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f7f6f3] flex flex-col items-center justify-center">
+        <Loader2 size={36} className="animate-spin text-[#1a1a1a] mb-4" strokeWidth={1.5} />
+        <p className="text-[11px] tracking-[0.18em] uppercase text-[#9a9a94]">Verifying Session...</p>
+      </div>
+    );
+  }
+
+  if (!isAdminAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#f7f6f3] flex">
