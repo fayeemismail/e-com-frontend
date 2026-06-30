@@ -249,17 +249,31 @@ function OrderRow({
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>(INITIAL_ORDERS);
   const [filter, setFilter] = useState<OrderStatus | "All">("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5;
 
   const updateStatus = (id: string, status: OrderStatus) => {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+  };
+
+  const handleFilterChange = (newFilter: OrderStatus | "All") => {
+    setFilter(newFilter);
+    setCurrentPage(1);
   };
 
   const filtered = orders.filter((o) => {
     return filter === "All" || o.status === filter;
   });
 
+  const totalPages = Math.ceil(filtered.length / ordersPerPage) || 1;
+  const startIndex = (currentPage - 1) * ordersPerPage;
+  const paginatedOrders = filtered.slice(startIndex, startIndex + ordersPerPage);
+
   const counts: Record<string, number> = {};
   orders.forEach((o) => { counts[o.status] = (counts[o.status] ?? 0) + 1; });
+
+  const shownCountStart = filtered.length > 0 ? startIndex + 1 : 0;
+  const shownCountEnd = Math.min(startIndex + ordersPerPage, filtered.length);
 
   return (
     <AdminLayout>
@@ -277,7 +291,7 @@ export default function AdminOrdersPage() {
             {FILTERS.map((f) => (
               <button
                 key={f}
-                onClick={() => setFilter(f)}
+                onClick={() => handleFilterChange(f)}
                 className={`text-[9px] tracking-[0.12em] uppercase px-3 py-1.5 border whitespace-nowrap shrink-0 bg-transparent cursor-pointer transition-colors duration-150 ${
                   filter === f
                     ? "border-[#1a1a1a] text-[#1a1a1a]"
@@ -308,14 +322,14 @@ export default function AdminOrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {paginatedOrders.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-16 text-center text-[12px] text-[#9a9a94]">
                     No orders found.
                   </td>
                 </tr>
               ) : (
-                filtered.map((o) => (
+                paginatedOrders.map((o) => (
                   <OrderRow key={o.id} order={o} onStatusChange={updateStatus} />
                 ))
               )}
@@ -323,8 +337,72 @@ export default function AdminOrdersPage() {
           </table>
         </div>
 
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border border-[#e8e6e2] border-t-0 bg-white px-4 py-3 sm:px-6">
+            <div className="flex flex-1 justify-between sm:hidden">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                className="relative inline-flex items-center rounded-md border border-[#e8e6e2] bg-white px-4 py-2 text-xs font-medium text-[#1a1a1a] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed select-none"
+              >
+                Previous
+              </button>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                className="relative ml-3 inline-flex items-center rounded-md border border-[#e8e6e2] bg-white px-4 py-2 text-xs font-medium text-[#1a1a1a] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed select-none"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[11px] text-[#888]">
+                  Page <span className="font-medium text-[#1a1a1a]">{currentPage}</span> of{" "}
+                  <span className="font-medium text-[#1a1a1a]">{totalPages}</span>
+                </p>
+              </div>
+              <div>
+                <nav className="isolate inline-flex -space-x-px" aria-label="Pagination">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                  >
+                    Previous
+                  </button>
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`relative inline-flex items-center px-3 py-2 text-[11px] font-medium transition-colors border-none cursor-pointer bg-transparent ${
+                          currentPage === pageNum
+                            ? "text-[#1a1a1a] font-bold"
+                            : "text-[#888] hover:text-[#1a1a1a]"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                  >
+                    Next
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
+
         <p className="text-[10px] text-[#bbb] mt-3">
-          Showing {filtered.length} of {orders.length} orders
+          Showing {shownCountStart}–{shownCountEnd} of {filtered.length} orders
         </p>
       </div>
 

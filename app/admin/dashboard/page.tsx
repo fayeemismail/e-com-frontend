@@ -5,7 +5,6 @@ import {
   ShoppingBag,
   DollarSign,
   Users,
-  Package,
   TrendingUp,
   TrendingDown,
   Clock,
