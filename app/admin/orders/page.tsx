@@ -89,6 +89,7 @@ function StatusSelect({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{
     top?: number;
     bottom?: number;
@@ -128,7 +129,12 @@ function StatusSelect({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        !(dropdownRef.current && dropdownRef.current.contains(target))
+      ) {
         setIsOpen(false);
       }
     }
@@ -171,6 +177,7 @@ function StatusSelect({
         typeof window !== "undefined" &&
         createPortal(
           <div
+            ref={dropdownRef}
             style={{
               position: "fixed",
               left: `${coords.left}px`,
