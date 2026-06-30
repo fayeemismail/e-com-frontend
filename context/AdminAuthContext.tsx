@@ -68,7 +68,6 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    setLoading(true);
     try {
       await adminService.logout();
     } catch (err) {
@@ -77,7 +76,6 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       setAdminEmail(null);
       setIsAdminAuthenticated(false);
       setError(null);
-      setLoading(false);
     }
   }, []);
 

@@ -7,8 +7,6 @@ import { useAdminAuth } from "@/context/AdminAuthContext";
 import {
   LayoutDashboard,
   ShoppingBag,
-  Package,
-  Users,
   Settings,
   LogOut,
   Loader2,
@@ -17,8 +15,6 @@ import {
 const NAV = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Orders",    href: "/admin/orders",    icon: ShoppingBag },
-  { label: "Products",  href: "/admin/products",  icon: Package },
-  { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Settings",  href: "/admin/settings",  icon: Settings },
 ];
 
