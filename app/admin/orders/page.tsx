@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminOrders } from "@/hooks/use-admin-orders";
 import { AdminOrder } from "@/types/admin/types";
@@ -86,29 +87,126 @@ function StatusSelect({
   disabled?: boolean;
   onChange: (val: string) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    width: number;
+    openUpwards: boolean;
+  }>({ left: 0, width: 0, openUpwards: false });
+
+  const toggleDropdown = () => {
+    if (!isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const dropdownHeight = 180; // Estimated height for options card
+
+      const shouldOpenUpwards = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+
+      if (shouldOpenUpwards) {
+        setCoords({
+          bottom: viewportHeight - rect.top + 6,
+          left: rect.left,
+          width: rect.width,
+          openUpwards: true,
+        });
+      } else {
+        setCoords({
+          top: rect.bottom + 6,
+          left: rect.left,
+          width: rect.width,
+          openUpwards: false,
+        });
+      }
+    }
+    setIsOpen(!isOpen);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    function handleScroll() {
+      setIsOpen(false);
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener("scroll", handleScroll, { capture: true });
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, { capture: true });
+    };
+  }, [isOpen]);
+
+  const currentLabel = options[value] || value;
+  const currentStyle = styles[value] || "text-[#1a1a1a] bg-white border-[#e8e6e2]";
+
   return (
-    <div className="relative inline-block w-full min-w-[125px]">
-      <select
+    <div ref={containerRef} className="relative inline-block w-full min-w-[130px]">
+      <button
+        type="button"
         disabled={disabled}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`w-full text-[9px] tracking-[0.08em] font-semibold border rounded-full px-2.5 py-1 uppercase cursor-pointer select-none outline-none focus:ring-1 transition-all duration-150 appearance-none bg-no-repeat bg-position-[right_8px_center] disabled:opacity-60 disabled:cursor-not-allowed ${
-          styles[value] || "text-[#1a1a1a] bg-white border-[#e8e6e2]"
-        }`}
-        style={{
-          backgroundImage: disabled
-            ? "none"
-            : `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-          backgroundSize: "12px 12px",
-          paddingRight: disabled ? "8px" : "20px",
-        }}
+        onClick={toggleDropdown}
+        className={`w-full flex items-center justify-between text-[9px] tracking-[0.08em] font-semibold border rounded-full px-3 py-1.5 uppercase select-none outline-none transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${currentStyle}`}
       >
-        {Object.entries(options).map(([val, label]) => (
-          <option key={val} value={val} className="text-[10px] normal-case bg-white text-[#1a1a1a]">
-            {label}
-          </option>
-        ))}
-      </select>
+        <span className="truncate pr-1">{currentLabel}</span>
+        {!disabled && (
+          <ChevronDown
+            size={11}
+            className={`transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`}
+          />
+        )}
+      </button>
+
+      {isOpen &&
+        !disabled &&
+        typeof window !== "undefined" &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              left: `${coords.left}px`,
+              width: `${coords.width}px`,
+              ...(coords.openUpwards ? { bottom: `${coords.bottom}px` } : { top: `${coords.top}px` }),
+            }}
+            className={`z-50 bg-white border border-[#e8e6e2] rounded-md shadow-lg py-1 max-h-48 overflow-y-auto ${
+              coords.openUpwards
+                ? "animate-in fade-in slide-in-from-bottom-1 duration-150"
+                : "animate-in fade-in slide-in-from-top-1 duration-150"
+            }`}
+          >
+            {Object.entries(options).map(([val, label]) => {
+              const isSelected = val === value;
+              return (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => {
+                    onChange(val);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-1.5 text-[10px] uppercase tracking-wider transition-colors duration-150 hover:bg-[#faf9f7] flex items-center justify-between ${
+                    isSelected ? "bg-[#faf9f7] font-semibold text-[#1a1a1a]" : "text-[#5a5a55]"
+                  }`}
+                >
+                  <span className="truncate">{label}</span>
+                  {isSelected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1a1a1a] ml-1.5 shrink-0" />
+                  )}
+                </button>
+              );
+            })}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
@@ -392,7 +490,11 @@ export default function AdminOrdersPage() {
                     </tr>
                   ) : (
                     orders.map((o) => (
-                      <OrderRow key={o.id} order={o} onFlagChange={handleFlagChange} />
+                      <OrderRow
+                        key={o.id}
+                        order={o}
+                        onFlagChange={handleFlagChange}
+                      />
                     ))
                   )}
                 </tbody>
