@@ -8,7 +8,6 @@ import { AdminOrder } from "@/types/admin/types";
 import {
   ChevronDown,
   ChevronUp,
-  Loader2,
   RefreshCw,
 } from "lucide-react";
 
@@ -439,11 +438,75 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
-        {/* Loading Spinner */}
+        {/* Skeleton Loading */}
         {loading && (
-          <div className="flex items-center justify-center py-20 bg-white border border-[#e8e6e2]">
-            <Loader2 className="animate-spin h-5 w-5 text-[#1a1a1a] mr-2" />
-            <span className="text-[11px] tracking-wider uppercase text-[#9a9a94]">Loading orders...</span>
+          <div className="bg-white border border-[#e8e6e2] overflow-hidden rounded-sm shadow-sm">
+            <table className="w-full min-w-[950px] border-collapse">
+              <thead>
+                <tr className="border-b border-[#f0eeea] bg-[#faf9f7]">
+                  {[
+                    "Order",
+                    "Customer",
+                    "Type",
+                    "Amount",
+                    "Order Status",
+                    "Payment Status",
+                    "Rental Status",
+                    "",
+                  ].map((h, i) => (
+                    <th
+                      key={i}
+                      className={`px-4 py-3 text-left text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] font-semibold ${
+                        i === 7 ? "text-center w-10" : ""
+                      }`}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#f4f2ee]">
+                {Array.from({ length: ordersPerPage }).map((_, rowIdx) => (
+                  <tr key={rowIdx} className="border-b border-[#f4f2ee]">
+                    {/* Order ID & Date */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-3 w-20 bg-[#f0eeea] rounded-sm animate-pulse" />
+                      <div className="h-2.5 w-16 bg-[#f4f2ee] rounded-sm animate-pulse mt-1.5" />
+                    </td>
+                    {/* Customer */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-3 w-24 bg-[#f0eeea] rounded-sm animate-pulse" />
+                      <div className="h-2.5 w-28 bg-[#f4f2ee] rounded-sm animate-pulse mt-1.5" />
+                    </td>
+                    {/* Type */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-5 w-16 bg-[#f0eeea] rounded-sm animate-pulse" />
+                    </td>
+                    {/* Amount */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-3 w-14 bg-[#f0eeea] rounded-sm animate-pulse" />
+                      <div className="h-2.5 w-8 bg-[#f4f2ee] rounded-sm animate-pulse mt-1.5" />
+                    </td>
+                    {/* Order Status */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-6 w-[125px] bg-[#f0eeea] rounded-full animate-pulse" />
+                    </td>
+                    {/* Payment Status */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-6 w-[125px] bg-[#f0eeea] rounded-full animate-pulse" />
+                    </td>
+                    {/* Rental Status */}
+                    <td className="px-4 py-3.5">
+                      <div className="h-6 w-[125px] bg-[#f0eeea] rounded-full animate-pulse" />
+                    </td>
+                    {/* Expand */}
+                    <td className="px-4 py-3.5 text-center">
+                      <div className="h-3.5 w-3.5 bg-[#f0eeea] rounded-sm animate-pulse mx-auto" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 
