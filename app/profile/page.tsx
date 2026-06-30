@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext";
 
 const tabs = ["Overview", "Orders", "Wishlist", "Settings"];
 
@@ -25,6 +27,8 @@ const statusColors: Record<string, string> = {
 };
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { sessionEmail, clearSession } = useCart();
   const [activeTab, setActiveTab] = useState("Overview");
 
   return (
@@ -42,11 +46,15 @@ export default function ProfilePage() {
             {/* Avatar + Name */}
             <div className="flex items-center gap-4 mb-8 pb-8 border-b border-[#e8e6e2]">
               <div className="w-14 h-14 rounded-full bg-[#1a1a1a] flex items-center justify-center shrink-0">
-                <span className="text-white text-sm font-light tracking-widest">AS</span>
+                <span className="text-white text-sm font-light tracking-widest">
+                  {sessionEmail ? sessionEmail.slice(0, 2).toUpperCase() : "GU"}
+                </span>
               </div>
               <div>
-                <p className="text-sm font-light font-serif text-[#1a1a1a] tracking-wide">Amara Singh</p>
-                <p className="text-[11px] text-[#9a9a94] tracking-wide">Member since 2023</p>
+                <p className="text-sm font-light font-serif text-[#1a1a1a] tracking-wide truncate max-w-[150px]" title={sessionEmail || "Guest"}>
+                  {sessionEmail ? sessionEmail.split("@")[0] : "Guest User"}
+                </p>
+                <p className="text-[11px] text-[#9a9a94] tracking-wide">Member since 2026</p>
               </div>
             </div>
 
@@ -76,7 +84,13 @@ export default function ProfilePage() {
                   {tab}
                 </button>
               ))}
-              <button className="w-full text-left text-[11px] tracking-[0.16em] uppercase py-2.5 px-0 border-l-2 border-transparent pl-3 text-[#9a9a94] hover:text-[#c44] transition-colors mt-4">
+              <button
+                onClick={async () => {
+                  await clearSession();
+                  router.push("/");
+                }}
+                className="w-full text-left text-[11px] tracking-[0.16em] uppercase py-2.5 px-0 border-l-2 border-transparent pl-3 text-[#9a9a94] hover:text-[#c44] transition-colors mt-4 cursor-pointer"
+              >
                 Sign Out
               </button>
             </nav>
