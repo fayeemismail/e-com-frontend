@@ -128,7 +128,7 @@ function StatusSelect({
   const currentStyle = styles[value] || "text-[#1a1a1a] bg-white border-[#e8e6e2]";
 
   return (
-    <div ref={containerRef} className="relative inline-block w-full min-w-[150px]">
+    <div ref={containerRef} className="relative inline-block w-full min-w-37.5">
       <button
         type="button"
         disabled={disabled}
@@ -289,18 +289,18 @@ export default function AdminOrderDetailsPage({ params }: { params: Promise<{ id
                           </span>
                         </td>
                         <td className="px-5 py-4 align-middle text-[12px] text-[#5a5a55]">
-                          <div>${item.price.toFixed(2)}{item.transactionType === "rent" ? " / day" : ""}</div>
+                          <div>₹{item.price.toFixed(2)}{item.transactionType === "rent" ? " / day" : ""}</div>
                           {item.transactionType === "rent" && item.securityDeposit ? (
-                            <div className="text-[10px] text-[#9a9a94]">+${item.securityDeposit.toFixed(2)} deposit</div>
+                            <div className="text-[10px] text-[#9a9a94]">+₹{item.securityDeposit.toFixed(2)} deposit</div>
                           ) : null}
                         </td>
                         <td className="px-5 py-4 align-middle text-center text-[12px] text-[#1a1a1a] font-medium">
                           {item.qty}
                         </td>
                         <td className="px-5 py-4 align-middle text-right text-[12px] text-[#1a1a1a] font-semibold">
-                          <div>${(item.price * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1) * item.qty).toFixed(2)}</div>
+                          <div>₹{(item.price * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1) * item.qty).toFixed(2)}</div>
                           {item.transactionType === "rent" && item.securityDeposit ? (
-                            <div className="text-[10px] text-[#9a9a94]">+${(item.securityDeposit * item.qty).toFixed(2)} deposit</div>
+                            <div className="text-[10px] text-[#9a9a94]">+₹{(item.securityDeposit * item.qty).toFixed(2)} deposit</div>
                           ) : null}
                         </td>
                       </tr>
@@ -309,19 +309,19 @@ export default function AdminOrderDetailsPage({ params }: { params: Promise<{ id
                 </table>
               </div>
               <div className="px-5 py-4 bg-[#faf9f7] border-t border-[#f0eeea] flex flex-col items-end gap-2">
-                <div className="flex justify-between w-full max-w-[200px] text-[12px] text-[#5a5a55]">
+                <div className="flex justify-between w-full max-w-50 text-[12px] text-[#5a5a55]">
                   <span>Subtotal</span>
-                  <span>${(order.pricingSummary?.subtotal || 0).toFixed(2)}</span>
+                  <span>₹{(order.pricingSummary?.subtotal || 0).toFixed(2)}</span>
                 </div>
                 {order.pricingSummary?.totalSecurityDeposits > 0 && (
-                  <div className="flex justify-between w-full max-w-[200px] text-[12px] text-[#5a5a55]">
+                  <div className="flex justify-between w-full max-w-50 text-[12px] text-[#5a5a55]">
                     <span>Security Deposits</span>
-                    <span>${order.pricingSummary.totalSecurityDeposits.toFixed(2)}</span>
+                    <span>₹{order.pricingSummary.totalSecurityDeposits.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between w-full max-w-[200px] text-[12px] text-[#1a1a1a] font-bold border-t border-[#e8e6e2] pt-2 mt-1">
+                <div className="flex justify-between w-full max-w-50 text-[12px] text-[#1a1a1a] font-bold border-t border-[#e8e6e2] pt-2 mt-1">
                   <span>Total</span>
-                  <span>${order.total.toFixed(2)}</span>
+                  <span>₹{order.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>

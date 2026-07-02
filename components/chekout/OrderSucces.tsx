@@ -104,7 +104,7 @@ export default function OrderSuccess({ order }: Props) {
                         </p>
                       </div>
                       <p className="text-[#1a1a1a] font-medium shrink-0">
-                        ${lineTotal.toFixed(2)}
+                        ₹{lineTotal.toFixed(2)}
                       </p>
                     </div>
                   );
@@ -154,19 +154,19 @@ export default function OrderSuccess({ order }: Props) {
             <div className="pt-4 border-t border-[#e8e6e2]/60 space-y-2">
               <div className="flex justify-between text-xs text-[#6b6b65]">
                 <span>Subtotal</span>
-                <span>${order.pricingSummary.subtotal.toFixed(2)}</span>
+                <span>₹{order.pricingSummary.subtotal.toFixed(2)}</span>
               </div>
               {order.pricingSummary.totalSecurityDeposits > 0 && (
                 <div className="flex justify-between text-xs text-[#6b6b65]">
                   <span>Refundable Deposits</span>
                   <span>
-                    ${order.pricingSummary.totalSecurityDeposits.toFixed(2)}
+                    ₹{order.pricingSummary.totalSecurityDeposits.toFixed(2)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between text-sm text-[#1a1a1a] font-medium pt-2 border-t border-[#e8e6e2]/30">
                 <span className="font-serif font-light">Total Paid</span>
-                <span>${order.pricingSummary.totalAmount.toFixed(2)}</span>
+                <span>₹{order.pricingSummary.totalAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>

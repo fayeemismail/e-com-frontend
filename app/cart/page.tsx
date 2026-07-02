@@ -57,13 +57,13 @@ export default function CartPage() {
       <div className="min-h-screen bg-[#fafaf9] pb-16">
         <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] mb-8 bg-white">
           <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Shopping Bags</p>
-          <div className="h-8 w-24 bg-gray-200 animate-pulse rounded-[4px]" />
+          <div className="h-8 w-24 bg-gray-200 animate-pulse rounded-sm" />
         </div>
         <div className="px-5 sm:px-8 md:px-12 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-white border border-[#e8e6e2] p-5 rounded-[4px] flex gap-4 items-center">
-                <div className="w-16 h-20 bg-gray-200 animate-pulse rounded-[4px]" />
+              <div key={i} className="bg-white border border-[#e8e6e2] p-5 rounded-sm flex gap-4 items-center">
+                <div className="w-16 h-20 bg-gray-200 animate-pulse rounded-sm" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 w-1/3 bg-gray-200 animate-pulse rounded" />
                   <div className="h-3 w-1/4 bg-gray-200 animate-pulse rounded" />
@@ -71,7 +71,7 @@ export default function CartPage() {
               </div>
             ))}
           </div>
-          <div className="bg-white border border-[#e8e6e2] p-6 h-64 rounded-[4px] space-y-4">
+          <div className="bg-white border border-[#e8e6e2] p-6 h-64 rounded-sm space-y-4">
             <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded" />
             <div className="h-10 w-full bg-gray-200 animate-pulse rounded" />
           </div>
@@ -84,7 +84,7 @@ export default function CartPage() {
   if (!sessionEmail) {
     return (
       <div className="min-h-screen bg-[#fafaf9] flex flex-col justify-center items-center py-20 px-4">
-        <div className="bg-white w-full max-w-md p-8 sm:p-10 border border-[#e8e6e2] shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-[6px] text-center">
+        <div className="bg-white w-full max-w-md p-8 sm:p-10 border border-[#e8e6e2] shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-md text-center">
           <div className="w-12 h-12 rounded-full bg-[#fafaf9] border border-[#e8e6e2] flex items-center justify-center mx-auto mb-6">
             <ShoppingBag className="w-5 h-5 text-[#c4a882]" strokeWidth={1.4} />
           </div>
@@ -92,7 +92,7 @@ export default function CartPage() {
           <h2 className="text-xl font-light font-serif text-[#1a1a1a] tracking-[0.02em] mb-2.5">
             Access Your Cart
           </h2>
-          <p className="text-[12px] font-light leading-relaxed text-[#6a6a65] tracking-[0.01em] max-w-[300px] mx-auto mb-7">
+          <p className="text-[12px] font-light leading-relaxed text-[#6a6a65] tracking-[0.01em] max-w-75 mx-auto mb-7">
             To view items in your cart and continue shopping, please enter your email address below. We&apos;ll retrieve your progress instantly.
           </p>
 
@@ -108,7 +108,7 @@ export default function CartPage() {
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
                 disabled={authLoading}
-                className="w-full h-11 px-4 border border-[#e8e6e2] outline-none rounded-[4px] text-[13px] 
+                className="w-full h-11 px-4 border border-[#e8e6e2] outline-none rounded-sm text-[13px] 
                 tracking-[0.02em] text-[#1a1a1a] placeholder-[#bbb] focus:border-[#1a1a1a] bg-white transition-all disabled:bg-[#fcfcfa] disabled:text-[#aaa]"
               />
               {authError && (
@@ -124,7 +124,7 @@ export default function CartPage() {
               type="submit"
               disabled={authLoading}
               className="w-full h-11 bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] 
-              cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 rounded-[4px] 
+              cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 rounded-sm 
               disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center font-light"
             >
               {authLoading ? (
@@ -164,7 +164,7 @@ export default function CartPage() {
           <Link
             href="/shop"
             className="inline-block bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-3.5 
-            hover:bg-white hover:text-black border border-[#1a1a1a] transition-colors duration-200 rounded-[4px]"
+            hover:bg-white hover:text-black border border-[#1a1a1a] transition-colors duration-200 rounded-sm"
           >
             Browse Collections
           </Link>
@@ -207,11 +207,11 @@ export default function CartPage() {
               return (
                 <div
                   key={item.sku}
-                  className="bg-white border border-[#e8e6e2] p-5 rounded-[4px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative hover:shadow-[0_4px_16px_rgba(0,0,0,0.015)] transition-shadow duration-200"
+                  className="bg-white border border-[#e8e6e2] p-5 rounded-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative hover:shadow-[0_4px_16px_rgba(0,0,0,0.015)] transition-shadow duration-200"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     {/* Item Image */}
-                    <div className="w-16 h-20 bg-[#fafaf9] border border-[#e8e6e2] shrink-0 overflow-hidden rounded-[2px] relative">
+                    <div className="w-16 h-20 bg-[#fafaf9] border border-[#e8e6e2] shrink-0 overflow-hidden rounded-xs relative">
                       <Image
                         src={itemImage}
                         alt={item.name}
@@ -225,7 +225,7 @@ export default function CartPage() {
                     <div className="min-w-0">
                       <Link
                         href={item.productId ? `/shop/${item.productId}` : "/shop"}
-                        className="text-sm font-light font-serif text-[#1a1a1a] hover:text-[#c4a882] transition-colors leading-snug block truncate max-w-[280px]"
+                        className="text-sm font-light font-serif text-[#1a1a1a] hover:text-[#c4a882] transition-colors leading-snug block truncate max-w-70"
                       >
                         {item.name}
                       </Link>
@@ -238,13 +238,13 @@ export default function CartPage() {
                         </span>
                         
                         <span className="text-[11px] text-[#9a9a94] font-light">
-                          ${item.price.toFixed(2)}{item.transactionType === "rent" ? "/day" : ""}
+                          ₹{item.price.toFixed(2)}{item.transactionType === "rent" ? "/day" : ""}
                         </span>
                       </div>
 
                       {item.transactionType === "rent" && item.securityDeposit && (
                         <p className="text-[9px] text-[#9a9a94] mt-1 tracking-normal font-light">
-                          +${item.securityDeposit} deposit per unit (refundable)
+                          +₹{item.securityDeposit} deposit per unit (refundable)
                         </p>
                       )}
 
@@ -268,7 +268,7 @@ export default function CartPage() {
                   <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
                     
                     {/* Quantity selectors */}
-                    <div className="flex items-center border border-[#e8e6e2] rounded-[4px] bg-[#fafaf9] h-9">
+                    <div className="flex items-center border border-[#e8e6e2] rounded-sm bg-[#fafaf9] h-9">
                       <button
                         onClick={() => updateQuantity(item.sku, item.quantity - 1)}
                         disabled={item.quantity <= 1 || item.availableStock === 0 || item.isActive === false}
@@ -293,13 +293,13 @@ export default function CartPage() {
                     </div>
 
                     {/* Total values */}
-                    <div className="text-right min-w-[70px]">
+                    <div className="text-right min-w-17.5">
                       <p className="text-xs font-medium text-[#1a1a1a]">
-                        ${item.itemTotal.toFixed(2)}
+                        ₹{item.itemTotal.toFixed(2)}
                       </p>
                       {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
                         <p className="text-[9px] text-[#9a9a94] mt-0.5">
-                          ${item.itemDepositTotal.toFixed(2)} dep.
+                          ₹{item.itemDepositTotal.toFixed(2)} dep.
                         </p>
                       )}
                     </div>
@@ -320,19 +320,19 @@ export default function CartPage() {
 
           {/* Right: Order Summary Panel */}
           <div className="space-y-6">
-            <div className="bg-white border border-[#e8e6e2] p-6 rounded-[4px] shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            <div className="bg-white border border-[#e8e6e2] p-6 rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
               <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-5 font-serif font-semibold">Order Summary</p>
               
               <div className="space-y-3.5 mb-5 border-b border-[#e8e6e2] pb-5">
                 <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
                   <span>Subtotal</span>
-                  <span className="text-[#1a1a1a] font-medium">${summary.subtotal.toFixed(2)}</span>
+                  <span className="text-[#1a1a1a] font-medium">₹{summary.subtotal.toFixed(2)}</span>
                 </div>
                 
                 {summary.totalSecurityDeposits > 0 && (
                   <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
                     <span>Refundable Deposits</span>
-                    <span className="text-[#1a1a1a] font-medium">${summary.totalSecurityDeposits.toFixed(2)}</span>
+                    <span className="text-[#1a1a1a] font-medium">₹{summary.totalSecurityDeposits.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -343,12 +343,12 @@ export default function CartPage() {
                   type="text"
                   placeholder="Promo Code"
                   disabled={true}
-                  className="flex-1 min-w-0 border border-[#e8e6e2] bg-[#fafaf9] text-[#9a9a94] outline-none rounded-[4px] px-3 py-2 text-xs tracking-wide cursor-not-allowed"
+                  className="flex-1 min-w-0 border border-[#e8e6e2] bg-[#fafaf9] text-[#9a9a94] outline-none rounded-sm px-3 py-2 text-xs tracking-wide cursor-not-allowed"
                 />
                 <button
                   type="button"
                   disabled={true}
-                  className="px-4 py-2 border border-[#e8e6e2] text-[#9a9a94] bg-[#fafaf9] text-[10px] tracking-[0.14em] uppercase rounded-[4px] cursor-not-allowed opacity-60"
+                  className="px-4 py-2 border border-[#e8e6e2] text-[#9a9a94] bg-[#fafaf9] text-[10px] tracking-[0.14em] uppercase rounded-sm cursor-not-allowed opacity-60"
                 >
                   Apply
                 </button>
@@ -358,7 +358,7 @@ export default function CartPage() {
 
               <div className="flex justify-between items-baseline mb-6 pt-1">
                 <span className="text-sm font-light font-serif text-[#1a1a1a]">Total</span>
-                <span className="text-xl font-light text-[#1a1a1a]">${summary.totalAmount.toFixed(2)}</span>
+                <span className="text-xl font-light text-[#1a1a1a]">₹{summary.totalAmount.toFixed(2)}</span>
               </div>
 
               {summary.totalSecurityDeposits > 0 && (
@@ -371,7 +371,7 @@ export default function CartPage() {
                 <button
                   disabled
                   className="w-full bg-[#fafaf9] text-[#9a9a94] text-[11px] tracking-[0.18em] uppercase border border-[#e8e6e2] 
-                  rounded-[4px] flex items-center justify-center h-12 font-light cursor-not-allowed gap-2"
+                  rounded-sm flex items-center justify-center h-12 font-light cursor-not-allowed gap-2"
                 >
                   <Loader2 className="animate-spin h-3.5 w-3.5 text-[#9a9a94]" />
                   Syncing Bag...
@@ -381,7 +381,7 @@ export default function CartPage() {
                   <button
                     disabled
                     className="w-full bg-[#fafaf9] text-[#9a9a94] text-[11px] tracking-[0.18em] uppercase border border-[#e8e6e2] 
-                    rounded-[4px] flex items-center justify-center h-12 font-light cursor-not-allowed"
+                    rounded-sm flex items-center justify-center h-12 font-light cursor-not-allowed"
                   >
                     Proceed to Checkout
                   </button>
@@ -393,7 +393,7 @@ export default function CartPage() {
                 <Link
                   href="/checkout"
                   className="w-full bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] 
-                  hover:bg-white hover:text-black transition-colors duration-200 rounded-[4px] flex items-center justify-center h-12 font-light"
+                  hover:bg-white hover:text-black transition-colors duration-200 rounded-sm flex items-center justify-center h-12 font-light"
                 >
                   Proceed to Checkout
                 </Link>

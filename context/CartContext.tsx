@@ -367,7 +367,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       {/* Premium Toast Notification Thingy */}
       {toast && toast.visible && (
-        <div className="fixed bottom-6 right-6 z-120 bg-[#1a1a1a] text-white border border-[#333] px-5 py-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.15)] rounded-[4px] flex items-center gap-3 animate-[slideIn_0.3s_ease-out]">
+        <div className="fixed bottom-6 right-6 z-120 bg-[#1a1a1a] text-white border border-[#333] px-5 py-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.15)] rounded-sm flex items-center gap-3 animate-[slideIn_0.3s_ease-out]">
           <svg
             width="14"
             height="14"

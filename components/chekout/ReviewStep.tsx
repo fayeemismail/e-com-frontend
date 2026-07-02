@@ -91,11 +91,11 @@ export default function ReviewStep({
               </div>
               <div className="text-right">
                 <p className="text-xs text-[#1a1a1a] font-medium">
-                  ${item.itemTotal.toFixed(2)}
+                  ₹{item.itemTotal.toFixed(2)}
                 </p>
                 {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
                   <p className="text-[9px] text-[#9a9a94] mt-0.5">
-                    ${item.itemDepositTotal.toFixed(2)} dep.
+                    ₹{item.itemDepositTotal.toFixed(2)} dep.
                   </p>
                 )}
               </div>
@@ -165,7 +165,7 @@ export default function ReviewStep({
               Processing...
             </>
           ) : (
-            `Place Order · $${total.toFixed(2)}`
+            `Place Order · ₹${total.toFixed(2)}`
           )}
         </button>
       </div>

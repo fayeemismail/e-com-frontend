@@ -108,10 +108,10 @@ export default function ProductCard({ product }: { product: DisplayProduct }) {
         <div className="flex items-center gap-1.5 shrink-0">
           {product.compareAtPrice && (
             <p className="text-[11px] text-[#aaa] line-through">
-              ${product.compareAtPrice}
+              ₹{product.compareAtPrice}
             </p>
           )}
-          <p className="text-[12px] text-[#1a1a1a]">${product.price}</p>
+          <p className="text-[12px] text-[#1a1a1a]">₹{product.price}</p>
         </div>
       </div>
     </Link>

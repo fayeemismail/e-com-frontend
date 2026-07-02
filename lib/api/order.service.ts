@@ -22,6 +22,7 @@ export interface CheckoutPayload {
 
 export interface OrderItem {
   sku: string;
+  image:string;
   name: string;
   quantity: number;
   transactionType: "buy" | "rent";

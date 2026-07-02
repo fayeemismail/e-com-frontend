@@ -16,7 +16,7 @@ import {
 const STATS = [
   {
     label: "Total Revenue",
-    value: "$24,830",
+    value: "₹24,830",
     change: "+12.4%",
     up: true,
     icon: DollarSign,
@@ -49,20 +49,20 @@ const STATS = [
 ];
 
 const RECENT_ORDERS = [
-  { id: "ORD-2841", customer: "Amara Singh",    total: "$420.00", status: "Delivered", date: "Jun 28" },
-  { id: "ORD-2840", customer: "Leo Ferreira",   total: "$185.00", status: "Shipped",   date: "Jun 27" },
-  { id: "ORD-2839", customer: "Nadia Okafor",   total: "$1,290.00",status: "Processing",date: "Jun 27" },
-  { id: "ORD-2838", customer: "James Whitmore", total: "$310.00", status: "Pending",   date: "Jun 26" },
-  { id: "ORD-2837", customer: "Priya Nair",     total: "$260.00", status: "Cancelled", date: "Jun 26" },
-  { id: "ORD-2836", customer: "Kenji Tanaka",   total: "$580.00", status: "Delivered", date: "Jun 25" },
+  { id: "ORD-2841", customer: "Amara Singh",    total: "₹420.00", status: "Delivered", date: "Jun 28" },
+  { id: "ORD-2840", customer: "Leo Ferreira",   total: "₹185.00", status: "Shipped",   date: "Jun 27" },
+  { id: "ORD-2839", customer: "Nadia Okafor",   total: "₹1,290.00",status: "Processing",date: "Jun 27" },
+  { id: "ORD-2838", customer: "James Whitmore", total: "₹310.00", status: "Pending",   date: "Jun 26" },
+  { id: "ORD-2837", customer: "Priya Nair",     total: "₹260.00", status: "Cancelled", date: "Jun 26" },
+  { id: "ORD-2836", customer: "Kenji Tanaka",   total: "₹580.00", status: "Delivered", date: "Jun 25" },
 ];
 
 const TOP_PRODUCTS = [
-  { name: "Linen Sofa",          category: "Seating",  sold: 42, revenue: "$54,180" },
-  { name: "Hee Lounge Chair",    category: "Seating",  sold: 38, revenue: "$15,960" },
-  { name: "Woven Pendant Light", category: "Lighting", sold: 31, revenue: "$8,060" },
-  { name: "Walnut Coffee Table", category: "Tables",   sold: 27, revenue: "$15,660" },
-  { name: "Bouclé Accent Chair", category: "Seating",  sold: 24, revenue: "$11,760" },
+  { name: "Linen Sofa",          category: "Seating",  sold: 42, revenue: "₹54,180" },
+  { name: "Hee Lounge Chair",    category: "Seating",  sold: 38, revenue: "₹15,960" },
+  { name: "Woven Pendant Light", category: "Lighting", sold: 31, revenue: "₹8,060" },
+  { name: "Walnut Coffee Table", category: "Tables",   sold: 27, revenue: "₹15,660" },
+  { name: "Bouclé Accent Chair", category: "Seating",  sold: 24, revenue: "₹11,760" },
 ];
 
 const STATUS_STYLES: Record<string, string> = {

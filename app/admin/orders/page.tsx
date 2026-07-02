@@ -7,11 +7,7 @@ import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminOrders } from "@/hooks/use-admin-orders";
 import { AdminOrder } from "@/types/admin/types";
-import {
-  ChevronDown,
-  ChevronUp,
-  RefreshCw,
-} from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 
 // ── Status Config ─────────────────────────────────────────────────
 
@@ -25,12 +21,18 @@ const ORDER_STATUS_LABELS: Record<string, string> = {
 };
 
 const ORDER_STATUS_STYLES: Record<string, string> = {
-  pending: "text-amber-700 bg-amber-50 border-amber-200 focus:border-amber-400 focus:ring-amber-200",
-  processing: "text-violet-700 bg-violet-50 border-violet-200 focus:border-violet-400 focus:ring-violet-200",
-  shipped: "text-indigo-700 bg-indigo-50 border-indigo-200 focus:border-indigo-400 focus:ring-indigo-200",
-  delivered: "text-green-700 bg-green-50 border-green-200 focus:border-green-400 focus:ring-green-200",
-  completed: "text-emerald-700 bg-emerald-50 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-200",
-  cancelled: "text-red-700 bg-red-50 border-red-200 focus:border-red-400 focus:ring-red-200",
+  pending:
+    "text-amber-700 bg-amber-50 border-amber-200 focus:border-amber-400 focus:ring-amber-200",
+  processing:
+    "text-violet-700 bg-violet-50 border-violet-200 focus:border-violet-400 focus:ring-violet-200",
+  shipped:
+    "text-indigo-700 bg-indigo-50 border-indigo-200 focus:border-indigo-400 focus:ring-indigo-200",
+  delivered:
+    "text-green-700 bg-green-50 border-green-200 focus:border-green-400 focus:ring-green-200",
+  completed:
+    "text-emerald-700 bg-emerald-50 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-200",
+  cancelled:
+    "text-red-700 bg-red-50 border-red-200 focus:border-red-400 focus:ring-red-200",
 };
 
 const PAYMENT_STATUS_LABELS: Record<string, string> = {
@@ -41,10 +43,13 @@ const PAYMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 const PAYMENT_STATUS_STYLES: Record<string, string> = {
-  pending: "text-amber-700 bg-amber-50 border-amber-200 focus:border-amber-400 focus:ring-amber-200",
+  pending:
+    "text-amber-700 bg-amber-50 border-amber-200 focus:border-amber-400 focus:ring-amber-200",
   paid: "text-emerald-700 bg-emerald-50 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-200",
-  failed: "text-red-700 bg-red-50 border-red-200 focus:border-red-400 focus:ring-red-200",
-  refunded: "text-gray-500 bg-gray-50 border-gray-200 focus:border-gray-400 focus:ring-gray-200",
+  failed:
+    "text-red-700 bg-red-50 border-red-200 focus:border-red-400 focus:ring-red-200",
+  refunded:
+    "text-gray-500 bg-gray-50 border-gray-200 focus:border-gray-400 focus:ring-gray-200",
 };
 
 const RENTAL_STATUS_LABELS: Record<string, string> = {
@@ -57,10 +62,14 @@ const RENTAL_STATUS_LABELS: Record<string, string> = {
 
 const RENTAL_STATUS_STYLES: Record<string, string> = {
   "n/a": "text-gray-400 bg-gray-50 border-gray-200",
-  pending_return: "text-amber-700 bg-amber-50 border-amber-200 focus:border-amber-400 focus:ring-amber-200",
-  returned_in_full: "text-emerald-700 bg-emerald-50 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-200",
-  returned_damaged: "text-orange-700 bg-orange-50 border-orange-200 focus:border-orange-400 focus:ring-orange-200",
-  forfeited: "text-red-700 bg-red-50 border-red-200 focus:border-red-400 focus:ring-red-200",
+  pending_return:
+    "text-amber-700 bg-amber-50 border-amber-200 focus:border-amber-400 focus:ring-amber-200",
+  returned_in_full:
+    "text-emerald-700 bg-emerald-50 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-200",
+  returned_damaged:
+    "text-orange-700 bg-orange-50 border-orange-200 focus:border-orange-400 focus:ring-orange-200",
+  forfeited:
+    "text-red-700 bg-red-50 border-red-200 focus:border-red-400 focus:ring-red-200",
 };
 
 const FILTERS = [
@@ -107,7 +116,8 @@ function StatusSelect({
       const spaceAbove = rect.top;
       const dropdownHeight = 180; // Estimated height for options card
 
-      const shouldOpenUpwards = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+      const shouldOpenUpwards =
+        spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
 
       if (shouldOpenUpwards) {
         setCoords({
@@ -154,10 +164,14 @@ function StatusSelect({
   }, [isOpen]);
 
   const currentLabel = options[value] || value;
-  const currentStyle = styles[value] || "text-[#1a1a1a] bg-white border-[#e8e6e2]";
+  const currentStyle =
+    styles[value] || "text-[#1a1a1a] bg-white border-[#e8e6e2]";
 
   return (
-    <div ref={containerRef} className="relative inline-block w-full min-w-[130px]">
+    <div
+      ref={containerRef}
+      className="relative inline-block w-full min-w-32.5"
+    >
       <button
         type="button"
         disabled={disabled}
@@ -183,7 +197,9 @@ function StatusSelect({
               position: "fixed",
               left: `${coords.left}px`,
               width: `${coords.width}px`,
-              ...(coords.openUpwards ? { bottom: `${coords.bottom}px` } : { top: `${coords.top}px` }),
+              ...(coords.openUpwards
+                ? { bottom: `${coords.bottom}px` }
+                : { top: `${coords.top}px` }),
             }}
             className={`z-50 bg-white border border-[#e8e6e2] rounded-md shadow-lg py-1 max-h-48 overflow-y-auto ${
               coords.openUpwards
@@ -202,7 +218,9 @@ function StatusSelect({
                     setIsOpen(false);
                   }}
                   className={`w-full text-left px-3 py-1.5 text-[10px] uppercase tracking-wider transition-colors duration-150 hover:bg-[#faf9f7] flex items-center justify-between ${
-                    isSelected ? "bg-[#faf9f7] font-semibold text-[#1a1a1a]" : "text-[#5a5a55]"
+                    isSelected
+                      ? "bg-[#faf9f7] font-semibold text-[#1a1a1a]"
+                      : "text-[#5a5a55]"
                   }`}
                 >
                   <span className="truncate">{label}</span>
@@ -213,7 +231,7 @@ function StatusSelect({
               );
             })}
           </div>,
-          document.body
+          document.body,
         )}
     </div>
   );
@@ -226,13 +244,19 @@ function OrderRow({
   order: AdminOrder;
   onFlagChange: (
     id: string,
-    updates: { orderStatus?: string; paymentStatus?: string; rentalReturnStatus?: string }
+    updates: {
+      orderStatus?: string;
+      paymentStatus?: string;
+      rentalReturnStatus?: string;
+    },
   ) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
 
   const hasRental = order.items.some((item) => item.transactionType === "rent");
-  const hasPurchase = order.items.some((item) => item.transactionType === "buy");
+  const hasPurchase = order.items.some(
+    (item) => item.transactionType === "buy",
+  );
   let typeLabel = "Purchase";
   let typeStyle = "text-emerald-700 bg-emerald-50 border-emerald-200";
   if (hasRental && hasPurchase) {
@@ -251,33 +275,44 @@ function OrderRow({
       >
         {/* Order ID & Date */}
         <td className="px-4 py-3.5 align-middle">
-          <p className="text-[11px] font-mono text-[#1a1a1a] font-medium">{order.id}</p>
+          <p className="text-[11px] font-mono text-[#1a1a1a] font-medium">
+            {order.id}
+          </p>
           <p className="text-[10px] text-[#9a9a94] mt-0.5">{order.date}</p>
         </td>
 
         {/* Customer */}
         <td className="px-4 py-3.5 align-middle">
-          <p className="text-[12px] text-[#1a1a1a] font-medium">{order.customer}</p>
+          <p className="text-[12px] text-[#1a1a1a] font-medium">
+            {order.customer}
+          </p>
           <p className="text-[10px] text-[#9a9a94] mt-0.5">{order.email}</p>
         </td>
 
         {/* Order Type */}
         <td className="px-4 py-3.5 align-middle">
-          <span className={`inline-block text-[9px] tracking-wider uppercase px-2.5 py-0.5 border font-semibold ${typeStyle}`}>
+          <span
+            className={`inline-block text-[9px] tracking-wider uppercase px-2.5 py-0.5 border font-semibold ${typeStyle}`}
+          >
             {typeLabel}
           </span>
         </td>
 
         {/* Amount */}
         <td className="px-4 py-3.5 align-middle">
-          <p className="text-[12px] text-[#1a1a1a] font-medium">${order.total.toFixed(2)}</p>
+          <p className="text-[12px] text-[#1a1a1a] font-medium">
+            ₹{order.total.toFixed(2)}
+          </p>
           <p className="text-[10px] text-[#9a9a94] mt-0.5 uppercase tracking-wider">
             {order.paymentMethod}
           </p>
         </td>
 
         {/* Order Status Select */}
-        <td className="px-4 py-3.5 align-middle" onClick={(e) => e.stopPropagation()}>
+        <td
+          className="px-4 py-3.5 align-middle"
+          onClick={(e) => e.stopPropagation()}
+        >
           <StatusSelect
             value={order.orderStatus}
             options={ORDER_STATUS_LABELS}
@@ -287,7 +322,10 @@ function OrderRow({
         </td>
 
         {/* Payment Status Select */}
-        <td className="px-4 py-3.5 align-middle" onClick={(e) => e.stopPropagation()}>
+        <td
+          className="px-4 py-3.5 align-middle"
+          onClick={(e) => e.stopPropagation()}
+        >
           <StatusSelect
             value={order.paymentStatus}
             options={PAYMENT_STATUS_LABELS}
@@ -297,13 +335,18 @@ function OrderRow({
         </td>
 
         {/* Rental Status Select */}
-        <td className="px-4 py-3.5 align-middle" onClick={(e) => e.stopPropagation()}>
+        <td
+          className="px-4 py-3.5 align-middle"
+          onClick={(e) => e.stopPropagation()}
+        >
           <StatusSelect
             value={order.rentalReturnStatus}
             options={RENTAL_STATUS_LABELS}
             styles={RENTAL_STATUS_STYLES}
             disabled={!order.hasRental}
-            onChange={(val) => onFlagChange(order.id, { rentalReturnStatus: val })}
+            onChange={(val) =>
+              onFlagChange(order.id, { rentalReturnStatus: val })
+            }
           />
         </td>
 
@@ -322,23 +365,36 @@ function OrderRow({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
               {/* Items */}
               <div>
-                <p className="text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] mb-3">Order Items</p>
+                <p className="text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] mb-3">
+                  Order Items
+                </p>
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {order.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center bg-white border border-[#e8e6e2] p-2.5 rounded-sm">
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center bg-white border border-[#e8e6e2] p-2.5 rounded-sm"
+                    >
                       <div>
-                        <p className="text-[#1a1a1a] text-[11px] font-medium">{item.name}</p>
-                        <p className="text-[#9a9a94] text-[10px] mt-0.5">Qty: {item.qty}</p>
+                        <p className="text-[#1a1a1a] text-[11px] font-medium">
+                          {item.name}
+                        </p>
+                        <p className="text-[#9a9a94] text-[10px] mt-0.5">
+                          Qty: {item.qty}
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-[8px] uppercase tracking-wider px-1.5 py-0.5 border font-semibold ${
-                          item.transactionType === "rent"
-                            ? "text-indigo-700 bg-indigo-50 border-indigo-200"
-                            : "text-emerald-700 bg-emerald-50 border-emerald-200"
-                        }`}>
+                        <span
+                          className={`text-[8px] uppercase tracking-wider px-1.5 py-0.5 border font-semibold ${
+                            item.transactionType === "rent"
+                              ? "text-indigo-700 bg-indigo-50 border-indigo-200"
+                              : "text-emerald-700 bg-emerald-50 border-emerald-200"
+                          }`}
+                        >
                           {item.transactionType === "rent" ? "Rent" : "Buy"}
                         </span>
-                        <span className="text-[#5a5a55] text-[11px] font-medium">${(item.price * item.qty).toFixed(2)}</span>
+                        <span className="text-[#5a5a55] text-[11px] font-medium">
+                          ₹{(item.price * item.qty).toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -347,31 +403,44 @@ function OrderRow({
 
               {/* Delivery Address */}
               <div>
-                <p className="text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] mb-3">Delivery Address</p>
+                <p className="text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] mb-3">
+                  Delivery Address
+                </p>
                 <div className="bg-white border border-[#e8e6e2] p-3 rounded-sm leading-relaxed text-[#5a5a55] text-[11px]">
-                  <p className="font-semibold text-[#1a1a1a] mb-1">{order.customer}</p>
+                  <p className="font-semibold text-[#1a1a1a] mb-1">
+                    {order.customer}
+                  </p>
                   <p>{order.address}</p>
                 </div>
               </div>
 
               {/* Order Summary */}
               <div>
-                <p className="text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] mb-3">Order Summary</p>
+                <p className="text-[9px] tracking-[0.14em] uppercase text-[#9a9a94] mb-3">
+                  Order Summary
+                </p>
                 <div className="bg-white border border-[#e8e6e2] p-3 rounded-sm text-[11px] space-y-1.5">
                   <div className="flex justify-between text-[#5a5a55]">
                     <span>Payment Method</span>
-                    <span className="font-semibold text-[#1a1a1a] uppercase">{order.paymentMethod}</span>
+                    <span className="font-semibold text-[#1a1a1a] uppercase">
+                      {order.paymentMethod}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[#5a5a55]">
                     <span>Contains Rentals</span>
-                    <span className="font-semibold text-[#1a1a1a]">{order.hasRental ? "Yes" : "No"}</span>
+                    <span className="font-semibold text-[#1a1a1a]">
+                      {order.hasRental ? "Yes" : "No"}
+                    </span>
                   </div>
                   <div className="border-t border-[#e8e6e2] mt-2 pt-2 flex justify-between font-semibold text-[12px] text-[#1a1a1a]">
                     <span>Total Amount</span>
-                    <span>${order.total.toFixed(2)}</span>
+                    <span>₹{order.total.toFixed(2)}</span>
                   </div>
                   <div className="mt-3 pt-3">
-                    <Link href={`/admin/orders/${order.id}`} className="block w-full text-center py-2 bg-[#1a1a1a] text-white text-[10px] uppercase tracking-wider font-semibold rounded-sm hover:bg-[#333] transition-colors">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="block w-full text-center py-2 bg-[#1a1a1a] text-white text-[10px] uppercase tracking-wider font-semibold rounded-sm hover:bg-[#333] transition-colors"
+                    >
                       View Full Details →
                     </Link>
                   </div>
@@ -424,7 +493,8 @@ function AdminOrdersContent() {
     router.push(`/admin/orders?${params.toString()}`, { scroll: true });
   };
 
-  const shownCountStart = totalCount > 0 ? (currentPage - 1) * ordersPerPage + 1 : 0;
+  const shownCountStart =
+    totalCount > 0 ? (currentPage - 1) * ordersPerPage + 1 : 0;
   const shownCountEnd = Math.min(currentPage * ordersPerPage, totalCount);
 
   return (
@@ -433,8 +503,12 @@ function AdminOrdersContent() {
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-0.5">Management</p>
-            <h1 className="text-2xl font-light font-serif text-[#1a1a1a]">Orders</h1>
+            <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-0.5">
+              Management
+            </p>
+            <h1 className="text-2xl font-light font-serif text-[#1a1a1a]">
+              Orders
+            </h1>
           </div>
           <button
             onClick={refresh}
@@ -471,7 +545,7 @@ function AdminOrdersContent() {
         {/* Skeleton Loading */}
         {loading && (
           <div className="bg-white border border-[#e8e6e2] overflow-hidden rounded-sm shadow-sm">
-            <table className="w-full min-w-[950px] border-collapse">
+            <table className="w-full min-w-237.5 border-collapse">
               <thead>
                 <tr className="border-b border-[#f0eeea] bg-[#faf9f7]">
                   {[
@@ -519,15 +593,15 @@ function AdminOrdersContent() {
                     </td>
                     {/* Order Status */}
                     <td className="px-4 py-3.5">
-                      <div className="h-6 w-[125px] bg-[#f0eeea] rounded-full animate-pulse" />
+                      <div className="h-6 w-31.25 bg-[#f0eeea] rounded-full animate-pulse" />
                     </td>
                     {/* Payment Status */}
                     <td className="px-4 py-3.5">
-                      <div className="h-6 w-[125px] bg-[#f0eeea] rounded-full animate-pulse" />
+                      <div className="h-6 w-31.25 bg-[#f0eeea] rounded-full animate-pulse" />
                     </td>
                     {/* Rental Status */}
                     <td className="px-4 py-3.5">
-                      <div className="h-6 w-[125px] bg-[#f0eeea] rounded-full animate-pulse" />
+                      <div className="h-6 w-31.25 bg-[#f0eeea] rounded-full animate-pulse" />
                     </td>
                     {/* Expand */}
                     <td className="px-4 py-3.5 text-center">
@@ -557,7 +631,7 @@ function AdminOrdersContent() {
         {!loading && !error && (
           <>
             <div className="bg-white border border-[#e8e6e2] overflow-x-auto rounded-sm shadow-sm">
-              <table className="w-full min-w-[950px] border-collapse">
+              <table className="w-full min-w-237.5 border-collapse">
                 <thead>
                   <tr className="border-b border-[#f0eeea] bg-[#faf9f7]">
                     {[
@@ -584,7 +658,10 @@ function AdminOrdersContent() {
                 <tbody className="divide-y divide-[#f4f2ee]">
                   {orders.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-16 text-center text-[12px] text-[#9a9a94]">
+                      <td
+                        colSpan={8}
+                        className="px-4 py-16 text-center text-[12px] text-[#9a9a94]"
+                      >
                         No orders found.
                       </td>
                     </tr>
@@ -607,14 +684,18 @@ function AdminOrdersContent() {
                 <div className="flex flex-1 justify-between sm:hidden">
                   <button
                     disabled={currentPage === 1}
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                    onClick={() =>
+                      handlePageChange(Math.max(1, currentPage - 1))
+                    }
                     className="relative inline-flex items-center rounded-md border border-[#e8e6e2] bg-white px-4 py-2 text-xs font-medium text-[#1a1a1a] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed select-none"
                   >
                     Previous
                   </button>
                   <button
                     disabled={currentPage === totalPages}
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                    onClick={() =>
+                      handlePageChange(Math.min(totalPages, currentPage + 1))
+                    }
                     className="relative ml-3 inline-flex items-center rounded-md border border-[#e8e6e2] bg-white px-4 py-2 text-xs font-medium text-[#1a1a1a] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed select-none"
                   >
                     Next
@@ -623,16 +704,28 @@ function AdminOrdersContent() {
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[11px] text-[#888]">
-                      Page <span className="font-medium text-[#1a1a1a]">{currentPage}</span> of{" "}
-                      <span className="font-medium text-[#1a1a1a]">{totalPages}</span>
+                      Page{" "}
+                      <span className="font-medium text-[#1a1a1a]">
+                        {currentPage}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-medium text-[#1a1a1a]">
+                        {totalPages}
+                      </span>
                     </p>
                   </div>
                   <div>
-                    <nav className="isolate inline-flex -space-x-px" aria-label="Pagination">
+                    <nav
+                      className="isolate inline-flex -space-x-px"
+                      aria-label="Pagination"
+                    >
                       <button
                         disabled={currentPage === 1}
-                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                        className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                        onClick={() =>
+                          handlePageChange(Math.max(1, currentPage - 1))
+                        }
+                        className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a]
+                         disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                       >
                         Previous
                       </button>
@@ -642,7 +735,8 @@ function AdminOrdersContent() {
                           <button
                             key={pageNum}
                             onClick={() => handlePageChange(pageNum)}
-                            className={`relative inline-flex items-center px-3 py-2 text-[11px] font-medium transition-colors border-none cursor-pointer bg-transparent ${
+                            className={`relative inline-flex items-center px-3 py-2 text-[11px] font-medium transition-colors border-none
+                               cursor-pointer bg-transparent ${
                               currentPage === pageNum
                                 ? "text-[#1a1a1a] font-bold border-b border-[#1a1a1a]"
                                 : "text-[#888] hover:text-[#1a1a1a]"
@@ -654,8 +748,13 @@ function AdminOrdersContent() {
                       })}
                       <button
                         disabled={currentPage === totalPages}
-                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                        className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
+                        onClick={() =>
+                          handlePageChange(
+                            Math.min(totalPages, currentPage + 1),
+                          )
+                        }
+                        className="relative inline-flex items-center px-3 py-2 text-[11px] font-medium text-[#888]
+                         hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer bg-transparent border-none"
                       >
                         Next
                       </button>

@@ -73,12 +73,12 @@ function GridCard({ product }: { product: DisplayProduct }) {
         {/* Price */}
         <div className="flex items-center gap-2">
           <span className="text-[12px] sm:text-[13px] text-[#111]">
-            ${product.price}
+            ₹{product.price}
           </span>
 
           {product.compareAtPrice && (
             <span className="text-[10px] sm:text-[11px] text-[#ccc] line-through">
-              ${product.compareAtPrice}
+              ₹{product.compareAtPrice}
             </span>
           )}
         </div>

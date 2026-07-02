@@ -61,7 +61,7 @@ export default function ProductGrid({ products, view, onReset }: Props) {
               <p className="text-[13px] text-[#1a1a1a] truncate">{p.name}</p>
               {p.tag && <span className="text-[10px] tracking-widest uppercase text-[#9a9a94]">{p.tag}</span>}
             </div>
-            <p className="text-[13px] text-[#1a1a1a] shrink-0">${p.price}</p>
+            <p className="text-[13px] text-[#1a1a1a] shrink-0">₹{p.price}</p>
           </div>
         ))}
       </div>

@@ -105,7 +105,7 @@ function OrderCard({ order }: { order: OrderResponse }) {
           <div>
             <p className="text-[9px] tracking-wider uppercase text-[#9a9a94]">Total</p>
             <p className="text-xs text-[#1a1a1a] mt-0.5 font-medium">
-              ${order.pricingSummary.totalAmount.toFixed(2)}
+              ₹{order.pricingSummary.totalAmount.toFixed(2)}
             </p>
           </div>
         </div>
@@ -147,7 +147,7 @@ function OrderCard({ order }: { order: OrderResponse }) {
                     </p>
                   </div>
                   <p className="text-[#1a1a1a] shrink-0 font-medium">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₹{(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
               ))}
@@ -184,17 +184,17 @@ function OrderCard({ order }: { order: OrderResponse }) {
           <div className="pt-3 border-t border-[#f0eeea] space-y-1.5">
             <div className="flex justify-between text-xs text-[#9a9a94]">
               <span>Subtotal</span>
-              <span>${order.pricingSummary.subtotal.toFixed(2)}</span>
+              <span>₹{order.pricingSummary.subtotal.toFixed(2)}</span>
             </div>
             {order.pricingSummary.totalSecurityDeposits > 0 && (
               <div className="flex justify-between text-xs text-[#9a9a94]">
                 <span>Refundable deposits</span>
-                <span>${order.pricingSummary.totalSecurityDeposits.toFixed(2)}</span>
+                <span>₹{order.pricingSummary.totalSecurityDeposits.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm text-[#1a1a1a] font-medium pt-2 border-t border-[#f0eeea]">
               <span className="font-serif font-light">Total</span>
-              <span>${order.pricingSummary.totalAmount.toFixed(2)}</span>
+              <span>₹{order.pricingSummary.totalAmount.toFixed(2)}</span>
             </div>
           </div>
         </div>

@@ -120,7 +120,7 @@ export default function ProductDetails({ product }: { product: Product }) {
                   Object.entries(product.dimensions).map(([key, val]) => (
                     <div key={key} className="flex justify-between py-2.5">
                       <span className="text-[12px] text-[#9a9a94] capitalize">
-                        {key.replace(/([A-Z])/g, " $1")}
+                        {key.replace(/([A-Z])/g, " ₹1")}
                       </span>
                       <span className="text-[12px] text-[#1a1a1a]">{val}</span>
                     </div>

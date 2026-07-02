@@ -55,7 +55,7 @@ export default function SessionModal({ isOpen, onClose, onSubmit }: SessionModal
       />
 
       {/* Modal Container */}
-      <div className="relative bg-white w-full max-w-[400px] mx-4 p-8 sm:p-9 border border-[#e8e6e2] shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-[6px] z-10 animate-[scaleUp_0.25s_ease-out]">
+      <div className="relative bg-white w-full max-w-100 mx-4 p-8 sm:p-9 border border-[#e8e6e2] shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-md z-10 animate-[scaleUp_0.25s_ease-out]">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -103,7 +103,7 @@ export default function SessionModal({ isOpen, onClose, onSubmit }: SessionModal
           <h2 className="text-center text-xl font-light tracking-[0.02em] font-serif text-[#1a1a1a] mb-2.5">
             Continue to Cart
           </h2>
-          <p className="text-center text-[12px] font-light leading-relaxed text-[#6a6a65] tracking-[0.01em] max-w-[300px] mx-auto mb-7">
+          <p className="text-center text-[12px] font-light leading-relaxed text-[#6a6a65] tracking-[0.01em] max-w-75 mx-auto mb-7">
             Enter your email to secure your shopping bag. We&apos;ll save your progress and keep your items ready for you.
           </p>
 
@@ -120,7 +120,7 @@ export default function SessionModal({ isOpen, onClose, onSubmit }: SessionModal
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 autoFocus
-                className="w-full h-11 px-4 border border-[#e8e6e2] outline-none rounded-[4px] text-[13px] tracking-[0.02em] text-[#1a1a1a] placeholder-[#bbb] focus:border-[#1a1a1a] bg-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.01)] transition-all disabled:bg-[#fcfcfa] disabled:text-[#aaa]"
+                className="w-full h-11 px-4 border border-[#e8e6e2] outline-none rounded-sm text-[13px] tracking-[0.02em] text-[#1a1a1a] placeholder-[#bbb] focus:border-[#1a1a1a] bg-white shadow-[inset_0_1px_2px_rgba(0,0,0,0.01)] transition-all disabled:bg-[#fcfcfa] disabled:text-[#aaa]"
               />
               {error && (
                 <div className="flex items-center gap-1.5 mt-2 text-red-600">
@@ -146,7 +146,7 @@ export default function SessionModal({ isOpen, onClose, onSubmit }: SessionModal
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-11 bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 rounded-[4px] disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center font-light"
+              className="w-full h-11 bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 rounded-sm disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center font-light"
             >
               {loading ? (
                 <span className="flex items-center gap-2">

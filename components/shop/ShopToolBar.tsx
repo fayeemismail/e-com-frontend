@@ -90,7 +90,7 @@ export default function ShopToolbar({
           {sortOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
-              <div className="absolute right-0 top-8 z-20 bg-white border border-[#e8e6e2] min-w-[180px] py-1 shadow-md rounded-sm">
+              <div className="absolute right-0 top-8 z-20 bg-white border border-[#e8e6e2] min-w-45 py-1 shadow-md rounded-sm">
                 {(Object.keys(SORT_LABELS) as SortOption[]).map((key) => (
                   <button
                     key={key}
