@@ -6,9 +6,51 @@ import Image from "next/image";
 import { useFeaturedProducts } from "@/hooks/use-featured-products";
 import { DisplayProduct } from "@/lib/mappers/product.mapper";
 import ErrorState from "@/components/common/ErrorState";
+import { useCart } from "@/context/CartContext";
+import { productService } from "@/lib/api/product.service";
 
 function GridCard({ product }: { product: DisplayProduct }) {
   const [hovered, setHovered] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isAdding) return;
+
+    try {
+      setIsAdding(true);
+      let targetSku = product.defaultSku;
+
+      if (!targetSku) {
+        const detail = await productService.getProductById(String(product.id));
+        if (detail?.skus && detail.skus.length > 0) {
+          targetSku = detail.skus.find((s) => s.type === "buy") || detail.skus[0];
+        }
+      }
+
+      if (!targetSku) {
+        window.location.href = `/shop/${product.id}`;
+        return;
+      }
+
+      const selectedType = targetSku.type || "buy";
+      const durationDays = selectedType === "rent" ? 7 : undefined;
+
+      await addToCart({
+        sku: targetSku.sku,
+        quantity: 1,
+        transactionType: selectedType,
+        rentalDurationDays: durationDays,
+      });
+    } catch (err) {
+      console.error("Failed to add to cart from home product section:", err);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <Link
@@ -45,12 +87,22 @@ function GridCard({ product }: { product: DisplayProduct }) {
 
         {/* Add to cart */}
         <div
-          onClick={(e) => e.preventDefault()}
-          className={`absolute bottom-0 left-0 right-0 bg-[#111] text-center py-2 sm:py-3 text-[8px] sm:text-[9px] tracking-[0.2em] uppercase text-white transition-transform duration-300 ${
-            hovered ? "translate-y-0" : "translate-y-full"
-          }`}
+          onClick={handleAddToCart}
+          className={`absolute bottom-0 left-0 right-0 bg-[#111] hover:bg-[#222] text-center py-2 sm:py-3 text-[8px] sm:text-[9px] tracking-[0.2em] uppercase text-white transition-transform duration-300 flex items-center justify-center gap-1.5 cursor-pointer select-none ${
+            hovered || isAdding ? "translate-y-0" : "translate-y-full"
+          } ${isAdding ? "opacity-80 cursor-wait" : ""}`}
         >
-          Add to Cart
+          {isAdding ? (
+            <>
+              <svg className="animate-spin h-3 w-3 text-current" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              <span>Adding...</span>
+            </>
+          ) : (
+            "Add to Cart"
+          )}
         </div>
       </div>
 

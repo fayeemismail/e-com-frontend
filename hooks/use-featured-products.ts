@@ -28,6 +28,31 @@ export function useFeaturedProducts(limit = 8) {
 
         setProducts(mapped);
         setError(null);
+
+        // Pre-fetch product details in the background to resolve SKUs for instant Add to Cart
+        Promise.all(
+          backendProducts.map(async (p) => {
+            try {
+              const detail = await productService.getProductById(p.id);
+              return { id: p.id, skus: detail.skus };
+            } catch {
+              return null;
+            }
+          })
+        ).then((skuResults) => {
+          if (!activeRequest) return;
+          const skuMap = new Map(
+            skuResults.filter(Boolean).map((r) => [r!.id, r!.skus])
+          );
+          setProducts((prev) =>
+            prev.map((prod) => {
+              const skus = skuMap.get(String(prod.id));
+              if (!skus || skus.length === 0) return prod;
+              const defaultSku = skus.find((s) => s.type === "buy") || skus[0];
+              return { ...prod, skus, defaultSku };
+            })
+          );
+        });
       } catch (err) {
         if (!activeRequest) return;
         console.error("Failed to load featured products:", err);
