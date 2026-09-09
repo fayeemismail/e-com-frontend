@@ -1,4 +1,4 @@
-import { BackendProduct } from "../api/product.service";
+import { BackendProduct, BackendSku } from "../api/product.service";
 import { Product } from "@/types/shop/types";
 
 export interface DisplayProduct {
@@ -11,6 +11,8 @@ export interface DisplayProduct {
   hoverImage: string;
   category: string;
   tag: string | null;
+  skus?: BackendSku[];
+  defaultSku?: BackendSku;
 }
 
 export class ProductViewMapper {
@@ -24,6 +26,10 @@ export class ProductViewMapper {
     const hoverImage = p.images?.[1] || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&q=80";
     const categoryName = p.category ? (categoryMap.get(p.category) || "General") : "General";
 
+    const defaultSku = p.skus && p.skus.length > 0
+      ? (p.skus.find((s) => s.type === "buy") || p.skus[0])
+      : undefined;
+
     return {
       id: p.id,
       slug,
@@ -34,6 +40,8 @@ export class ProductViewMapper {
       hoverImage,
       category: categoryName,
       tag: p.isFeatured ? "Featured" : null,
+      skus: p.skus,
+      defaultSku,
     };
   }
 
