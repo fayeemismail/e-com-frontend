@@ -13,6 +13,10 @@ export interface DisplayProduct {
   tag: string | null;
   skus?: BackendSku[];
   defaultSku?: BackendSku;
+  unit?: string;
+  unitName?: string;
+  attributes?: Record<string, string>;
+  rawProduct?: any;
 }
 
 export class ProductViewMapper {
@@ -30,6 +34,57 @@ export class ProductViewMapper {
       ? (p.skus.find((s) => s.type === "buy") || p.skus[0])
       : undefined;
 
+    const rawUnit =
+      (p as any).unitName ||
+      (p as any).unit_name ||
+      (p as any).unit ||
+      (p as any).pricingUnit ||
+      (p as any).priceUnit ||
+      (p as any).uom ||
+      p.attributes?.unitName ||
+      p.attributes?.['Unit Name'] ||
+      p.attributes?.['unit_name'] ||
+      p.attributes?.unit ||
+      p.attributes?.Unit ||
+      p.attributes?.pricingUnit ||
+      p.attributes?.uom ||
+      (defaultSku as any)?.unitName ||
+      (defaultSku as any)?.unit_name ||
+      (defaultSku as any)?.unit ||
+      defaultSku?.attributes?.unitName ||
+      defaultSku?.attributes?.['Unit Name'] ||
+      defaultSku?.attributes?.['unit_name'] ||
+      defaultSku?.attributes?.unit ||
+      defaultSku?.attributes?.Unit ||
+      defaultSku?.attributes?.format ||
+      defaultSku?.attributes?.Format;
+
+    let unit: string | undefined = undefined;
+    if (rawUnit) {
+      const u = String(rawUnit).trim();
+      const lower = u.toLowerCase();
+      if (u === "-" || u === "--" || u === "—" || u === "–" || lower === "none" || lower === "n/a" || lower === "single" || lower === "single piece") {
+        unit = undefined;
+      } else if (lower === "dz" || lower === "dozen" || lower === "doz") {
+        unit = "DZ";
+      } else if (lower === "pac" || lower === "pack") {
+        unit = "PAC";
+      } else if (lower === "pc" || lower === "piece" || lower === "pcs") {
+        unit = "PC";
+      } else {
+        unit = u.toUpperCase().replace(/^\/+\s*/, "");
+      }
+    } else {
+      const title = p.title.toLowerCase();
+      if (/\b(dz|dozen|doz)\b/.test(title)) unit = "DZ";
+      else if (/\b(pac|pack)\b/.test(title)) unit = "PAC";
+      else if (/\b(pc|pcs)\b/.test(title)) unit = "PC";
+      else {
+        const match = title.match(/\b(box|set|bundle|pkt|packet|carton|pair)\b/i);
+        if (match) unit = match[1].toUpperCase();
+      }
+    }
+
     return {
       id: p.id,
       slug,
@@ -42,6 +97,10 @@ export class ProductViewMapper {
       tag: p.isFeatured ? "Featured" : null,
       skus: p.skus,
       defaultSku,
+      unit,
+      unitName: unit,
+      attributes: p.attributes,
+      rawProduct: p,
     };
   }
 

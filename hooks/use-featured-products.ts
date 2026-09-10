@@ -49,7 +49,32 @@ export function useFeaturedProducts(limit = 8) {
               const skus = skuMap.get(String(prod.id));
               if (!skus || skus.length === 0) return prod;
               const defaultSku = skus.find((s) => s.type === "buy") || skus[0];
-              return { ...prod, skus, defaultSku };
+              const skuUnit =
+                (defaultSku as any)?.unitName ||
+                (defaultSku as any)?.unit_name ||
+                (defaultSku as any)?.unit ||
+                defaultSku?.attributes?.unitName ||
+                defaultSku?.attributes?.['Unit Name'] ||
+                defaultSku?.attributes?.unit ||
+                defaultSku?.attributes?.Unit;
+              let unit = prod.unit;
+              if (skuUnit) {
+                const u = String(skuUnit).trim();
+                const lower = u.toLowerCase();
+                if (u === "-" || u === "--" || u === "—" || u === "–" || lower === "none" || lower === "n/a" || lower === "single") {
+                  unit = undefined;
+                } else if (lower === "dz" || lower === "dozen" || lower === "doz") {
+                  unit = "DZ";
+                } else if (lower === "pac" || lower === "pack") {
+                  unit = "PAC";
+                } else if (lower === "pc" || lower === "piece" || lower === "pcs") {
+                  unit = "PC";
+                } else {
+                  unit = u.toUpperCase().replace(/^\/+\s*/, "");
+                }
+              }
+              const unitName = unit;
+              return { ...prod, skus, defaultSku, unit, unitName };
             })
           );
         });

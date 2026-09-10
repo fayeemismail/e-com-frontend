@@ -10,6 +10,9 @@ export interface BackendSku {
   stock: number;
   images?: string[];
   attributes: Record<string, string>;
+  unit?: string;
+  unitName?: string;
+  unit_name?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,6 +29,9 @@ export interface BackendProduct {
   price?: number;
   compareAtPrice?: number;
   skus?: BackendSku[];
+  unit?: string;
+  unitName?: string;
+  unit_name?: string;
   createdAt: string;
   updatedAt: string;
 }
