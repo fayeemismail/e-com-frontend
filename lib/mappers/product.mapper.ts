@@ -89,8 +89,8 @@ export class ProductViewMapper {
       id: p.id,
       slug,
       name: p.title,
-      price: p.price || 0,
-      compareAtPrice: p.compareAtPrice,
+      price: Math.round(p.price || 0),
+      compareAtPrice: p.compareAtPrice ? Math.round(p.compareAtPrice) : undefined,
       image,
       hoverImage,
       category: categoryName,
@@ -138,15 +138,22 @@ export class ProductViewMapper {
       : undefined;
 
     // Use default pricing from backend mapped price
-    const price = p.price || 0;
-    const compareAtPrice = p.compareAtPrice;
+    const price = Math.round(p.price || 0);
+    const compareAtPrice = p.compareAtPrice ? Math.round(p.compareAtPrice) : undefined;
+
+    const skus = p.skus?.map((s) => ({
+      ...s,
+      price: s.price !== undefined ? Math.round(s.price) : undefined,
+      rentPricePerDay: s.rentPricePerDay !== undefined ? Math.round(s.rentPricePerDay) : undefined,
+      securityDeposit: s.securityDeposit !== undefined ? Math.round(s.securityDeposit) : undefined,
+    }));
 
     // Sum total stock from variants
     const stock = p.skus?.reduce((sum, s) => sum + s.stock, 0) ?? 0;
 
     return {
       id: p.id,
-      skus: p.skus,
+      skus,
       slug,
       name: p.title,
       price,

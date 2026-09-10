@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { OrderResponse } from "@/lib/api/order.service";
+import { formatPrice } from "@/lib/utils/format.util";
 
 type Props = { order: OrderResponse };
 
@@ -104,7 +105,7 @@ export default function OrderSuccess({ order }: Props) {
                         </p>
                       </div>
                       <p className="text-[#1a1a1a] font-medium shrink-0">
-                        ₹{lineTotal.toFixed(2)}
+                        ₹{formatPrice(lineTotal)}
                       </p>
                     </div>
                   );
@@ -154,19 +155,19 @@ export default function OrderSuccess({ order }: Props) {
             <div className="pt-4 border-t border-[#e8e6e2]/60 space-y-2">
               <div className="flex justify-between text-xs text-[#6b6b65]">
                 <span>Subtotal</span>
-                <span>₹{order.pricingSummary.subtotal.toFixed(2)}</span>
+                <span>₹{formatPrice(order.pricingSummary.subtotal)}</span>
               </div>
               {order.pricingSummary.totalSecurityDeposits > 0 && (
                 <div className="flex justify-between text-xs text-[#6b6b65]">
                   <span>Refundable Deposits</span>
                   <span>
-                    ₹{order.pricingSummary.totalSecurityDeposits.toFixed(2)}
+                    ₹{formatPrice(order.pricingSummary.totalSecurityDeposits)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between text-sm text-[#1a1a1a] font-medium pt-2 border-t border-[#e8e6e2]/30">
                 <span className="font-serif font-light">Total Paid</span>
-                <span>₹{order.pricingSummary.totalAmount.toFixed(2)}</span>
+                <span>₹{formatPrice(order.pricingSummary.totalAmount)}</span>
               </div>
             </div>
           </div>

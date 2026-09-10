@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DisplayProduct } from "@/lib/mappers/product.mapper";
+import { formatPrice } from "@/lib/utils/format.util";
 
 export default function ProductCard({ product }: { product: DisplayProduct }) {
   const [hovered, setHovered] = useState(false);
@@ -17,11 +18,6 @@ export default function ProductCard({ product }: { product: DisplayProduct }) {
     >
       {/* Image */}
       <div className="relative overflow-hidden bg-[#f0eeea] aspect-square">
-        {product.tag && (
-          <span className="absolute top-2 left-2 z-10 text-[9px] tracking-[0.12em] uppercase bg-white text-[#1a1a1a] px-2 py-0.5">
-            {product.tag}
-          </span>
-        )}
         {/* Wishlist and Cart Overlay Icons */}
         <div
           className="absolute top-2 right-2 z-10 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 
@@ -108,10 +104,10 @@ export default function ProductCard({ product }: { product: DisplayProduct }) {
         <div className="flex items-center gap-1.5 shrink-0">
           {product.compareAtPrice && (
             <p className="text-[11px] text-[#aaa] line-through">
-              ₹{product.compareAtPrice}
+              ₹{formatPrice(product.compareAtPrice)}
             </p>
           )}
-          <p className="text-[12px] text-[#1a1a1a]">₹{product.price}</p>
+          <p className="text-[12px] text-[#1a1a1a]">₹{formatPrice(product.price)}</p>
         </div>
       </div>
     </Link>

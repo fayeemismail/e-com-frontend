@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import type { ShippingData } from "./ShippingStep";
+import { formatPrice } from "@/lib/utils/format.util";
 
 type CartItem = {
   sku: string;
@@ -91,11 +92,11 @@ export default function ReviewStep({
               </div>
               <div className="text-right">
                 <p className="text-xs text-[#1a1a1a] font-medium">
-                  ₹{item.itemTotal.toFixed(2)}
+                  ₹{formatPrice(item.itemTotal)}
                 </p>
                 {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
                   <p className="text-[9px] text-[#9a9a94] mt-0.5">
-                    ₹{item.itemDepositTotal.toFixed(2)} dep.
+                    ₹{formatPrice(item.itemDepositTotal)} dep.
                   </p>
                 )}
               </div>
@@ -165,7 +166,7 @@ export default function ReviewStep({
               Processing...
             </>
           ) : (
-            `Place Order · ₹${total.toFixed(2)}`
+            `Place Order · ₹${formatPrice(total)}`
           )}
         </button>
       </div>

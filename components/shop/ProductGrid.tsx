@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { DisplayProduct } from "@/lib/mappers/product.mapper"; 
 import ProductCard from "./ProductCard"; 
+import { formatPrice } from "@/lib/utils/format.util";
 
 type Props = {
   products: DisplayProduct[];
@@ -59,9 +60,8 @@ export default function ProductGrid({ products, view, onReset }: Props) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] text-[#1a1a1a] truncate">{p.name}</p>
-              {p.tag && <span className="text-[10px] tracking-widest uppercase text-[#9a9a94]">{p.tag}</span>}
             </div>
-            <p className="text-[13px] text-[#1a1a1a] shrink-0">₹{p.price}</p>
+            <p className="text-[13px] text-[#1a1a1a] shrink-0">₹{formatPrice(p.price)}</p>
           </div>
         ))}
       </div>

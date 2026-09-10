@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Product } from "@/types/shop/types";
 import type { BackendSku } from "@/lib/api/product.service";
 import { useCart } from "@/context/CartContext";
+import { formatPrice } from "@/lib/utils/format.util";
 
 export default function ProductActions({ product }: { product: Product }) {
   const { addToCart, isAddingToCart } = useCart();
@@ -105,16 +106,16 @@ export default function ProductActions({ product }: { product: Product }) {
                   <div className="text-right">
                     {s.type === "buy" ? (
                       <span className="text-[13px] font-light tracking-[0.04em] text-[#1a1a1a]">
-                        ₹{s.price}
+                        ₹{formatPrice(s.price)}
                       </span>
                     ) : (
                       <div className="flex flex-col items-end">
                         <span className="text-[13px] font-light tracking-[0.04em] text-[#1a1a1a]">
-                          ₹{s.rentPricePerDay} <span className="text-[10px] text-[#9a9a94] lowercase tracking-normal">/ day</span>
+                          ₹{formatPrice(s.rentPricePerDay)} <span className="text-[10px] text-[#9a9a94] lowercase tracking-normal">/ day</span>
                         </span>
                         {s.securityDeposit && (
                           <span className="text-[9px] text-[#9a9a94] tracking-normal mt-0.5">
-                            +₹{s.securityDeposit} deposit
+                            +₹{formatPrice(s.securityDeposit)} deposit
                           </span>
                         )}
                       </div>
@@ -189,9 +190,9 @@ export default function ProductActions({ product }: { product: Product }) {
                 Adding...
               </>
             ) : selectedType === "buy" ? (
-              `Add to Cart — ₹${calculatedPrice}`
+              `Add to Cart — ₹${formatPrice(calculatedPrice)}`
             ) : (
-              `Add to Cart (Rent) — ₹${calculatedPrice}`
+              `Add to Cart (Rent) — ₹${formatPrice(calculatedPrice)}`
             )}
           </button>
           
@@ -220,7 +221,7 @@ export default function ProductActions({ product }: { product: Product }) {
         {selectedType === "rent" && selectedSku?.securityDeposit && (
           <p className="text-[10px] text-[#9a9a94] text-center sm:text-left tracking-[0.02em]">
             * Price includes a refundable security deposit of{" "}
-            <span className="text-[#1a1a1a] font-medium">₹{selectedSku.securityDeposit}</span>
+            <span className="text-[#1a1a1a] font-medium">₹{formatPrice(selectedSku.securityDeposit)}</span>
           </p>
         )}
       </div>

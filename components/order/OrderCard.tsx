@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import type { OrderResponse } from "@/lib/api/order.service";
 import { StatusIndicator } from "./StatusIndicator"; 
 import { OrderTracker } from "./OrderTracker"; 
+import { formatPrice } from "@/lib/utils/format.util"; 
 
 // One order = one card. Clicking the header row toggles the expanded details
 // (items, shipping address, payment info, price breakdown).
@@ -63,7 +64,7 @@ function CardHeader({
         <div>
           <p className="text-[9px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1">Total</p>
           <p className="text-[13px] text-[#1a1a1a]">
-            ₹{order.pricingSummary.totalAmount.toFixed(2)}
+            ₹{formatPrice(order.pricingSummary.totalAmount)}
           </p>
         </div>
       </div>
@@ -126,11 +127,11 @@ function ItemsList({ order }: { order: OrderResponse }) {
 
             <div className="text-right shrink-0 flex flex-col justify-center">
               <p className="text-[13px] text-[#1a1a1a]">
-                ₹{(item.price * item.quantity).toFixed(2)}
+                ₹{formatPrice(item.price * item.quantity)}
               </p>
               {item.securityDeposit && item.securityDeposit > 0 && (
                 <p className="text-[10px] text-[#9a9a94] mt-0.5">
-                  + ₹{item.securityDeposit} deposit
+                  + ₹{formatPrice(item.securityDeposit)} deposit
                 </p>
               )}
             </div>
@@ -185,17 +186,17 @@ function PriceSummary({ order }: { order: OrderResponse }) {
       <div className="space-y-1.5">
         <div className="flex justify-between text-[12px] text-[#9a9a94]">
           <span>Subtotal</span>
-          <span>₹{subtotal.toFixed(2)}</span>
+          <span>₹{formatPrice(subtotal)}</span>
         </div>
         {totalSecurityDeposits > 0 && (
           <div className="flex justify-between text-[12px] text-[#9a9a94]">
             <span>Refundable deposits</span>
-            <span>₹{totalSecurityDeposits.toFixed(2)}</span>
+            <span>₹{formatPrice(totalSecurityDeposits)}</span>
           </div>
         )}
         <div className="flex justify-between text-[13px] text-[#1a1a1a] pt-1.5 mt-1.5 border-t border-[#f2f0eb]">
           <span className="font-serif font-light">Total</span>
-          <span>₹{totalAmount.toFixed(2)}</span>
+          <span>₹{formatPrice(totalAmount)}</span>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminOrders } from "@/hooks/use-admin-orders";
 import { AdminOrder } from "@/types/admin/types";
 import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
+import { formatPrice } from "@/lib/utils/format.util";
 
 // ── Status Config ─────────────────────────────────────────────────
 
@@ -301,7 +302,7 @@ function OrderRow({
         {/* Amount */}
         <td className="px-4 py-3.5 align-middle">
           <p className="text-[12px] text-[#1a1a1a] font-medium">
-            ₹{order.total.toFixed(2)}
+            ₹{formatPrice(order.total)}
           </p>
           <p className="text-[10px] text-[#9a9a94] mt-0.5 uppercase tracking-wider">
             {order.paymentMethod}
@@ -393,7 +394,7 @@ function OrderRow({
                           {item.transactionType === "rent" ? "Rent" : "Buy"}
                         </span>
                         <span className="text-[#5a5a55] text-[11px] font-medium">
-                          ₹{(item.price * item.qty).toFixed(2)}
+                          ₹{formatPrice(item.price * item.qty)}
                         </span>
                       </div>
                     </div>
@@ -434,7 +435,7 @@ function OrderRow({
                   </div>
                   <div className="border-t border-[#e8e6e2] mt-2 pt-2 flex justify-between font-semibold text-[12px] text-[#1a1a1a]">
                     <span>Total Amount</span>
-                    <span>₹{order.total.toFixed(2)}</span>
+                    <span>₹{formatPrice(order.total)}</span>
                   </div>
                   <div className="mt-3 pt-3">
                     <Link

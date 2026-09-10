@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { formatPrice } from "@/lib/utils/format.util";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&q=80";
@@ -44,13 +45,13 @@ export default function OrderSidebar({
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-[#1a1a1a] tracking-wide truncate font-serif">
+              <p className="text-xs font-light font-serif text-[#1a1a1a] truncate">
                 {item.name}
               </p>
               <p className="text-[10px] text-[#9a9a94]">Qty {item.quantity}</p>
             </div>
             <p className="text-[11px] text-[#1a1a1a] shrink-0 font-medium">
-              ₹{item.itemTotal.toFixed(2)}
+              ₹{formatPrice(item.itemTotal)}
             </p>
           </div>
         ))}
@@ -60,12 +61,12 @@ export default function OrderSidebar({
       <div className="border-t border-[#e8e6e2] pt-4 space-y-2.5 mb-4">
         <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
           <span>Subtotal</span>
-          <span>₹{subtotal.toFixed(2)}</span>
+          <span>₹{formatPrice(subtotal)}</span>
         </div>
         {securityDeposits > 0 && (
           <div className="flex justify-between text-[11px] text-[#6b6b65] tracking-wide">
             <span>Refundable Deposits</span>
-            <span>₹{securityDeposits.toFixed(2)}</span>
+            <span>₹{formatPrice(securityDeposits)}</span>
           </div>
         )}
       </div>
@@ -75,7 +76,7 @@ export default function OrderSidebar({
           Total
         </span>
         <span className="text-sm font-medium text-[#1a1a1a]">
-          ₹{total.toFixed(2)}
+          ₹{formatPrice(total)}
         </span>
       </div>
     </div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Loader2 } from "lucide-react";
+import { formatPrice } from "@/lib/utils/format.util";
 
 export default function CartPage() {
   const {
@@ -238,13 +239,13 @@ export default function CartPage() {
                         </span>
                         
                         <span className="text-[11px] text-[#9a9a94] font-light">
-                          ₹{item.price.toFixed(2)}{item.transactionType === "rent" ? "/day" : ""}
+                          ₹{formatPrice(item.price)}{item.transactionType === "rent" ? "/day" : ""}
                         </span>
                       </div>
 
                       {item.transactionType === "rent" && item.securityDeposit && (
                         <p className="text-[9px] text-[#9a9a94] mt-1 tracking-normal font-light">
-                          +₹{item.securityDeposit} deposit per unit (refundable)
+                          +₹{formatPrice(item.securityDeposit)} deposit per unit (refundable)
                         </p>
                       )}
 
@@ -295,11 +296,11 @@ export default function CartPage() {
                     {/* Total values */}
                     <div className="text-right min-w-17.5">
                       <p className="text-xs font-medium text-[#1a1a1a]">
-                        ₹{item.itemTotal.toFixed(2)}
+                        ₹{formatPrice(item.itemTotal)}
                       </p>
                       {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
                         <p className="text-[9px] text-[#9a9a94] mt-0.5">
-                          ₹{item.itemDepositTotal.toFixed(2)} dep.
+                          ₹{formatPrice(item.itemDepositTotal)} dep.
                         </p>
                       )}
                     </div>
@@ -326,13 +327,13 @@ export default function CartPage() {
               <div className="space-y-3.5 mb-5 border-b border-[#e8e6e2] pb-5">
                 <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
                   <span>Subtotal</span>
-                  <span className="text-[#1a1a1a] font-medium">₹{summary.subtotal.toFixed(2)}</span>
+                  <span className="text-[#1a1a1a] font-medium">₹{formatPrice(summary.subtotal)}</span>
                 </div>
                 
                 {summary.totalSecurityDeposits > 0 && (
                   <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
                     <span>Refundable Deposits</span>
-                    <span className="text-[#1a1a1a] font-medium">₹{summary.totalSecurityDeposits.toFixed(2)}</span>
+                    <span className="text-[#1a1a1a] font-medium">₹{formatPrice(summary.totalSecurityDeposits)}</span>
                   </div>
                 )}
               </div>
@@ -358,7 +359,7 @@ export default function CartPage() {
 
               <div className="flex justify-between items-baseline mb-6 pt-1">
                 <span className="text-sm font-light font-serif text-[#1a1a1a]">Total</span>
-                <span className="text-xl font-light text-[#1a1a1a]">₹{summary.totalAmount.toFixed(2)}</span>
+                <span className="text-xl font-light text-[#1a1a1a]">₹{formatPrice(summary.totalAmount)}</span>
               </div>
 
               {summary.totalSecurityDeposits > 0 && (

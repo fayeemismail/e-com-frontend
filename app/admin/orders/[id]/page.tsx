@@ -7,6 +7,7 @@ import Image from "next/image";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useAdminOrderDetails } from "@/hooks/use-admin-order-details";
 import { ChevronDown, ArrowLeft, Package, CreditCard, Clock } from "lucide-react";
+import { formatPrice } from "@/lib/utils/format.util";
 
 // ── Status Config ─────────────────────────────────────────────────
 const ORDER_STATUS_LABELS: Record<string, string> = {
@@ -289,18 +290,18 @@ export default function AdminOrderDetailsPage({ params }: { params: Promise<{ id
                           </span>
                         </td>
                         <td className="px-5 py-4 align-middle text-[12px] text-[#5a5a55]">
-                          <div>₹{item.price.toFixed(2)}{item.transactionType === "rent" ? " / day" : ""}</div>
+                          <div>₹{formatPrice(item.price)}{item.transactionType === "rent" ? " / day" : ""}</div>
                           {item.transactionType === "rent" && item.securityDeposit ? (
-                            <div className="text-[10px] text-[#9a9a94]">+₹{item.securityDeposit.toFixed(2)} deposit</div>
+                            <div className="text-[10px] text-[#9a9a94]">+₹{formatPrice(item.securityDeposit)} deposit</div>
                           ) : null}
                         </td>
                         <td className="px-5 py-4 align-middle text-center text-[12px] text-[#1a1a1a] font-medium">
                           {item.qty}
                         </td>
                         <td className="px-5 py-4 align-middle text-right text-[12px] text-[#1a1a1a] font-semibold">
-                          <div>₹{(item.price * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1) * item.qty).toFixed(2)}</div>
+                          <div>₹{formatPrice(item.price * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1) * item.qty)}</div>
                           {item.transactionType === "rent" && item.securityDeposit ? (
-                            <div className="text-[10px] text-[#9a9a94]">+₹{(item.securityDeposit * item.qty).toFixed(2)} deposit</div>
+                            <div className="text-[10px] text-[#9a9a94]">+₹{formatPrice(item.securityDeposit * item.qty)} deposit</div>
                           ) : null}
                         </td>
                       </tr>
@@ -311,17 +312,17 @@ export default function AdminOrderDetailsPage({ params }: { params: Promise<{ id
               <div className="px-5 py-4 bg-[#faf9f7] border-t border-[#f0eeea] flex flex-col items-end gap-2">
                 <div className="flex justify-between w-full max-w-50 text-[12px] text-[#5a5a55]">
                   <span>Subtotal</span>
-                  <span>₹{(order.pricingSummary?.subtotal || 0).toFixed(2)}</span>
+                  <span>₹{formatPrice(order.pricingSummary?.subtotal || 0)}</span>
                 </div>
                 {order.pricingSummary?.totalSecurityDeposits > 0 && (
                   <div className="flex justify-between w-full max-w-50 text-[12px] text-[#5a5a55]">
                     <span>Security Deposits</span>
-                    <span>₹{order.pricingSummary.totalSecurityDeposits.toFixed(2)}</span>
+                    <span>₹{formatPrice(order.pricingSummary.totalSecurityDeposits)}</span>
                   </div>
                 )}
                 <div className="flex justify-between w-full max-w-50 text-[12px] text-[#1a1a1a] font-bold border-t border-[#e8e6e2] pt-2 mt-1">
                   <span>Total</span>
-                  <span>₹{order.total.toFixed(2)}</span>
+                  <span>₹{formatPrice(order.total)}</span>
                 </div>
               </div>
             </div>

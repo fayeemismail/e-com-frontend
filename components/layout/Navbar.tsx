@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { useSearchAutosuggest } from "@/hooks/use-search-autosuggest";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { User, ShoppingBag, Heart, LogOut, ChevronDown } from "lucide-react";
+import { formatPrice } from "@/lib/utils/format.util";
 
 const navLinks = [
   { label: "Home",  href: "/" },
@@ -191,7 +192,7 @@ function SearchBox({
                       <p className="text-[12px] text-[#1a1a1a] truncate font-light">{item.name}</p>
                       {item.author && <p className="text-[10px] text-[#9a9a94] truncate">{item.author}</p>}
                     </div>
-                    <p className="text-[11px] text-[#1a1a1a] shrink-0">₹{item.price.toFixed(2)}</p>
+                    <p className="text-[11px] text-[#1a1a1a] shrink-0">₹{formatPrice(item.price)}</p>
                   </Link>
                 ))}
               </div>

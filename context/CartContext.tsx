@@ -27,8 +27,8 @@ function recalculateCartTotals(items: CartValidationItem[]): CartValidationRespo
 
     return {
       ...item,
-      itemTotal,
-      itemDepositTotal,
+      itemTotal: Math.round(itemTotal),
+      itemDepositTotal: Math.round(itemDepositTotal),
       inStock: item.availableStock >= item.quantity,
     };
   });
@@ -56,11 +56,11 @@ function recalculateCartTotals(items: CartValidationItem[]): CartValidationRespo
   return {
     items: updatedItems,
     summary: {
-      subtotal: parseFloat(subtotal.toFixed(2)),
-      totalSecurityDeposits: parseFloat(totalSecurityDeposits.toFixed(2)),
-      tax: parseFloat(tax.toFixed(2)),
-      shippingCost: parseFloat(shippingCost.toFixed(2)),
-      totalAmount: parseFloat(totalAmount.toFixed(2)),
+      subtotal: Math.round(subtotal),
+      totalSecurityDeposits: Math.round(totalSecurityDeposits),
+      tax: Math.round(tax),
+      shippingCost: Math.round(shippingCost),
+      totalAmount: Math.round(totalAmount),
     },
     isValid,
     errors,
