@@ -54,7 +54,7 @@ export default function FeaturedProducts() {
         {/* On < xl, this renders Heading on top-left and View All on top-right */}
         <div className="flex items-center justify-between w-full xl:w-auto">
           <h2 className="text-[10px] tracking-[0.22em] uppercase text-[#111] font-normal m-0 shrink-0">
-            Featured Collection
+            Shop By category
           </h2>
 
           <Link
