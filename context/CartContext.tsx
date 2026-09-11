@@ -235,6 +235,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeFromCart = async (sku: string) => {
     if (!cart) return;
 
+    // Immediately cancel any pending debounced update for this SKU
+    if (debounceTimeoutsRef.current[sku]) {
+      clearTimeout(debounceTimeoutsRef.current[sku]);
+      delete debounceTimeoutsRef.current[sku];
+    }
+
     const targetItem = cart.items.find((item) => item.sku === sku);
     if (!targetItem) return;
 
@@ -279,6 +285,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateQuantity = async (sku: string, quantity: number) => {
     if (!cart) return;
 
+    // If quantity is reduced to 0 or less, immediately delegate to removeFromCart
+    if (quantity <= 0) {
+      await removeFromCart(sku);
+      return;
+    }
+
     const targetItem = cart.items.find((item) => item.sku === sku);
     if (!targetItem) return;
 
@@ -317,8 +329,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           setCartCount(freshData.items.reduce((sum, item) => sum + item.quantity, 0));
         }
       } catch (err) {
-        console.error("Failed to update cart item quantity:", err);
+        console.warn("Handled cart update error:", err);
         if (seq === requestSequenceRef.current) {
+          // If cart was not found or deleted concurrently, refresh state from server without crashing
+          if (err instanceof ApiError && (err.status === 404 || err.message?.toLowerCase().includes("cart not found"))) {
+            await loadCartData();
+            return;
+          }
           setCart(rollbackCart);
           setCartCount(rollbackCart.items.reduce((sum, item) => sum + item.quantity, 0));
           showNotification(err instanceof Error ? err.message : "Failed to update quantity.");

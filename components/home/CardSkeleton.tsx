@@ -2,7 +2,7 @@
 
 export default function CardSkeleton() {
   return (
-    <div className="animate-pulse flex flex-col justify-between bg-white border border-[#e8e4de] p-2.5 sm:p-3 md:p-3.5 rounded-xs h-full min-h-[200px]">
+    <div className="animate-pulse flex flex-col justify-between bg-white border border-[#e8e4de] p-2.5 sm:p-3 md:p-3.5 rounded-xs h-full min-h-50">
       <div>
         {/* Category & Icon */}
         <div className="flex items-center gap-2 mb-2">
