@@ -158,16 +158,16 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
             }`}
         />
 
-        {/* In-Cart Active Badge (desktop indicator when not hovered) */}
+        {/* In-Cart Active Badge (medium/large screen indicator when not hovered) */}
         {inCartQty > 0 && !hovered && (
-          <div className="hidden min-[600px]:flex absolute bottom-2 left-2 z-10 bg-[#111] text-white text-[7.5px] sm:text-[8px] md:text-[9px] px-1.5 sm:px-2 py-0.5 rounded-xs font-mono items-center gap-1 shadow-sm">
+          <div className="hidden sm:flex absolute bottom-2 left-2 z-10 bg-[#111] text-white text-[7.5px] sm:text-[8px] md:text-[9px] px-1.5 sm:px-2 py-0.5 rounded-xs font-mono items-center gap-1 shadow-sm">
             <span>In Cart:</span>
             <span className="font-semibold text-[#c4a882]">{inCartQty}</span>
             {unitLabel && <span className="uppercase text-[7px] sm:text-[8px]">{unitLabel}</span>}
           </div>
         )}
 
-        {/* Counter Overlay: visible on mobile screen without hover; slides up on desktop hover */}
+        {/* Counter Overlay: visible on small screen without hover; on hover shows on medium and large screen */}
         <div
           onClick={(e) => {
             e.preventDefault();
@@ -176,9 +176,9 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
           onTouchStart={(e) => e.stopPropagation()}
           onTouchEnd={(e) => e.stopPropagation()}
           className={`absolute inset-x-0 bottom-0 bg-[#111]/95 backdrop-blur-xs text-white p-1.5 sm:p-1.5 md:p-2 lg:p-2.5 z-20 flex flex-col gap-1 transition-all duration-300 shadow-lg 
-            translate-y-0 opacity-100 min-[600px]:translate-y-full min-[600px]:opacity-0 ${
-              hovered ? "min-[600px]:translate-y-0 min-[600px]:opacity-100" : ""
-            } [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100`}
+            translate-y-0 opacity-100 sm:translate-y-full sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 ${
+              hovered ? "sm:translate-y-0 sm:opacity-100" : ""
+            }`}
         >
           {/* Optional Unit Selector (e.g. PC vs DZ) */}
           {availableUnits.length > 1 && (
