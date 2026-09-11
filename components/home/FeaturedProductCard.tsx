@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { DisplayProduct } from "@/lib/mappers/product.mapper";
 import { useCart } from "@/context/CartContext";
 import { productService, BackendSku } from "@/lib/api/product.service";
@@ -11,6 +10,56 @@ import { formatPrice } from "@/lib/utils/format.util";
 
 interface FeaturedProductCardProps {
   product: DisplayProduct;
+}
+
+// Category icon helper (larger crisp icons)
+function getCategoryIcon(cat: string) {
+  const c = (cat || "").toLowerCase();
+  if (c.includes("office") || c.includes("stationery") || c.includes("pen") || c.includes("paper") || c.includes("supply")) {
+    return (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <path d="M12 19l7-7 3 3-7 7-3-3z" />
+        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+        <path d="M2 2l7.586 7.586" />
+        <circle cx="11" cy="11" r="2" />
+      </svg>
+    );
+  }
+  if (c.includes("collectible") || c.includes("rare") || c.includes("edition") || c.includes("first")) {
+    return (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+        <path d="M2 9h20" />
+        <path d="M10 21l-4-12 4-6" />
+        <path d="M14 21l4-12-4-6" />
+      </svg>
+    );
+  }
+  if (c.includes("fiction") || c.includes("book") || c.includes("literature") || c.includes("novel") || c.includes("story")) {
+    return (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+    );
+  }
+  if (c.includes("art") || c.includes("design") || c.includes("print")) {
+    return (
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <circle cx="13.5" cy="6.5" r=".7" fill="currentColor" />
+        <circle cx="17.5" cy="10.5" r=".7" fill="currentColor" />
+        <circle cx="8.5" cy="7.5" r=".7" fill="currentColor" />
+        <circle cx="6.5" cy="12.5" r=".7" fill="currentColor" />
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+      </svg>
+    );
+  }
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+      <line x1="7" y1="7" x2="7.01" y2="7" />
+    </svg>
+  );
 }
 
 export default function FeaturedProductCard({ product }: FeaturedProductCardProps) {
@@ -32,6 +81,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
   const currentPrice =
     (currentSku?.type === "buy" ? currentSku.price : currentSku?.rentPricePerDay) ?? product.price;
   const availableUnits = getAvailableUnits(product);
+  const skuString = currentSku?.sku || (product as any).sku || (product.skus && product.skus[0]?.sku) || "";
 
   // Check if current SKU is already in the cart
   const cartItem = cart?.items.find((item) => item.sku === currentSku?.sku);
@@ -132,42 +182,63 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
   return (
     <Link
       href={`/shop/${product.id}`}
-      className="cursor-pointer group no-underline block"
+      className="cursor-pointer group no-underline block h-full"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Image Container */}
-      <div
-        className="relative overflow-hidden bg-[#f4f1ec]"
-        style={{ paddingBottom: "100%" }}
-      >
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          sizes="(max-width: 640px) 50vw, 25vw"
-          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${hovered ? "opacity-0" : "opacity-100"
-            }`}
-        />
-        <Image
-          src={product.hoverImage}
-          alt=""
-          fill
-          sizes="(max-width: 640px) 50vw, 25vw"
-          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${hovered ? "opacity-100" : "opacity-0"
-            }`}
-        />
-
-        {/* In-Cart Active Badge (medium/large screen indicator when not hovered) */}
-        {inCartQty > 0 && !hovered && (
-          <div className="hidden sm:flex absolute bottom-2 left-2 z-10 bg-[#111] text-white text-[7.5px] sm:text-[8px] md:text-[9px] px-1.5 sm:px-2 py-0.5 rounded-xs font-mono items-center gap-1 shadow-sm">
-            <span>In Cart:</span>
-            <span className="font-semibold text-[#c4a882]">{inCartQty}</span>
-            {unitLabel && <span className="uppercase text-[7px] sm:text-[8px]">{unitLabel}</span>}
+      {/* ── UNIFIED NO-IMAGE PRODUCT CARD (ALL SCREENS) ── */}
+      <div className="flex flex-col justify-between h-full bg-white border border-[#e8e4de] hover:border-[#111] transition-all duration-200 p-2.5 sm:p-3 md:p-3.5 lg:p-4 rounded-xs shadow-xs hover:shadow-sm">
+        <div>
+          {/* 1. Category Icon & Category Name on Top */}
+          <div className="flex items-center gap-1.5 text-[8.5px] sm:text-[9px] lg:text-[10px] tracking-[0.08em] uppercase text-[#c4a882] font-semibold mb-1.5">
+            <span className="shrink-0 text-[#c4a882] flex items-center justify-center">
+              {getCategoryIcon(product.category)}
+            </span>
+            <span className="truncate">{product.category}</span>
           </div>
-        )}
 
-        {/* Counter Overlay: visible on small screen without hover; on hover shows on medium and large screen */}
+          {/* 2. Product Name on bottom of Category */}
+          <h3 className="text-[11.5px] sm:text-[12px] lg:text-[13.5px] font-medium text-[#111] group-hover:text-[#c4a882] transition-colors leading-snug line-clamp-2 mb-2">
+            {product.name}
+          </h3>
+
+          {/* 3. Unit Name on top, and 4. SKU on bottom of Unit Name (in tertiary color #888) */}
+          {(unitLabel || skuString) && (
+            <div className="flex flex-col gap-0.5 text-[8px] sm:text-[8.5px] lg:text-[9.5px] text-[#888] font-mono mb-2">
+              {unitLabel && (
+                <div className="flex items-center">
+                  <span className="uppercase font-medium text-[#666] bg-[#f5f4f0] px-1.5 py-0.5 rounded-xs tracking-wider border border-[#eae6de]">
+                    Unit: {unitLabel}
+                  </span>
+                </div>
+              )}
+              {skuString && (
+                <div className="text-[7.5px] sm:text-[8px] lg:text-[9px] text-[#888] tracking-wider truncate">
+                  SKU: {skuString}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 5. Price - Single prominent big price with larger text on lg screens */}
+          <div className="flex items-baseline gap-1.5 my-2 lg:my-2.5">
+            <span className="text-[17px] sm:text-[19px] lg:text-[23px] text-[#111] font-bold tracking-tight">
+              ₹{formatPrice(currentPrice)}
+            </span>
+            {unitLabel && (
+              <span className="text-[10px] sm:text-[11px] lg:text-[12.5px] text-[#777] font-normal uppercase">
+                /{unitLabel}
+              </span>
+            )}
+            {product.compareAtPrice && (
+              <span className="text-[10.5px] sm:text-[11.5px] lg:text-[13px] text-[#bbb] line-through ml-1">
+                ₹{formatPrice(product.compareAtPrice)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* 6. Bottom: Counter and Add to Cart Button (Only One Price on card, no increment price) */}
         <div
           onClick={(e) => {
             e.preventDefault();
@@ -175,17 +246,13 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
           }}
           onTouchStart={(e) => e.stopPropagation()}
           onTouchEnd={(e) => e.stopPropagation()}
-          className={`absolute inset-x-0 bottom-0 bg-[#111]/95 backdrop-blur-xs text-white p-1.5 sm:p-1.5 md:p-2 lg:p-2.5 z-20 flex flex-col gap-1 transition-all duration-300 shadow-lg 
-            translate-y-0 opacity-100 sm:translate-y-full sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 ${
-              hovered ? "sm:translate-y-0 sm:opacity-100" : ""
-            }`}
+          className="mt-auto pt-2 border-t border-[#f0ece4] flex flex-col gap-1.5"
         >
-          {/* Optional Unit Selector (e.g. PC vs DZ) */}
+          {/* Multiple Unit Selector if available */}
           {availableUnits.length > 1 && (
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
               {availableUnits.map((u) => {
-                const isSel =
-                  selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
+                const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
                 return (
                   <button
                     key={u.sku}
@@ -195,10 +262,10 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                       e.stopPropagation();
                       setSelectedSku(u.skuObj);
                     }}
-                    className={`text-[7px] sm:text-[7.5px] md:text-[8px] uppercase tracking-wider px-1 sm:px-1.5 py-0.5 border cursor-pointer transition-colors whitespace-nowrap ${
+                    className={`text-[7px] sm:text-[7.5px] lg:text-[8.5px] uppercase tracking-wider px-1.5 py-0.5 border cursor-pointer transition-colors rounded-xs whitespace-nowrap ${
                       isSel
-                        ? "bg-white text-black border-white font-medium"
-                        : "bg-transparent text-[#aaa] border-[#444] hover:border-[#888]"
+                        ? "bg-[#111] text-white border-[#111] font-medium"
+                        : "bg-transparent text-[#777] border-[#ddd] hover:border-[#999]"
                     }`}
                   >
                     {u.label}
@@ -210,61 +277,58 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
 
           {/* Active Cart Counter (if already added to cart) */}
           {inCartQty > 0 ? (
-            <div className="flex items-center justify-between gap-1 sm:gap-1.5">
-              <div className="flex items-center border border-[#444] bg-[#222] rounded-xs shrink-0">
+            <div className="flex items-center gap-1.5 h-7 sm:h-7.5 lg:h-8 w-full">
+              <div className="flex items-center border border-[#111] bg-white rounded-xs h-full shrink-0">
                 <button
                   type="button"
                   onClick={handleDecrementInCart}
                   disabled={isProcessing}
-                  className="w-5 sm:w-5 md:w-6 h-5.5 sm:h-6 md:h-7 flex items-center justify-center text-xs text-white hover:bg-[#333] bg-transparent border-none cursor-pointer select-none disabled:opacity-50"
+                  className="w-4.5 sm:w-5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#111] hover:bg-[#f5f4f0] bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
                   aria-label="Decrease quantity"
                 >
                   −
                 </button>
-                <span className="w-5 sm:w-5.5 md:w-6 h-5.5 sm:h-6 md:h-7 flex items-center justify-center text-[9px] sm:text-[9.5px] md:text-[11px] font-mono text-white font-semibold select-none">
+                <span className="w-4 sm:w-4.5 lg:w-5 h-full flex items-center justify-center text-[10px] lg:text-[11.5px] font-mono font-semibold text-[#111] select-none">
                   {inCartQty}
                 </span>
                 <button
                   type="button"
                   onClick={handleIncrementInCart}
                   disabled={isProcessing}
-                  className="w-5 sm:w-5 md:w-6 h-5.5 sm:h-6 md:h-7 flex items-center justify-center text-xs text-white hover:bg-[#333] bg-transparent border-none cursor-pointer select-none disabled:opacity-50"
+                  className="w-4.5 sm:w-5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#111] hover:bg-[#f5f4f0] bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
                   aria-label="Increase quantity"
                 >
                   +
                 </button>
               </div>
 
-              <div className="flex flex-col items-end leading-tight text-right select-none min-w-0">
-                <span className="text-[9px] sm:text-[9.5px] md:text-[11px] font-semibold text-[#c4a882] truncate">
-                  ₹{formatPrice(currentPrice * inCartQty)}
-                </span>
-                <span className="text-[7px] sm:text-[7.5px] md:text-[8px] text-[#aaa] uppercase truncate">
-                  In Cart{unitLabel ? ` (${unitLabel})` : ""}
+              <div className="flex-1 h-full bg-[#faf9f6] border border-[#111] rounded-xs px-2 flex items-center justify-center min-w-0">
+                <span className="text-[7.5px] sm:text-[8px] lg:text-[9.5px] uppercase tracking-wider font-semibold text-[#111] flex items-center gap-1 whitespace-nowrap select-none">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#c4a882] shrink-0" />
+                  In Cart
                 </span>
               </div>
             </div>
           ) : (
-            /* Direct Counter & Add to Bag (0 extra modal clicks) */
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <div className="flex items-center border border-[#444] bg-[#222] rounded-xs shrink-0">
+            <div className="flex items-center gap-1.5 h-7 sm:h-7.5 lg:h-8 w-full">
+              <div className="flex items-center border border-[#ddd] bg-white rounded-xs h-full shrink-0">
                 <button
                   type="button"
                   onClick={handleLocalDecrement}
                   disabled={localQty <= 1 || isProcessing}
-                  className="w-5 sm:w-5 md:w-5.5 h-5.5 sm:h-6 md:h-7 flex items-center justify-center text-xs text-white hover:bg-[#333] disabled:opacity-30 bg-transparent border-none cursor-pointer select-none"
+                  className="w-4.5 sm:w-5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#111] hover:bg-[#f5f4f0] disabled:opacity-30 bg-transparent border-none cursor-pointer select-none"
                   aria-label="Decrease quantity"
                 >
                   −
                 </button>
-                <span className="w-5 sm:w-5 md:w-5.5 h-5.5 sm:h-6 md:h-7 flex items-center justify-center text-[9px] sm:text-[9.5px] md:text-[11px] font-mono text-white select-none">
+                <span className="w-4 sm:w-4.5 lg:w-5 h-full flex items-center justify-center text-[10px] lg:text-[11.5px] font-mono text-[#111] select-none">
                   {localQty}
                 </span>
                 <button
                   type="button"
                   onClick={handleLocalIncrement}
                   disabled={isProcessing}
-                  className="w-5 sm:w-5 md:w-5.5 h-5.5 sm:h-6 md:h-7 flex items-center justify-center text-xs text-white hover:bg-[#333] bg-transparent border-none cursor-pointer select-none"
+                  className="w-4.5 sm:w-5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#111] hover:bg-[#f5f4f0] bg-transparent border-none cursor-pointer select-none"
                   aria-label="Increase quantity"
                 >
                   +
@@ -275,7 +339,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                 type="button"
                 onClick={handleQuickAdd}
                 disabled={isProcessing}
-                className="flex-1 min-w-0 h-5.5 sm:h-6 md:h-7 bg-[#c4a882] hover:bg-[#b5966d] text-[#111] text-[7.5px] sm:text-[8px] md:text-[9px] tracking-[0.05em] sm:tracking-[0.1em] uppercase font-semibold transition-colors flex items-center justify-center gap-1 rounded-xs cursor-pointer border-none disabled:opacity-75 select-none px-1"
+                className="flex-1 min-w-0 h-full bg-[#111] hover:bg-[#333] text-white text-[7.5px] sm:text-[8px] lg:text-[9.5px] tracking-wider uppercase font-semibold transition-colors flex items-center justify-center gap-1 rounded-xs cursor-pointer border-none disabled:opacity-75 select-none px-1"
               >
                 {isProcessing ? (
                   <svg className="animate-spin h-2.5 w-2.5 text-current" fill="none" viewBox="0 0 24 24">
@@ -283,50 +347,10 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
                 ) : (
-                  <span className="truncate">Add · ₹{formatPrice(currentPrice * localQty)}</span>
+                  <span className="whitespace-nowrap">Add to Cart</span>
                 )}
               </button>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Product Info */}
-      <div className="pt-2 sm:pt-2.5 md:pt-3 pb-1">
-        {/* Category */}
-        <p className="text-[8.5px] sm:text-[9px] md:text-[10px] lg:text-[11px] tracking-[0.06em] sm:tracking-[0.08em] uppercase text-[#999] mb-0.5 sm:mb-1 leading-relaxed truncate">
-          {product.category}
-        </p>
-
-        {/* Product Name */}
-        <p
-          className={`text-[11px] sm:text-[11.5px] md:text-[12.5px] lg:text-[13px] leading-snug mb-1 transition-colors duration-200 truncate ${
-            hovered ? "text-[#c4a882]" : "text-[#111]"
-          }`}
-        >
-          {product.name}
-        </p>
-
-        {/* Price & Unit */}
-        <div className="flex items-baseline gap-1 sm:gap-1.5 flex-wrap">
-          <span className="text-[11px] sm:text-[11.5px] md:text-[12.5px] lg:text-[13px] text-[#111] font-medium">
-            ₹{formatPrice(currentPrice)}
-            {unitLabel && (
-              <span className="text-[9px] sm:text-[10px] md:text-[11px] text-[#555] font-medium ml-0.5 sm:ml-1 uppercase">
-                / {unitLabel}
-              </span>
-            )}
-          </span>
-
-          {product.compareAtPrice && (
-            <span className="text-[9px] sm:text-[9.5px] md:text-[10.5px] text-[#ccc] line-through">
-              ₹{formatPrice(product.compareAtPrice)}
-              {unitLabel && (
-                <span className="text-[8px] sm:text-[8.5px] md:text-[9px] text-[#aaa] ml-0.5 uppercase">
-                  /{unitLabel}
-                </span>
-              )}
-            </span>
           )}
         </div>
       </div>

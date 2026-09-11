@@ -106,7 +106,7 @@ export default function FeaturedProducts() {
 
       {/* Loading state */}
       {loading && (
-        <div className="grid grid-cols-2 min-[600px]:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
+        <div className="grid grid-cols-2 min-[600px]:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
           {Array.from({ length: 4 }).map((_, index) => (
             <CardSkeleton key={index} />
           ))}
@@ -145,7 +145,7 @@ export default function FeaturedProducts() {
 
       {/* Responsive product grid: 2 cols on mobile (< 600px), 4 cols on half-screen/55% and desktop (>= 600px) */}
       {!loading && !error && filtered.length > 0 && (
-        <div className="grid grid-cols-2 min-[600px]:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4 lg:gap-5">
+        <div className="grid grid-cols-2 min-[600px]:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
           {filtered.map((p) => (
             <FeaturedProductCard key={p.id} product={p} />
           ))}
