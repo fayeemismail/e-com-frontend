@@ -328,19 +328,19 @@ export default function Navbar() {
         {/* Row 2: Hardcoded texts in second row with rounded divs, dots, and expanded gap on lg screen */}
         <div className="bg-[#0b2447] border-t border-white/10 px-4 md:px-8 py-2">
           <div className="flex items-center gap-2 sm:gap-3.5 lg:gap-6 text-[11px] sm:text-[11.5px] tracking-wide overflow-x-auto whitespace-nowrap scrollbar-none font-normal">
-            <span className="px-3 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-blue-100/90 shadow-2xs">
+            <span className="px-3 py-0.5 rounded-full bg-white/8 border border-white/10 text-blue-100/90 shadow-2xs">
               Consigment store
             </span>
             <span className="text-blue-300/40 select-none text-[8px]">•</span>
-            <span className="px-3 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-blue-100/90 shadow-2xs">
+            <span className="px-3 py-0.5 rounded-full bg-white/8 border border-white/10 text-blue-100/90 shadow-2xs">
               Outline Agreement 46000
             </span>
             <span className="text-blue-300/40 select-none text-[8px]">•</span>
-            <span className="px-3 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-blue-100/90 shadow-2xs">
+            <span className="px-3 py-0.5 rounded-full bg-white/8 border border-white/10 text-blue-100/90 shadow-2xs">
               Vendor 455853
             </span>
             <span className="text-blue-300/40 select-none text-[8px]">•</span>
-            <span className="px-3 py-0.5 rounded-full bg-white/[0.08] border border-white/10 text-blue-100/90 shadow-2xs">
+            <span className="px-3 py-0.5 rounded-full bg-white/8 border border-white/10 text-blue-100/90 shadow-2xs">
               Prices in SAR
             </span>
           </div>
@@ -349,7 +349,7 @@ export default function Navbar() {
 
       {/* Mobile search bar dropdown */}
       {!isAdminAuthenticated && (
-        <div className={`fixed top-[92px] sm:top-[96px] left-0 right-0 z-40 md:hidden bg-[#0f2e5a] border-b border-[#0b2447] px-4 py-2.5 transition-all duration-300 ${mobileSearchOpen ? "max-h-16 opacity-100 overflow-visible" : "max-h-0 opacity-0 overflow-hidden pointer-events-none py-0"}`}>
+        <div className={`fixed top-23 sm:top-24 left-0 right-0 z-40 md:hidden bg-[#0f2e5a] border-b border-[#0b2447] px-4 py-2.5 transition-all duration-300 ${mobileSearchOpen ? "max-h-16 opacity-100 overflow-visible" : "max-h-0 opacity-0 overflow-hidden pointer-events-none py-0"}`}>
           <SearchBox
             {...search}
             onSubmit={handleSearchSubmit}
@@ -362,14 +362,14 @@ export default function Navbar() {
       {/* Mobile drawer */}
       <div className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${mobileOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
         <div onClick={() => setMobileOpen(false)} className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${mobileOpen ? "opacity-100" : "opacity-0"}`} />
-        <div className={`absolute top-[92px] sm:top-[96px] left-0 right-0 bg-[#0f2e5a] border-b border-[#0b2447] text-white transition-all duration-300 overflow-hidden shadow-2xl ${mobileOpen ? "max-h-screen opacity-100 py-2" : "max-h-0 opacity-0 py-0"}`}>
+        <div className={`absolute top-23 sm:top-24 left-0 right-0 bg-[#0f2e5a] border-b border-[#0b2447] text-white transition-all duration-300 overflow-hidden shadow-2xl ${mobileOpen ? "max-h-screen opacity-100 py-2" : "max-h-0 opacity-0 py-0"}`}>
           <ul className="list-none m-0 p-0">
             {navLinks.map((link) => (
               <li key={link.label}>
                 <Link
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-6 py-3 text-[13px] tracking-[0.1em] uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors"
+                  className="block px-6 py-3 text-[13px] tracking-widest uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -382,7 +382,7 @@ export default function Navbar() {
                 <Link
                   href="/cart"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-[0.1em] uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-widest uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors"
                 >
                   <ShoppingCart size={16} strokeWidth={1.6} />
                   Cart {cartCount > 0 && `(${cartCount})`}
@@ -394,7 +394,7 @@ export default function Navbar() {
             {/*
             {!isAdminAuthenticated && (
               <li>
-                <Link href="/wishlist" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-[0.1em] uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors">
+                <Link href="/wishlist" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-widest uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors">
                   <Heart size={15} strokeWidth={1.5} /> Wishlist
                 </Link>
               </li>
@@ -405,7 +405,7 @@ export default function Navbar() {
             {/*
             {!isAdminAuthenticated && (
               <li>
-                <Link href="/profile" onClick={(e) => { handleProfileClick(e); setMobileOpen(false); }} className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-[0.1em] uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors">
+                <Link href="/profile" onClick={(e) => { handleProfileClick(e); setMobileOpen(false); }} className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-widest uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors">
                   <User size={15} strokeWidth={1.5} /> Profile
                 </Link>
               </li>
@@ -416,12 +416,12 @@ export default function Navbar() {
             {isAdminAuthenticated && (
               <>
                 <li>
-                  <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-[0.1em] uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors">
+                  <Link href="/admin/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-6 py-3 text-[13px] tracking-widest uppercase text-white/90 hover:text-white no-underline border-b border-white/10 hover:bg-white/5 transition-colors">
                     Admin Dashboard
                   </Link>
                 </li>
                 <li>
-                  <button onClick={async () => { await adminLogout(); setMobileOpen(false); router.push("/admin/login"); }} className="flex items-center gap-3 w-full px-6 py-3 text-[13px] tracking-[0.1em] uppercase text-red-300 bg-transparent border-none cursor-pointer hover:bg-white/5 transition-colors text-left">
+                  <button onClick={async () => { await adminLogout(); setMobileOpen(false); router.push("/admin/login"); }} className="flex items-center gap-3 w-full px-6 py-3 text-[13px] tracking-widest uppercase text-red-300 bg-transparent border-none cursor-pointer hover:bg-white/5 transition-colors text-left">
                     <LogOut size={15} strokeWidth={1.5} /> Admin Sign Out
                   </button>
                 </li>
@@ -432,7 +432,7 @@ export default function Navbar() {
       </div>
 
       {/* Spacer to prevent content overlap under the fixed 2-row navbar */}
-      <div className="h-[92px] sm:h-[96px]" />
+      <div className="h-23 sm:h-24" />
     </>
   );
 }
