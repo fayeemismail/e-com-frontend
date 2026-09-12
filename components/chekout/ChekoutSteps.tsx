@@ -13,16 +13,16 @@ export default function CheckoutSteps({ current, steps, onStepClick }: Props) {
             onClick={() => i < current && onStepClick(i)}
             className={`text-[10px] tracking-[0.16em] uppercase transition-colors ${
               i === current
-                ? "text-[#1a1a1a]"
+                ? "text-[#0f2e5a] font-semibold"
                 : i < current
-                ? "text-[#9a9a94] hover:text-[#1a1a1a] cursor-pointer"
-                : "text-[#c5c5bf] cursor-default"
+                ? "text-[#64748b] hover:text-[#0f2e5a] cursor-pointer"
+                : "text-[#cbd5e1] cursor-default"
             }`}
           >
             {s}
           </button>
           {i < steps.length - 1 && (
-            <span className="text-[#e8e6e2] text-xs">›</span>
+            <span className="text-[#cbd5e1] text-xs">›</span>
           )}
         </div>
       ))}

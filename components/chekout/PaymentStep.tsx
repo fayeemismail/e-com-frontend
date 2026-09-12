@@ -100,7 +100,7 @@ export default function PaymentStep({
 
       {/* Payment method */}
       <div className="mb-8">
-        <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">
+        <p className="text-[10px] tracking-[0.18em] uppercase text-[#0f2e5a] font-semibold mb-4 pb-3 border-b border-[#e2e8f0]">
           Payment Method
         </p>
         <div className="flex flex-wrap gap-3 mb-6">
@@ -110,17 +110,17 @@ export default function PaymentStep({
               type="button"
               disabled={disabled}
               onClick={() => !disabled && onPaymentChange(id)}
-              className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors ${
+              className={`text-[10px] tracking-[0.14em] uppercase px-4 py-2 border transition-colors rounded-xs ${
                 paymentMethod === id
-                  ? "border-[#1a1a1a] bg-[#1a1a1a] text-white"
+                  ? "border-[#0f2e5a] bg-[#0f2e5a] text-white font-semibold shadow-2xs"
                   : disabled
-                  ? "border-[#e8e6e2] text-[#c5c5bf] bg-[#fafaf9] cursor-not-allowed"
-                  : "border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] cursor-pointer"
+                  ? "border-[#e2e8f0] text-[#94a3b8] bg-[#f8fafc] cursor-not-allowed"
+                  : "border-[#e2e8f0] text-[#64748b] hover:border-[#0f2e5a] hover:text-[#0f2e5a] cursor-pointer"
               }`}
             >
               {label}
               {disabled && note && (
-                <span className="lowercase text-[8px] tracking-normal text-[#9a9a94] ml-1">
+                <span className="lowercase text-[8px] tracking-normal text-[#94a3b8] ml-1">
                   ({note})
                 </span>
               )}
@@ -129,9 +129,9 @@ export default function PaymentStep({
         </div>
 
         {isCOD && (
-          <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
-            <p className="text-xs text-[#6b6b65] tracking-wide leading-relaxed font-light">
-              Pay in cash when your order arrives. Please keep exact change ready.
+          <div className="p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xs">
+            <p className="text-xs text-[#64748b] tracking-wide leading-relaxed font-light">
+              Pay in cash or consignment voucher when your requisition arrives.
             </p>
           </div>
         )}
@@ -139,14 +139,14 @@ export default function PaymentStep({
 
       {/* Billing address */}
       <div className="mb-8">
-        <div className="flex items-center justify-between pb-3 border-b border-[#e8e6e2] mb-4">
-          <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a]">
+        <div className="flex items-center justify-between pb-3 border-b border-[#e2e8f0] mb-4">
+          <p className="text-[10px] tracking-[0.18em] uppercase text-[#0f2e5a] font-semibold">
             Billing Address
           </p>
 
           {/* COD: always same — show label only */}
           {isCOD ? (
-            <span className="text-[10px] text-[#9a9a94] tracking-wide">
+            <span className="text-[10px] text-[#64748b] tracking-wide">
               Same as shipping
             </span>
           ) : (
@@ -155,7 +155,7 @@ export default function PaymentStep({
               type="button"
               onClick={() => onBillingToggle(!billingDifferent)}
               className={`relative inline-flex items-center h-5 w-9 rounded-full border-none cursor-pointer transition-colors duration-200 ${
-                billingDifferent ? "bg-[#1a1a1a]" : "bg-[#ddd]"
+                billingDifferent ? "bg-[#0f2e5a]" : "bg-[#cbd5e1]"
               }`}
               aria-label="Use different billing address"
             >
@@ -170,18 +170,18 @@ export default function PaymentStep({
 
         {/* Same as shipping note */}
         {(!billingDifferent || isCOD) && (
-          <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
-            <p className="text-[10px] tracking-[0.12em] uppercase text-[#9a9a94] mb-2">
+          <div className="p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xs">
+            <p className="text-[10px] tracking-[0.12em] uppercase text-[#64748b] mb-2 font-medium">
               Billing Address
             </p>
-            <p className="text-xs text-[#5a5a55] leading-relaxed font-light">
+            <p className="text-xs text-[#475569] leading-relaxed font-light">
               {shipping.firstName} {shipping.lastName}<br />
               {shipping.addressLine1}{shipping.addressLine2 ? `, ${shipping.addressLine2}` : ""}<br />
               {shipping.city}, {shipping.state} {shipping.postalCode}<br />
               {shipping.country}
             </p>
             {!isCOD && (
-              <p className="text-[10px] text-[#9a9a94] mt-2">
+              <p className="text-[10px] text-[#64748b] mt-2">
                 Toggle above to use a different billing address.
               </p>
             )}
@@ -205,15 +205,15 @@ export default function PaymentStep({
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={onBack}
-          className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors cursor-pointer bg-transparent"
+          className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e2e8f0] text-[#64748b] hover:border-[#0f2e5a] hover:text-[#0f2e5a] transition-colors cursor-pointer bg-transparent rounded-xs font-medium"
         >
           ← Back
         </button>
         <button
           onClick={onContinue}
-          className="flex-1 sm:flex-none bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors cursor-pointer"
+          className="flex-1 sm:flex-none bg-[#0f2e5a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#0b2447] transition-colors cursor-pointer rounded-xs font-semibold shadow-2xs"
         >
-          Review Order
+          Review Requisition
         </button>
       </div>
     </div>

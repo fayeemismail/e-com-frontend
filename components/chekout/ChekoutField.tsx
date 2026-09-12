@@ -18,7 +18,7 @@ export default function CheckoutField({
 }: Props) {
   return (
     <div className={colSpan ? "sm:col-span-2" : ""}>
-      <label className="block text-[10px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1.5">
+      <label className="block text-[10px] tracking-[0.16em] uppercase text-[#64748b] mb-1.5 font-medium">
         {label}
       </label>
       <input
@@ -26,8 +26,8 @@ export default function CheckoutField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={`w-full border ${
-          error ? "border-[#d32f2f]" : "border-[#e8e6e2]"
-        } px-3 py-3 text-xs text-[#1a1a1a] tracking-wide outline-none focus:border-[#1a1a1a] transition-colors placeholder-[#c5c5bf]`}
+          error ? "border-[#d32f2f]" : "border-[#cbd5e1]"
+        } px-3.5 py-3 text-xs text-[#0f172a] tracking-wide outline-none focus:border-[#0f2e5a] transition-colors placeholder-[#94a3b8] rounded-xs bg-white`}
       />
       {error && (
         <span className="text-[10px] text-[#d32f2f] mt-1 block tracking-wide">

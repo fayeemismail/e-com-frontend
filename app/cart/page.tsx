@@ -86,8 +86,8 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-[#fafaf9] flex flex-col justify-center items-center py-20 px-4">
         <div className="bg-white w-full max-w-md p-8 sm:p-10 border border-[#e8e6e2] shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-md text-center">
-          <div className="w-12 h-12 rounded-full bg-[#fafaf9] border border-[#e8e6e2] flex items-center justify-center mx-auto mb-6">
-            <ShoppingBag className="w-5 h-5 text-[#c4a882]" strokeWidth={1.4} />
+          <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-6">
+            <ShoppingBag className="w-5 h-5 text-[#0f2e5a]" strokeWidth={1.4} />
           </div>
 
           <h2 className="text-xl font-light font-serif text-[#1a1a1a] tracking-[0.02em] mb-2.5">
@@ -110,7 +110,7 @@ export default function CartPage() {
                 onChange={(e) => setEmailInput(e.target.value)}
                 disabled={authLoading}
                 className="w-full h-11 px-4 border border-[#e8e6e2] outline-none rounded-sm text-[13px] 
-                tracking-[0.02em] text-[#1a1a1a] placeholder-[#bbb] focus:border-[#1a1a1a] bg-white transition-all disabled:bg-[#fcfcfa] disabled:text-[#aaa]"
+                tracking-[0.02em] text-[#1a1a1a] placeholder-[#bbb] focus:border-[#0f2e5a] bg-white transition-all disabled:bg-[#fcfcfa] disabled:text-[#aaa]"
               />
               {authError && (
                 <div className="flex items-center gap-1.5 mt-2 text-red-600">
@@ -124,8 +124,8 @@ export default function CartPage() {
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full h-11 bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] 
-              cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 rounded-sm 
+              className="w-full h-11 bg-[#0f2e5a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#0f2e5a] 
+              cursor-pointer hover:bg-[#0b2447] transition-colors duration-200 rounded-sm 
               disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center font-light"
             >
               {authLoading ? (
@@ -164,8 +164,8 @@ export default function CartPage() {
           </p>
           <Link
             href="/shop"
-            className="inline-block bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-3.5 
-            hover:bg-white hover:text-black border border-[#1a1a1a] transition-colors duration-200 rounded-sm"
+            className="inline-block bg-[#0f2e5a] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-3.5 
+            hover:bg-[#0b2447] border border-[#0f2e5a] transition-colors duration-200 rounded-sm"
           >
             Browse Collections
           </Link>
@@ -187,7 +187,7 @@ export default function CartPage() {
             <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Shopping Bags</p>
             <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Cart</h1>
           </div>
-          <Link href="/shop" className="inline-flex items-center gap-2 text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors">
+          <Link href="/shop" className="inline-flex items-center gap-2 text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] hover:text-[#0f2e5a] transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" />
             Continue Shopping
           </Link>
@@ -197,7 +197,7 @@ export default function CartPage() {
       {/* Grid Content */}
       <div className="px-5 sm:px-8 md:px-12 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Left: Cart Items List */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => {
@@ -226,26 +226,25 @@ export default function CartPage() {
                     <div className="min-w-0">
                       <Link
                         href={item.productId ? `/shop/${item.productId}` : "/shop"}
-                        className="text-sm font-light font-serif text-[#1a1a1a] hover:text-[#c4a882] transition-colors leading-snug block truncate max-w-70"
+                        className="text-sm font-light font-serif text-[#1a1a1a] hover:text-[#0f2e5a] transition-colors leading-snug block truncate max-w-70"
                       >
                         {item.name}
                       </Link>
-                      
+
                       <div className="flex flex-wrap items-center gap-2.5 mt-1.5">
-                        <span className={`text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded font-mono font-semibold ${
-                          item.transactionType === "buy" ? "bg-[#edf7ed] text-[#1e4620]" : "bg-[#e8f4fd] text-[#0d3c61]"
-                        }`}>
+                        <span className={`text-[9px] uppercase tracking-[0.08em] px-1.5 py-0.5 rounded font-mono font-semibold ${item.transactionType === "buy" ? "bg-blue-50 text-[#0f2e5a]" : "bg-[#edf7ed] text-[#1e4620]"
+                          }`}>
                           {item.transactionType === "buy" ? "Buy" : `Rent${formatSuffix}`}
                         </span>
-                        
-                        <span className="text-[11px] text-[#9a9a94] font-light">
-                          ₹{formatPrice(item.price)}{item.transactionType === "rent" ? "/day" : ""}
+
+                        <span className="text-[11px] text-[#64748b] font-medium">
+                          {formatPrice(item.price)} SAR{item.transactionType === "rent" ? "/day" : ""}
                         </span>
                       </div>
 
                       {item.transactionType === "rent" && item.securityDeposit && (
-                        <p className="text-[9px] text-[#9a9a94] mt-1 tracking-normal font-light">
-                          +₹{formatPrice(item.securityDeposit)} deposit per unit (refundable)
+                        <p className="text-[9px] text-[#64748b] mt-1 tracking-normal font-light">
+                          +{formatPrice(item.securityDeposit)} SAR deposit per unit (refundable)
                         </p>
                       )}
 
@@ -264,10 +263,10 @@ export default function CartPage() {
                       ) : null}
                     </div>
                   </div>
- 
+
                   {/* Quantity Controls & Totals */}
                   <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
-                    
+
                     {/* Quantity selectors */}
                     <div className="flex items-center border border-[#e8e6e2] rounded-sm bg-[#fafaf9] h-9">
                       <button
@@ -295,12 +294,12 @@ export default function CartPage() {
 
                     {/* Total values */}
                     <div className="text-right min-w-17.5">
-                      <p className="text-xs font-medium text-[#1a1a1a]">
-                        ₹{formatPrice(item.itemTotal)}
+                      <p className="text-xs font-semibold text-[#0f172a]">
+                        {formatPrice(item.itemTotal)} SAR
                       </p>
                       {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
-                        <p className="text-[9px] text-[#9a9a94] mt-0.5">
-                          ₹{formatPrice(item.itemDepositTotal)} dep.
+                        <p className="text-[9px] text-[#64748b] mt-0.5">
+                          {formatPrice(item.itemDepositTotal)} SAR dep.
                         </p>
                       )}
                     </div>
@@ -323,17 +322,17 @@ export default function CartPage() {
           <div className="space-y-6">
             <div className="bg-white border border-[#e8e6e2] p-6 rounded-sm shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
               <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-5 font-serif font-semibold">Order Summary</p>
-              
+
               <div className="space-y-3.5 mb-5 border-b border-[#e8e6e2] pb-5">
                 <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
                   <span>Subtotal</span>
-                  <span className="text-[#1a1a1a] font-medium">₹{formatPrice(summary.subtotal)}</span>
+                  <span className="text-[#1a1a1a] font-medium">{formatPrice(summary.subtotal)} SAR</span>
                 </div>
-                
+
                 {summary.totalSecurityDeposits > 0 && (
                   <div className="flex justify-between text-[12px] text-[#6a6a65] tracking-wide">
                     <span>Refundable Deposits</span>
-                    <span className="text-[#1a1a1a] font-medium">₹{formatPrice(summary.totalSecurityDeposits)}</span>
+                    <span className="text-[#1a1a1a] font-medium">{formatPrice(summary.totalSecurityDeposits)} SAR</span>
                   </div>
                 )}
               </div>
@@ -359,7 +358,7 @@ export default function CartPage() {
 
               <div className="flex justify-between items-baseline mb-6 pt-1">
                 <span className="text-sm font-light font-serif text-[#1a1a1a]">Total</span>
-                <span className="text-xl font-light text-[#1a1a1a]">₹{formatPrice(summary.totalAmount)}</span>
+                <span className="text-xl font-medium text-[#0f2e5a]">{formatPrice(summary.totalAmount)} SAR</span>
               </div>
 
               {summary.totalSecurityDeposits > 0 && (
@@ -393,10 +392,10 @@ export default function CartPage() {
               ) : (
                 <Link
                   href="/checkout"
-                  className="w-full bg-[#1a1a1a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#1a1a1a] 
-                  hover:bg-white hover:text-black transition-colors duration-200 rounded-sm flex items-center justify-center h-12 font-light"
+                  className="w-full bg-[#0f2e5a] text-white text-[11px] tracking-[0.18em] uppercase border border-[#0f2e5a] 
+                  hover:bg-[#0b2447] transition-colors duration-200 rounded-sm flex items-center justify-center h-12 font-medium shadow-2xs"
                 >
-                  Proceed to Checkout
+                  Proceed to Requisition
                 </Link>
               )}
             </div>

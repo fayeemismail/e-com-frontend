@@ -64,13 +64,13 @@ export default function ReviewStep({
 
       {/* Items */}
       <div className="mb-8">
-        <p className="text-[10px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e2]">
+        <p className="text-[10px] tracking-[0.18em] uppercase text-[#0f2e5a] font-semibold mb-4 pb-3 border-b border-[#e2e8f0]">
           Items ({items.length})
         </p>
-        <div className="divide-y divide-[#e8e6e2]">
+        <div className="divide-y divide-[#e2e8f0]">
           {items.map((item) => (
             <div key={item.sku} className="py-5 flex items-center gap-4">
-              <div className="w-14 h-16 bg-[#f5f4f1] border border-[#e8e6e2] overflow-hidden shrink-0 relative">
+              <div className="w-14 h-16 bg-[#f8fafc] border border-[#e2e8f0] overflow-hidden shrink-0 relative rounded-xs">
                 <Image
                   src={item.image || FALLBACK_IMG}
                   alt={item.name}
@@ -80,23 +80,23 @@ export default function ReviewStep({
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-light font-serif text-[#1a1a1a] tracking-wide">
+                <p className="text-xs font-medium text-[#0f172a] tracking-wide">
                   {item.name}
                 </p>
-                <p className="text-[10px] text-[#9a9a94] tracking-wider uppercase mt-1">
+                <p className="text-[10px] text-[#64748b] tracking-wider uppercase mt-1">
                   {item.transactionType === "rent"
                     ? `Rent / ${item.rentalDurationDays} days`
                     : "Buy"}{" "}
-                  · Qty {item.quantity}
+                  · Qty {item.quantity} · SAP ID: {item.sku}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-[#1a1a1a] font-medium">
-                  ₹{formatPrice(item.itemTotal)}
+                <p className="text-xs text-[#0f172a] font-semibold">
+                  {formatPrice(item.itemTotal)} SAR
                 </p>
                 {item.transactionType === "rent" && item.itemDepositTotal > 0 && (
-                  <p className="text-[9px] text-[#9a9a94] mt-0.5">
-                    ₹{formatPrice(item.itemDepositTotal)} dep.
+                  <p className="text-[9px] text-[#64748b] mt-0.5">
+                    {formatPrice(item.itemDepositTotal)} SAR dep.
                   </p>
                 )}
               </div>
@@ -107,19 +107,19 @@ export default function ReviewStep({
 
       {/* Shipping + Payment summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
+        <div className="p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xs">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">
+            <p className="text-[10px] tracking-[0.14em] uppercase text-[#64748b] font-medium">
               Ships to
             </p>
             <button
               onClick={onEditShipping}
-              className="text-[10px] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors bg-transparent border-none cursor-pointer"
+              className="text-[10px] uppercase text-[#0f2e5a] hover:underline transition-colors bg-transparent border-none cursor-pointer font-medium"
             >
               Edit
             </button>
           </div>
-          <p className="text-xs text-[#1a1a1a] leading-relaxed tracking-wide font-light">
+          <p className="text-xs text-[#334155] leading-relaxed tracking-wide font-light">
             {shipping.firstName} {shipping.lastName}
             <br />
             {shipping.addressLine1}
@@ -129,19 +129,19 @@ export default function ReviewStep({
             {shipping.country}
           </p>
         </div>
-        <div className="p-4 bg-[#faf9f7] border border-[#e8e6e2]">
+        <div className="p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xs">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] tracking-[0.14em] uppercase text-[#9a9a94]">
+            <p className="text-[10px] tracking-[0.14em] uppercase text-[#64748b] font-medium">
               Payment
             </p>
             <button
               onClick={onEditPayment}
-              className="text-[10px] uppercase text-[#9a9a94] hover:text-[#1a1a1a] transition-colors bg-transparent border-none cursor-pointer"
+              className="text-[10px] uppercase text-[#0f2e5a] hover:underline transition-colors bg-transparent border-none cursor-pointer font-medium"
             >
               Edit
             </button>
           </div>
-          <p className="text-xs text-[#1a1a1a] tracking-wide font-light">
+          <p className="text-xs text-[#334155] tracking-wide font-light">
             {paymentMethod === "cod" ? "Cash on Delivery" : paymentMethod}
           </p>
         </div>
@@ -151,22 +151,22 @@ export default function ReviewStep({
         <button
           onClick={onBack}
           disabled={isPlacing}
-          className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e8e6e2] text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors bg-transparent cursor-pointer disabled:opacity-50"
+          className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e2e8f0] text-[#64748b] hover:border-[#0f2e5a] hover:text-[#0f2e5a] transition-colors bg-transparent cursor-pointer disabled:opacity-50 rounded-xs"
         >
           ← Back
         </button>
         <button
           onClick={onPlaceOrder}
           disabled={isPlacing}
-          className="grow sm:grow-0 bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#333] transition-colors cursor-pointer disabled:bg-[#9a9a94] disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="grow sm:grow-0 bg-[#0f2e5a] text-white text-[11px] tracking-[0.16em] uppercase px-10 py-4 hover:bg-[#0b2447] transition-colors cursor-pointer disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-xs font-semibold shadow-2xs"
         >
           {isPlacing ? (
             <>
               <Loader2 className="animate-spin h-3.5 w-3.5" />
-              Processing...
+              Processing Requisition...
             </>
           ) : (
-            `Place Order · ₹${formatPrice(total)}`
+            `Complete Requisition · ${formatPrice(total)} SAR`
           )}
         </button>
       </div>
