@@ -210,12 +210,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       await loadCartData();
     } catch (err) {
       console.error("Failed to add item to cart:", err);
+      // Rule requiring email commented down: allow everyone to add to cart without email
+      /*
       if (err instanceof ApiError && err.status === 401) {
         setPendingItem(item);
         setShowSessionModal(true);
       } else {
         showNotification(err instanceof Error ? err.message : "Failed to add item.");
       }
+      */
+      showNotification(err instanceof Error ? err.message : "Failed to add item.");
     } finally {
       setIsAddingToCart(false);
     }
@@ -223,10 +227,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = async (item: CartItemInput) => {
     // If no session exists, prompt email sign-in first
+    // Rule commented down: allow everyone to add to cart without requiring email
+    /*
     if (!sessionEmail) {
       setPendingItem(item);
       setShowSessionModal(true);
       return;
+    }
+    */
+    if (!sessionEmail) {
+      try {
+        const guestEmail = `guest_${Date.now()}@officecare.local`;
+        await initializeSession(guestEmail);
+      } catch (e) {
+        console.warn("Guest session auto-init skipped:", e);
+      }
     }
     await executeAddToCart(item);
   };

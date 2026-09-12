@@ -59,7 +59,7 @@ export default function FeaturedProducts() {
 
           <Link
             href="/shop"
-            className="xl:hidden text-[9px] sm:text-[10px] tracking-[0.12em] uppercase text-[#c4a882] hover:text-[#b5966d] no-underline border-b border-[#c4a882] hover:border-[#b5966d] pb-0.5 transition-colors shrink-0"
+            className="xl:hidden text-[9px] sm:text-[10px] tracking-[0.12em] uppercase text-[#0f2e5a] hover:text-[#0b2447] no-underline border-b border-[#0f2e5a] hover:border-[#0b2447] pb-0.5 transition-colors shrink-0"
           >
             View All
           </Link>
@@ -83,10 +83,10 @@ export default function FeaturedProducts() {
                   if (hasDraggedRef.current) return;
                   setActive(cat);
                 }}
-                className={`text-[8.5px] sm:text-[9px] tracking-[0.12em] uppercase px-2.5 sm:px-3 py-1.5 border bg-transparent cursor-pointer transition-all duration-200 whitespace-nowrap shrink-0 ${
+                className={`text-[8.5px] sm:text-[9px] tracking-[0.12em] uppercase px-2.5 sm:px-3 py-1.5 border bg-transparent cursor-pointer transition-all duration-200 whitespace-nowrap shrink-0 rounded-xs ${
                   active === cat
-                    ? "border-[#111] text-[#111] font-medium"
-                    : "border-transparent text-[#888] hover:text-[#111] hover:border-[#ddd]"
+                    ? "border-[#0f2e5a] text-[#0f2e5a] bg-blue-50/50 font-semibold"
+                    : "border-transparent text-[#64748b] hover:text-[#0f2e5a] hover:border-[#cbd5e1]"
                 }`}
               >
                 {cat}
@@ -98,7 +98,7 @@ export default function FeaturedProducts() {
         {/* View All button on wide desktop (xl: and above) on the far right */}
         <Link
           href="/shop"
-          className="hidden xl:inline-block text-[10px] tracking-[0.12em] uppercase text-[#c4a882] hover:text-[#b5966d] no-underline border-b border-[#c4a882] hover:border-[#b5966d] pb-0.5 transition-colors shrink-0"
+          className="hidden xl:inline-block text-[10px] tracking-[0.12em] uppercase text-[#0f2e5a] hover:text-[#0b2447] no-underline border-b border-[#0f2e5a] hover:border-[#0b2447] pb-0.5 transition-colors shrink-0"
         >
           View All
         </Link>
@@ -125,7 +125,7 @@ export default function FeaturedProducts() {
       {/* Empty state */}
       {!loading && !error && filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-md mx-auto">
-          <div className="mb-5 w-14 h-14 rounded-full bg-[#f3efe6] flex items-center justify-center text-[#c4a882] text-lg select-none">
+          <div className="mb-5 w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-[#0f2e5a] text-lg select-none">
             📚
           </div>
           <h3 className="text-[12px] tracking-[0.22em] uppercase text-[#111] font-normal mb-2.5 font-serif">

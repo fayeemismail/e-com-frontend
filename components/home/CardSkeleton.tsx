@@ -2,29 +2,28 @@
 
 export default function CardSkeleton() {
   return (
-    <div className="animate-pulse flex flex-col justify-between bg-white border border-[#e8e4de] p-2.5 sm:p-3 md:p-3.5 rounded-xs h-full min-h-50">
-      <div>
-        {/* Category & Icon */}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-4 h-4 rounded-xs bg-[#f0eeea] shrink-0" />
-          <div className="h-2.5 bg-[#f0eeea] w-1/3 rounded" />
-        </div>
+    <div className="animate-pulse flex flex-col justify-between bg-white border border-[#e2e8f0] rounded-xs h-full overflow-hidden">
+      {/* Top illustration block */}
+      <div className="h-28 sm:h-32 bg-[#f0f4f9] flex items-center justify-center p-3 relative">
+        <div className="w-14 h-14 rounded-xs bg-[#e2e8f0]/70" />
+      </div>
+
+      <div className="p-2.5 sm:p-3 md:p-3.5 flex flex-col flex-1">
+        {/* Category */}
+        <div className="h-2.5 bg-[#f0eeea] w-1/3 rounded mb-2" />
         {/* Product Name */}
         <div className="h-3.5 bg-[#f0eeea] w-4/5 rounded mb-2.5" />
-        {/* Unit & SKU */}
-        <div className="flex flex-col gap-1 mb-3">
-          <div className="h-2.5 bg-[#f0eeea] w-14 rounded" />
-          <div className="h-2 bg-[#f0eeea] w-20 rounded" />
-        </div>
+        {/* Unit & Dispatch */}
+        <div className="h-2.5 bg-[#f0eeea] w-1/2 rounded mb-3" />
         {/* Price */}
-        <div className="h-4 bg-[#f0eeea] w-1/3 rounded mb-3" />
-      </div>
-      {/* Bottom Counter & Add Button */}
-      <div className="pt-3 border-t border-[#f0ece4] flex gap-1.5">
-        <div className="h-6.5 sm:h-7 bg-[#f0eeea] w-14 rounded-xs" />
-        <div className="h-6.5 sm:h-7 bg-[#f0eeea] flex-1 rounded-xs" />
+        <div className="h-4 bg-[#f0eeea] w-1/3 rounded mb-3 mt-auto" />
+
+        {/* Bottom Counter & Add Button */}
+        <div className="pt-2 border-t border-[#f0ece4] flex gap-1.5">
+          <div className="h-7 sm:h-7.5 bg-[#f0eeea] w-16 rounded-xs" />
+          <div className="h-7 sm:h-7.5 bg-[#f0eeea] flex-1 rounded-xs" />
+        </div>
       </div>
     </div>
   );
 }
-
