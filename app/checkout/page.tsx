@@ -29,14 +29,14 @@ const EMPTY_BILLING: BillingData = {
 
 function validate(data: ShippingData): Record<string, string> {
   const e: Record<string, string> = {};
+  // Contact & shipping details bypassed per user request for direct requisition flow:
+  /*
   if (!data.firstName.trim()) e.firstName = "Required";
   if (!data.lastName.trim())  e.lastName  = "Required";
   if (!data.email.trim())     e.email     = "Required";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) e.email = "Invalid email";
   if (!data.phone.trim())     e.phone     = "Required";
 
-  // Address fields commented down per user request:
-  /*
   if (!data.addressLine1.trim()) e.addressLine1 = "Required";
   if (!data.city.trim())         e.city         = "Required";
   if (!data.state.trim())        e.state        = "Required";
@@ -292,6 +292,7 @@ export default function CheckoutPage() {
                 onClearError={clearError}
                 onContinue={handleCompleteRequisition}
                 isPlacing={isPlacing}
+                items={items}
               />
             )}
             {step === 1 && (
