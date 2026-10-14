@@ -7,6 +7,7 @@ export interface SuggestionItem {
   name: string;
   price: number;
   image: string;
+  sapId?: string;
   author?: string;
 }
 
@@ -69,6 +70,8 @@ export function useSearchAutosuggest() {
             .replace(/(^-|-$)/g, "");
             
           const image = p.images?.[0] || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&q=80";
+          const rawSapId = (p as any).sapId || (p.skus && p.skus[0]?.sku);
+          const brand = p.attributes?.brand || p.attributes?.Brand;
           const author = p.attributes?.author || p.attributes?.Author;
           
           return {
@@ -77,6 +80,7 @@ export function useSearchAutosuggest() {
             name: p.title,
             price: p.price || 0,
             image,
+            sapId: rawSapId ? `SAP: ${rawSapId}` : brand ? `Brand: ${brand}` : undefined,
             author,
           };
         });

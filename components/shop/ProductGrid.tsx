@@ -37,9 +37,11 @@ function getCategoryVisualPath(cat: string, name?: string): string {
 }
 
 export default function ProductGrid({ products, view, onReset }: Props) {
+  const gridKey = products.map((p) => p.id).slice(0, 4).join("-") || "empty";
+
   if (products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-md mx-auto">
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center max-w-md mx-auto category-card-enter">
         <div className="mb-5 w-14 h-14 rounded-full bg-[#f0f4f9] flex items-center justify-center text-[#0f2e5a] text-lg select-none border border-[#e2e8f0]">
           <svg
             width="20"
@@ -76,8 +78,8 @@ export default function ProductGrid({ products, view, onReset }: Props) {
 
   if (view === "list") {
     return (
-      <div className="divide-y divide-[#e2e8f0]">
-        {products.map((p) => {
+      <div key={`list-${gridKey}`} className="divide-y divide-[#e2e8f0]">
+        {products.map((p, index) => {
           const skuString =
             (p as any).rawProduct?.sapId ||
             (p as any).sapId ||
@@ -87,45 +89,50 @@ export default function ProductGrid({ products, view, onReset }: Props) {
             "";
 
           return (
-            <Link
+            <div
               key={p.id}
-              href={`/shop/${p.id}`}
-              className="flex items-center gap-4 py-4 cursor-pointer group no-underline text-inherit hover:bg-[#f8fafc] px-3 transition-colors rounded-xs"
+              className="category-card-enter"
+              style={{ animationDelay: `${Math.min(index * 24, 200)}ms` }}
             >
-              <div className="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 bg-[#f0f4f9] border border-[#e2e8f0] overflow-hidden rounded-xs flex items-center justify-center p-2">
-                <Image
-                  src={getCategoryVisualPath(p.category, p.name)}
-                  alt={p.name}
-                  width={44}
-                  height={44}
-                  unoptimized
-                  className="w-10 h-10 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[9.5px] uppercase tracking-wider text-[#64748b] font-medium mb-0.5">
-                  {p.category}
-                </p>
-                <p className="text-[13px] sm:text-[14px] font-semibold text-[#0f172a] group-hover:text-[#0f2e5a] transition-colors truncate">
-                  {p.name}
-                </p>
-                {skuString && (
-                  <p className="text-[10.5px] text-[#475569] font-mono mt-0.5">
-                    SAP ID: {skuString}
+              <Link
+                href={`/shop/${p.id}`}
+                className="flex items-center gap-4 py-4 cursor-pointer group no-underline text-inherit hover:bg-[#f8fafc] px-3 transition-colors rounded-xs"
+              >
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 bg-[#f0f4f9] border border-[#e2e8f0] overflow-hidden rounded-xs flex items-center justify-center p-2">
+                  <Image
+                    src={getCategoryVisualPath(p.category, p.name)}
+                    alt={p.name}
+                    width={44}
+                    height={44}
+                    unoptimized
+                    className="w-10 h-10 sm:w-11 sm:h-11 object-contain group-hover:scale-105 transition-transform"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9.5px] uppercase tracking-wider text-[#64748b] font-medium mb-0.5">
+                    {p.category}
                   </p>
-                )}
-              </div>
-              <div className="text-right shrink-0">
-                <p className="text-[14px] sm:text-[15px] font-bold text-[#0f2e5a]">
-                  {formatPrice(p.price)} SAR
-                </p>
-                {p.compareAtPrice && (
-                  <p className="text-[10.5px] text-[#94a3b8] line-through">
-                    {formatPrice(p.compareAtPrice)} SAR
+                  <p className="text-[13px] sm:text-[14px] font-semibold text-[#0f172a] group-hover:text-[#0f2e5a] transition-colors truncate">
+                    {p.name}
                   </p>
-                )}
-              </div>
-            </Link>
+                  {skuString && (
+                    <p className="text-[10.5px] text-[#475569] font-mono mt-0.5">
+                      SAP ID: {skuString}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[14px] sm:text-[15px] font-bold text-[#0f2e5a]">
+                    {formatPrice(p.price)} SAR
+                  </p>
+                  {p.compareAtPrice && (
+                    <p className="text-[10.5px] text-[#94a3b8] line-through">
+                      {formatPrice(p.compareAtPrice)} SAR
+                    </p>
+                  )}
+                </div>
+              </Link>
+            </div>
           );
         })}
       </div>
@@ -133,9 +140,18 @@ export default function ProductGrid({ products, view, onReset }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start">
-      {products.map((p) => (
-        <ProductCard key={p.id} product={p} />
+    <div
+      key={`grid-${gridKey}`}
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start"
+    >
+      {products.map((p, index) => (
+        <div
+          key={p.id}
+          className="category-card-enter h-full"
+          style={{ animationDelay: `${Math.min(index * 28, 220)}ms` }}
+        >
+          <ProductCard product={p} />
+        </div>
       ))}
     </div>
   );

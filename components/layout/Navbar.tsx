@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useSearchAutosuggest } from "@/hooks/use-search-autosuggest";
 import { useAdminAuth } from "@/context/AdminAuthContext";
@@ -132,12 +132,14 @@ function SearchBox({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] text-gray-800 truncate">{item.name}</p>
-                      {item.author && (
+                      {item.sapId ? (
+                        <p className="text-[10px] text-gray-400 truncate">{item.sapId}</p>
+                      ) : item.author ? (
                         <p className="text-[10px] text-gray-400 truncate">{item.author}</p>
-                      )}
+                      ) : null}
                     </div>
                     <p className="text-[11px] font-medium text-gray-800 shrink-0">
-                      ₹{formatPrice(item.price)}
+                      {formatPrice(item.price)} SAR
                     </p>
                   </Link>
                 ))}
@@ -164,6 +166,7 @@ function SearchBox({
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
@@ -204,89 +207,116 @@ export default function Navbar() {
                 />
               </Link>
 
-              {/* Nav links */}
-              <nav
-                className="hidden md:flex items-center gap-8 lg:gap-10 xl:gap-12 shrink-0 pl-4 lg:pl-6 border-l border-[#e2e8f0]"
-                aria-label="Primary"
-              >
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="text-[13.5px] font-medium tracking-[0.02em] text-[#0f2e5a] hover:text-[#1e6bb8] no-underline transition-colors px-1 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e6bb8]"
+              {/* Nav links with enterprise sliding active indicator */}
+              {(() => {
+                const isHome = pathname === "/";
+                const isShop = pathname === "/shop" || pathname.startsWith("/shop/");
+                const activeIndex = isHome ? 0 : isShop ? 1 : -1;
+
+                return (
+                  <nav
+                    className="hidden md:inline-flex items-center p-1 rounded-full bg-[#f1f4f9] border border-[#dbe3ef] relative shrink-0 select-none"
+                    aria-label="Primary"
                   >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
+                    {/* Sliding active pill indicator */}
+                    <div
+                      className={`absolute top-1 bottom-1 rounded-full bg-[#0a1f3d] transition-all duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
+                        activeIndex === -1 ? "opacity-0" : "opacity-100"
+                      }`}
+                      style={{
+                        left: "4px",
+                        width: "calc(50% - 4px)",
+                        transform: activeIndex === 1 ? "translateX(100%)" : "translateX(0)",
+                      }}
+                    />
+
+                    {navLinks.map((link, idx) => {
+                      const isActive = activeIndex === idx;
+                      return (
+                        <Link
+                          key={link.label}
+                          href={link.href}
+                          className={`relative z-10 w-18 lg:w-20 text-center py-1.5 text-[13px] font-medium tracking-[0.02em] no-underline rounded-full transition-colors duration-200 ${
+                            isActive
+                              ? "text-white font-semibold"
+                              : "text-[#52637a] hover:text-[#0a1f3d]"
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                );
+              })()}
 
               {/* Right cluster: search + cart */}
               <div className="flex items-center gap-3 sm:gap-4 shrink-0 ml-auto">
-              {!isAdminAuthenticated && (
-                <div className="hidden md:block w-[min(100%,280px)] lg:w-[320px] xl:w-[380px]">
-                  <SearchBox
-                    {...search}
-                    onSubmit={handleSearchSubmit}
-                    onSelectSuggestion={() => {}}
-                  />
-                </div>
-              )}
+                {!isAdminAuthenticated && (
+                  <div className="hidden md:block w-[min(100%,280px)] lg:w-[320px] xl:w-[380px]">
+                    <SearchBox
+                      {...search}
+                      onSubmit={handleSearchSubmit}
+                      onSelectSuggestion={() => {}}
+                    />
+                  </div>
+                )}
 
-              {!isAdminAuthenticated && (
+                {!isAdminAuthenticated && (
+                  <button
+                    aria-label="Search"
+                    onClick={() => setMobileSearchOpen((o) => !o)}
+                    className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0f2e5a]"
+                  >
+                    <Search size={20} strokeWidth={1.8} />
+                  </button>
+                )}
+
+                {!isAdminAuthenticated && (
+                  <Link
+                    href="/cart"
+                    aria-label="Requisition cart"
+                    className="relative inline-flex items-center gap-2 h-10 px-3 sm:px-3.5 rounded-full border border-[#dbe3ef] text-[#0f2e5a] hover:bg-[#f3f6fb] transition-colors no-underline"
+                  >
+                    <ShoppingCart size={17} strokeWidth={1.8} className="shrink-0" />
+                    <span className="text-[12px] font-medium hidden sm:inline tracking-[0.02em] whitespace-nowrap">
+                      Requisition cart
+                    </span>
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-[#1e6bb8] text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
                 <button
-                  aria-label="Search"
-                  onClick={() => setMobileSearchOpen((o) => !o)}
+                  aria-label="Toggle menu"
+                  onClick={() => setMobileOpen((o) => !o)}
                   className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0f2e5a]"
                 >
-                  <Search size={20} strokeWidth={1.8} />
+                  {mobileOpen ? <X size={22} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}
                 </button>
-              )}
 
-              {!isAdminAuthenticated && (
-                <Link
-                  href="/cart"
-                  aria-label="Requisition cart"
-                  className="relative inline-flex items-center gap-2 h-10 px-3 sm:px-3.5 rounded-full border border-[#dbe3ef] text-[#0f2e5a] hover:bg-[#f3f6fb] transition-colors no-underline"
-                >
-                  <ShoppingCart size={17} strokeWidth={1.8} className="shrink-0" />
-                  <span className="text-[12px] font-medium hidden sm:inline tracking-[0.02em] whitespace-nowrap">
-                    Requisition cart
-                  </span>
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-[#1e6bb8] text-white text-[10px] font-bold flex items-center justify-center leading-none">
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
-              )}
-
-              <button
-                aria-label="Toggle menu"
-                onClick={() => setMobileOpen((o) => !o)}
-                className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0f2e5a]"
-              >
-                {mobileOpen ? <X size={22} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}
-              </button>
-
-              {isAdminAuthenticated && (
-                <div className="hidden sm:flex items-center gap-3">
-                  <Link
-                    href="/admin/dashboard"
-                    className="text-[12.5px] font-medium text-[#0f2e5a] hover:text-[#1e6bb8] no-underline"
-                  >
-                    Admin
-                  </Link>
-                  <button
-                    onClick={async () => {
-                      await adminLogout();
-                      router.push("/admin/login");
-                    }}
-                    className="text-[12.5px] font-medium text-red-500 bg-transparent border-none cursor-pointer"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              )}
+                {isAdminAuthenticated && (
+                  <div className="hidden sm:flex items-center gap-3">
+                    <Link
+                      href="/admin/dashboard"
+                      className="text-[12.5px] font-medium text-[#0f2e5a] hover:text-[#1e6bb8] no-underline"
+                    >
+                      Admin
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        await adminLogout();
+                        router.push("/admin/login");
+                      }}
+                      className="text-[12.5px] font-medium text-red-500 bg-transparent border-none cursor-pointer"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -349,17 +379,22 @@ export default function Navbar() {
           }`}
         >
           <ul className="list-none m-0 p-0">
-            {navLinks.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-6 py-3 text-[13.5px] font-medium text-white/90 hover:bg-white/5 no-underline border-b border-white/10"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`block px-6 py-3 text-[13.5px] font-medium no-underline border-b border-white/10 ${
+                      isActive ? "bg-white/15 text-white font-semibold" : "text-white/90 hover:bg-white/5"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
             {!isAdminAuthenticated && (
               <li>
                 <Link

@@ -131,6 +131,7 @@ export function useFeaturedProducts(limit = 24) {
 
   return {
     products: filtered,
+    allProducts: products,
     loading,
     error,
     isRetrying,
