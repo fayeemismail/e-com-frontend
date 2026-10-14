@@ -2,7 +2,15 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #ffffff;
+  --foreground: #1a2744;
+  --oc-navy: #0a1f3d;
+  --oc-blue: #1e6bb8;
+  /* App chrome + always-visible classic scrollbar track */
+  --app-chrome: #f5f7fb;
+  --scrollbar-size: 12px;
+  --scrollbar-track: #e8eef6;
+  --scrollbar-thumb: rgba(10, 31, 61, 0.32);
+  --scrollbar-thumb-hover: rgba(10, 31, 61, 0.52);
 }
 
 @theme {
@@ -10,18 +18,118 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-nav: var(--font-lexend), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #ededed;
-    --foreground: #ffffff;
+    --background: #ffffff;
+    --foreground: #1a2744;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html {
+  height: 100%;
+  background-color: var(--app-chrome);
+  color-scheme: light;
+  /*
+    Always show a classic vertical scrollbar (not overlay / empty gutter).
+    This keeps layout width stable AND paints the track even when the page
+    is shorter than the viewport — no blank white strip on the right.
+  */
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  /* Firefox */
+  scrollbar-width: auto;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
+/* WebKit / Chromium / Electron: force classic (non-overlay) painted bar */
+html::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+  background-color: var(--scrollbar-track);
+}
+
+html::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track);
+  border-left: 1px solid #dbe3ef;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid var(--scrollbar-track);
+  background-clip: padding-box;
+  min-height: 40px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+html::-webkit-scrollbar-corner {
+  background-color: var(--scrollbar-track);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--app-chrome);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Scroll lives on html so the painted bar is always the page scrollbar */
+  overflow: visible;
+}
+
+.font-nav {
+  font-family: var(--font-nav);
+}
+
+/* Polished loading bones — soft shimmer over Office Care chrome */
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-bone {
+  position: relative;
+  overflow: hidden;
+  background-color: #e8edf4;
+}
+
+.skeleton-bone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.25s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-bone::after {
+    animation: none;
+  }
+}
+
+/* Hide scrollbars on intentional horizontal strips without changing layout height */
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

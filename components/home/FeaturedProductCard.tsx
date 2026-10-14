@@ -13,7 +13,6 @@ interface FeaturedProductCardProps {
   product: DisplayProduct;
 }
 
-// Category visual helper (returns matching category illustration from public/images/categories)
 function getCategoryVisualPath(cat: string, name?: string): string {
   const c = (cat || "").toLowerCase();
   const n = (name || "").toLowerCase();
@@ -39,7 +38,6 @@ function getCategoryVisualPath(cat: string, name?: string): string {
   return "/images/categories/books.svg";
 }
 
-// Category dummy dispatch date helper
 function getDispatchDate(cat: string, name?: string): string {
   const c = (cat || "").toLowerCase();
   const n = (name || "").toLowerCase();
@@ -56,11 +54,21 @@ function getDispatchDate(cat: string, name?: string): string {
   return "2-3 days dispatch";
 }
 
+function isPlaceholderImage(src?: string) {
+  if (!src) return true;
+  // Category illustration SVGs / explicit placeholders — not real product photos
+  if (src.includes("/images/categories/")) return true;
+  if (src.includes("placeholder")) return true;
+  // Mapper default book stock photo when API has no images
+  if (src.includes("photo-1543002588-bfa74002ed7e")) return true;
+  return false;
+}
+
 export default function FeaturedProductCard({ product }: FeaturedProductCardProps) {
-  const [hovered, setHovered] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [localQty, setLocalQty] = useState(1);
   const [selectedSku, setSelectedSku] = useState<BackendSku | undefined>(product.defaultSku);
+  const [imgFailed, setImgFailed] = useState(false);
 
   const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
 
@@ -69,6 +77,10 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
       setSelectedSku(product.defaultSku);
     }
   }, [product.defaultSku, selectedSku]);
+
+  useEffect(() => {
+    setImgFailed(false);
+  }, [product.id, product.image]);
 
   const currentSku = selectedSku || product.defaultSku;
   const unitLabel = getUnitLabel(product, currentSku);
@@ -84,15 +96,16 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
     "";
   const dispatchDate = getDispatchDate(product.category, product.name);
 
-  // Check if current SKU is already in the cart
   const cartItem = cart?.items.find((item) => item.sku === currentSku?.sku);
   const inCartQty = cartItem?.quantity || 0;
 
-  // Single-click Add to Requisition
+  const fallbackVisual = getCategoryVisualPath(product.category, product.name);
+  const useProductPhoto = !imgFailed && !isPlaceholderImage(product.image);
+  const imageSrc = useProductPhoto ? product.image : fallbackVisual;
+
   const handleQuickAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (isProcessing) return;
 
     try {
@@ -129,13 +142,10 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
     }
   };
 
-  // Increment in-cart quantity
   const handleIncrementInCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (!currentSku || isProcessing) return;
-
     try {
       setIsProcessing(true);
       await updateQuantity(currentSku.sku, inCartQty + 1);
@@ -146,13 +156,10 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
     }
   };
 
-  // Decrement in-cart quantity or remove
   const handleDecrementInCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (!currentSku || isProcessing) return;
-
     try {
       setIsProcessing(true);
       if (inCartQty > 1) {
@@ -167,7 +174,6 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
     }
   };
 
-  // Local counter adjust when not in cart
   const handleLocalDecrement = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -181,88 +187,92 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
   };
 
   return (
-    <Link
-      href={`/shop/${product.id}`}
-      className="cursor-pointer group no-underline block h-full"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div className="flex flex-col justify-between h-full bg-white border border-[#e2e8f0] hover:border-[#0f2e5a] transition-all duration-200 rounded-xs shadow-2xs hover:shadow-xs overflow-hidden">
-        
-        {/* 1. TOP SECTION: Category Illustration Box with Stock Badge */}
-        <div className="relative bg-[#f0f4f9] h-28 sm:h-32 flex items-center justify-center p-3 border-b border-[#e2e8f0]/70">
-          {/* Stock badge top right */}
-          <div className="absolute top-2 right-2">
-            <span className="text-[8px] sm:text-[8.5px] font-medium px-1.5 py-0.5 rounded-xs border border-blue-200 bg-white text-[#0f2e5a] tracking-wide shadow-2xs">
-              In stock
-            </span>
-          </div>
+    <Link href={`/shop/${product.id}`} className="cursor-pointer group no-underline block h-full">
+      <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-[#0f2e5a] transition-all duration-200 rounded-md shadow-2xs hover:shadow-xs overflow-hidden">
+        <div className="flex flex-col p-3 sm:p-3.5 gap-2.5">
+          {/* First section — roomy reserved bands; image matches content height */}
+          <div className="flex items-stretch gap-3">
+            <div className="relative shrink-0 w-[7.5rem] sm:w-32 lg:w-36 min-h-[7.5rem] sm:min-h-32 self-stretch bg-[#f5f7fb] rounded-sm overflow-hidden">
+              <Image
+                src={imageSrc}
+                alt={product.name}
+                fill
+                unoptimized
+                sizes="144px"
+                onError={() => setImgFailed(true)}
+                className={`select-none transition-transform duration-200 group-hover:scale-[1.03] ${
+                  useProductPhoto
+                    ? "object-cover object-center"
+                    : "object-contain object-center p-3"
+                }`}
+              />
+            </div>
 
-          {/* Category Illustration */}
-          <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
-            <Image
-              src={getCategoryVisualPath(product.category, product.name)}
-              alt={product.category}
-              width={64}
-              height={64}
-              unoptimized
-              className="w-14 h-14 sm:w-16 sm:h-16 object-contain select-none"
-            />
-          </div>
-        </div>
-
-        {/* 2. BODY SECTION */}
-        <div className="p-2.5 sm:p-3 md:p-3.5 flex flex-col flex-1">
-          {/* Category Name in tertiary color */}
-          <p className="text-[9px] sm:text-[9.5px] lg:text-[10px] uppercase tracking-[0.08em] text-[#64748b] font-medium mb-1 truncate">
-            {product.category}
-          </p>
-
-          {/* Product Name */}
-          <h3 className="text-[12px] sm:text-[12.5px] lg:text-[13.5px] font-semibold text-[#0f172a] group-hover:text-[#0f2e5a] transition-colors leading-snug line-clamp-2 mb-1.5">
-            {product.name}
-          </h3>
-
-          {/* Unit and SAP ID in 2 separate rows with increased text size */}
-          <div className="flex flex-col gap-1 mb-2">
-            {unitLabel && (
-              <div className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-medium text-[#475569]">
-                <span className="text-[#64748b]">Unit:</span>{" "}
-                <span className="uppercase text-[#0f172a] font-semibold">{unitLabel}</span>
+            <div className="flex-1 min-w-0 flex flex-col gap-2">
+              {/* 1 — Identity */}
+              <div className="min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1 h-4">
+                  <p className="text-[9px] sm:text-[9.5px] uppercase tracking-[0.08em] text-[#64748b] font-normal truncate m-0">
+                    {product.category || "—"}
+                  </p>
+                  <span className="shrink-0 inline-flex items-center gap-1 text-[8.5px] font-medium tracking-[0.04em] uppercase text-emerald-700 whitespace-nowrap">
+                    <span className="w-1 h-1 rounded-[1px] bg-emerald-600 shrink-0" aria-hidden />
+                    In stock
+                  </span>
+                </div>
+                <h3
+                  title={product.name}
+                  className="text-[12.5px] sm:text-[13px] lg:text-[13.5px] font-medium text-[#0f172a] group-hover:text-[#0f2e5a] transition-colors leading-snug m-0 line-clamp-2 min-h-[2.6em]"
+                >
+                  {product.name}
+                </h3>
               </div>
-            )}
-            {skuString && (
-              <div className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-medium text-[#475569]">
-                <span className="text-[#64748b]">SAP ID:</span>{" "}
-                <span className="font-mono text-[#0f172a] font-semibold">{skuString}</span>
+
+              {/* 2 — Specs */}
+              <div className="flex flex-col justify-center gap-0.5 h-[2.75rem] sm:h-[3rem]">
+                <p className="text-[11px] sm:text-[12px] text-[#475569] m-0 leading-tight truncate">
+                  <span className="text-[#64748b]">Unit:</span>{" "}
+                  <span className="uppercase text-[#0f172a] font-semibold">
+                    {unitLabel || "—"}
+                  </span>
+                </p>
+                <p className="text-[11px] sm:text-[12px] text-[#475569] m-0 leading-tight truncate">
+                  <span className="text-[#64748b]">SAP ID:</span>{" "}
+                  <span className="font-mono text-[#0f172a] font-semibold">
+                    {skuString || "—"}
+                  </span>
+                </p>
               </div>
-            )}
+
+              {/* 3 — Price + dispatch */}
+              <div className="flex flex-col justify-end min-h-[2.75rem] sm:min-h-[3rem]">
+                <div className="flex items-baseline gap-1 flex-wrap min-h-[1.25rem]">
+                  <span className="text-[14px] sm:text-[15px] lg:text-[16px] text-[#0f172a] font-semibold tracking-tight">
+                    {formatPrice(currentPrice)} SAR
+                  </span>
+                  <span className="text-[9.5px] sm:text-[10px] text-[#64748b] uppercase font-normal">
+                    /{unitLabel || "—"}
+                  </span>
+                  <span
+                    className={`text-[9.5px] sm:text-[10px] text-[#94a3b8] line-through font-normal ${
+                      product.compareAtPrice ? "" : "invisible"
+                    }`}
+                    aria-hidden={!product.compareAtPrice}
+                  >
+                    {product.compareAtPrice
+                      ? `${formatPrice(product.compareAtPrice)} SAR`
+                      : "0.00 SAR"}
+                  </span>
+                </div>
+                <div className="text-[10px] sm:text-[10.5px] text-[#64748b] font-normal flex items-center gap-1.5 mt-1 min-h-[1rem]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="truncate">{dispatchDate}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Price in SAR */}
-          <div className="flex items-baseline gap-1 my-1.5 mt-auto">
-            <span className="text-[14px] sm:text-[16px] lg:text-[18px] text-[#0f172a] font-bold tracking-tight">
-              {formatPrice(currentPrice)} SAR
-            </span>
-            {unitLabel && (
-              <span className="text-[9.5px] sm:text-[10.5px] text-[#64748b] font-normal uppercase">
-                /{unitLabel}
-              </span>
-            )}
-            {product.compareAtPrice && (
-              <span className="text-[9.5px] sm:text-[10.5px] text-[#94a3b8] line-through ml-1">
-                {formatPrice(product.compareAtPrice)} SAR
-              </span>
-            )}
-          </div>
-
-          {/* Dispatch information: on the bottom and on top of counter */}
-          <div className="text-[10px] sm:text-[10.5px] lg:text-[11px] text-[#64748b] font-medium flex items-center gap-1.5 pt-1.5 border-t border-[#e2e8f0]/70">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-            <span className="capitalize">{dispatchDate}</span>
-          </div>
-
-          {/* 3. Bottom Counter & Add to Requisition Button */}
+          {/* Bottom section — sits directly under the first block */}
           <div
             onClick={(e) => {
               e.preventDefault();
@@ -270,115 +280,110 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
             }}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
-            className="pt-1.5 flex flex-col gap-1.5"
+            className="flex flex-col gap-1.5 font-nav"
           >
-            {/* Multiple Unit Selector if available */}
-            {availableUnits.length > 1 && (
-              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
-                {availableUnits.map((u) => {
-                  const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
-                  return (
-                    <button
-                      key={u.sku}
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setSelectedSku(u.skuObj);
-                      }}
-                      className={`text-[7.5px] sm:text-[8px] lg:text-[8.5px] uppercase tracking-wider px-1.5 py-0.5 border cursor-pointer transition-colors rounded-xs whitespace-nowrap ${
-                        isSel
-                          ? "bg-[#0f2e5a] text-white border-[#0f2e5a] font-medium"
-                          : "bg-transparent text-[#64748b] border-[#cbd5e1] hover:border-[#94a3b8]"
-                      }`}
-                    >
-                      {u.label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+          {availableUnits.length > 1 && (
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+              {availableUnits.map((u) => {
+                const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
+                return (
+                  <button
+                    key={u.sku}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedSku(u.skuObj);
+                    }}
+                    className={`text-[9px] sm:text-[9.5px] uppercase tracking-[0.06em] px-2 py-0.5 border cursor-pointer transition-colors rounded-xs whitespace-nowrap font-medium ${
+                      isSel
+                        ? "bg-[#0f2e5a] text-white border-[#0f2e5a]"
+                        : "bg-transparent text-[#64748b] border-[#cbd5e1] hover:border-[#94a3b8]"
+                    }`}
+                  >
+                    {u.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-            {/* Active Requisition Counter (if already added) */}
-            {inCartQty > 0 ? (
-              <div className="flex items-center gap-1.5 h-7 sm:h-7.5 lg:h-8 w-full">
-                <div className="flex items-center border border-[#0f2e5a] bg-white rounded-xs h-full shrink-0">
-                  <button
-                    type="button"
-                    onClick={handleDecrementInCart}
-                    disabled={isProcessing}
-                    className="w-5 sm:w-5.5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#0f2e5a] hover:bg-blue-50 bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
-                    aria-label="Decrease quantity"
-                  >
-                    −
-                  </button>
-                  <span className="w-4 sm:w-4.5 lg:w-5 h-full flex items-center justify-center text-[10px] lg:text-[11.5px] font-mono font-semibold text-[#0f2e5a] select-none">
-                    {inCartQty}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleIncrementInCart}
-                    disabled={isProcessing}
-                    className="w-5 sm:w-5.5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#0f2e5a] hover:bg-blue-50 bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
-                </div>
-
-                <div className="flex-1 h-full bg-blue-50/70 border border-[#0f2e5a] rounded-xs px-2 flex items-center justify-center min-w-0">
-                  <span className="text-[7.5px] sm:text-[8px] lg:text-[9px] uppercase tracking-wider font-semibold text-[#0f2e5a] flex items-center gap-1 whitespace-nowrap select-none">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#0f2e5a] shrink-0" />
-                    In Requisition
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 h-7 sm:h-7.5 lg:h-8 w-full">
-                <div className="flex items-center border border-[#cbd5e1] bg-white rounded-xs h-full shrink-0">
-                  <button
-                    type="button"
-                    onClick={handleLocalDecrement}
-                    disabled={localQty <= 1 || isProcessing}
-                    className="w-5 sm:w-5.5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#334155] hover:bg-slate-100 disabled:opacity-30 bg-transparent border-none cursor-pointer select-none"
-                    aria-label="Decrease quantity"
-                  >
-                    −
-                  </button>
-                  <span className="w-4 sm:w-4.5 lg:w-5 h-full flex items-center justify-center text-[10px] lg:text-[11.5px] font-mono text-[#334155] select-none">
-                    {localQty}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleLocalIncrement}
-                    disabled={isProcessing}
-                    className="w-5 sm:w-5.5 lg:w-6 h-full flex items-center justify-center text-xs lg:text-sm text-[#334155] hover:bg-slate-100 bg-transparent border-none cursor-pointer select-none"
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
-                </div>
-
+          {inCartQty > 0 ? (
+            <div className="flex items-center gap-1.5 h-8 sm:h-9 w-full">
+              <div className="flex items-center border border-[#0f2e5a] bg-white rounded-xs h-full shrink-0">
                 <button
                   type="button"
-                  onClick={handleQuickAdd}
+                  onClick={handleDecrementInCart}
                   disabled={isProcessing}
-                  className="flex-1 min-w-0 h-full bg-[#0f2e5a] hover:bg-[#0b2447] text-white text-[7.5px] sm:text-[8px] lg:text-[9.5px] tracking-wider uppercase font-semibold transition-colors flex items-center justify-center gap-1 rounded-xs cursor-pointer border-none disabled:opacity-75 select-none px-1 shadow-2xs"
+                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#0f2e5a] hover:bg-blue-50 bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
+                  aria-label="Decrease quantity"
                 >
-                  {isProcessing ? (
-                    <svg className="animate-spin h-2.5 w-2.5 text-current" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                  ) : (
-                    <span className="whitespace-nowrap">+ Add to requisition</span>
-                  )}
+                  −
+                </button>
+                <span className="min-w-6 px-0.5 h-full flex items-center justify-center text-[12px] sm:text-[13px] font-semibold tabular-nums text-[#0f2e5a] select-none">
+                  {inCartQty}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleIncrementInCart}
+                  disabled={isProcessing}
+                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#0f2e5a] hover:bg-blue-50 bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
+                  aria-label="Increase quantity"
+                >
+                  +
                 </button>
               </div>
-            )}
+              <div className="flex-1 h-full bg-blue-50/70 border border-[#0f2e5a] rounded-xs px-2 flex items-center justify-center min-w-0">
+                <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.06em] font-semibold text-[#0f2e5a] whitespace-nowrap select-none">
+                  In requisition
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 h-8 sm:h-9 w-full">
+              <div className="flex items-center border border-[#cbd5e1] bg-white rounded-xs h-full shrink-0">
+                <button
+                  type="button"
+                  onClick={handleLocalDecrement}
+                  disabled={localQty <= 1 || isProcessing}
+                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#334155] hover:bg-slate-100 disabled:opacity-30 bg-transparent border-none cursor-pointer select-none"
+                  aria-label="Decrease quantity"
+                >
+                  −
+                </button>
+                <span className="min-w-6 px-0.5 h-full flex items-center justify-center text-[12px] sm:text-[13px] font-semibold tabular-nums text-[#0f2e5a] select-none">
+                  {localQty}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLocalIncrement}
+                  disabled={isProcessing}
+                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#334155] hover:bg-slate-100 bg-transparent border-none cursor-pointer select-none"
+                  aria-label="Increase quantity"
+                >
+                  +
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleQuickAdd}
+                disabled={isProcessing}
+                className="flex-1 min-w-0 h-full bg-[#0f2e5a] hover:bg-[#0b2447] text-white text-[10px] sm:text-[11px] tracking-[0.05em] uppercase font-semibold transition-colors flex items-center justify-center rounded-xs cursor-pointer border-none disabled:opacity-75 select-none px-2"
+              >
+                {isProcessing ? (
+                  <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <span className="whitespace-nowrap leading-none">Add to requisition</span>
+                )}
+              </button>
+            </div>
+          )}
           </div>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }

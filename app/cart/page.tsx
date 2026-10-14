@@ -55,26 +55,30 @@ export default function CartPage() {
   // Loader state / Skeleton Rows
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fafaf9] pb-16">
-        <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] mb-8 bg-white">
-          <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Shopping Bags</p>
-          <div className="h-8 w-24 bg-gray-200 animate-pulse rounded-sm" />
+      <div className="min-h-screen bg-[#f5f7fb] pb-16" aria-busy="true" aria-label="Loading requisition cart">
+        <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e2e8f0] mb-8 bg-white">
+          <p className="text-[10px] tracking-[0.22em] uppercase text-[#94a3b8] mb-1">Requisition</p>
+          <div className="skeleton-bone h-8 w-28 rounded-sm" />
         </div>
         <div className="px-5 sm:px-8 md:px-12 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            {[1, 2].map((i) => (
-              <div key={i} className="bg-white border border-[#e8e6e2] p-5 rounded-sm flex gap-4 items-center">
-                <div className="w-16 h-20 bg-gray-200 animate-pulse rounded-sm" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-1/3 bg-gray-200 animate-pulse rounded" />
-                  <div className="h-3 w-1/4 bg-gray-200 animate-pulse rounded" />
+          <div className="lg:col-span-2 space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white border border-[#e2e8f0] p-4 sm:p-5 rounded-md flex gap-4 items-center">
+                <div className="skeleton-bone w-16 h-16 sm:w-20 sm:h-20 rounded-md shrink-0" />
+                <div className="flex-1 space-y-2.5 min-w-0">
+                  <div className="skeleton-bone h-2.5 w-16 rounded-sm" />
+                  <div className="skeleton-bone h-3.5 w-2/3 rounded-sm" />
+                  <div className="skeleton-bone h-3 w-24 rounded-sm" />
                 </div>
+                <div className="skeleton-bone h-8 w-20 rounded-sm shrink-0 hidden sm:block" />
               </div>
             ))}
           </div>
-          <div className="bg-white border border-[#e8e6e2] p-6 h-64 rounded-sm space-y-4">
-            <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded" />
-            <div className="h-10 w-full bg-gray-200 animate-pulse rounded" />
+          <div className="bg-white border border-[#e2e8f0] p-6 rounded-md space-y-4 h-fit">
+            <div className="skeleton-bone h-4 w-1/2 rounded-sm" />
+            <div className="skeleton-bone h-3 w-full rounded-sm" />
+            <div className="skeleton-bone h-3 w-4/5 rounded-sm" />
+            <div className="skeleton-bone h-10 w-full rounded-sm mt-4" />
           </div>
         </div>
       </div>
@@ -91,10 +95,10 @@ export default function CartPage() {
           </div>
 
           <h2 className="text-xl font-light font-serif text-[#1a1a1a] tracking-[0.02em] mb-2.5">
-            Access Your Cart
+            Access Your Requisition Cart
           </h2>
           <p className="text-[12px] font-light leading-relaxed text-[#6a6a65] tracking-[0.01em] max-w-75 mx-auto mb-7">
-            To view items in your cart and continue shopping, please enter your email address below. We&apos;ll retrieve your progress instantly.
+            To view items in your requisition cart and continue, please enter your email address below. We&apos;ll retrieve your progress instantly.
           </p>
 
           <form onSubmit={handleSignInSubmit} className="space-y-5 text-left">
@@ -148,8 +152,8 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-white pb-16">
         <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] mb-12">
-          <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Shopping Bags</p>
-          <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Cart</h1>
+          <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Requisition</p>
+          <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Requisition cart</h1>
         </div>
 
         <div className="px-5 sm:px-8 md:px-12 flex flex-col items-center justify-center py-16 text-center max-w-md mx-auto">
@@ -157,10 +161,10 @@ export default function CartPage() {
             <ShoppingBag className="w-6 h-6 text-[#ccc]" strokeWidth={1} />
           </div>
           <h2 className="text-lg font-light tracking-tight font-serif text-[#1a1a1a] mb-2">
-            Your cart is empty
+            Your requisition cart is empty
           </h2>
           <p className="text-xs text-[#9a9a94] tracking-wide leading-relaxed mb-8">
-            Looks like you haven&apos;t added any items to your bag yet. Explore our selections and find something you like.
+            Looks like you haven&apos;t added any items yet. Explore the catalog and build your requisition.
           </p>
           <Link
             href="/shop"
@@ -184,8 +188,8 @@ export default function CartPage() {
       <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] mb-8 bg-white">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 max-w-6xl mx-auto">
           <div>
-            <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Shopping Bags</p>
-            <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Cart</h1>
+            <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Requisition</p>
+            <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Requisition cart</h1>
           </div>
           <Link href="/shop" className="inline-flex items-center gap-2 text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] hover:text-[#0f2e5a] transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -374,7 +378,7 @@ export default function CartPage() {
                   rounded-sm flex items-center justify-center h-12 font-light cursor-not-allowed gap-2"
                 >
                   <Loader2 className="animate-spin h-3.5 w-3.5 text-[#9a9a94]" />
-                  Syncing Bag...
+                  Syncing requisition...
                 </button>
               ) : !cart.isValid ? (
                 <div className="space-y-3">

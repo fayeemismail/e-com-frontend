@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { productService, BackendCategory } from "@/lib/api/product.service";
 import { ProductViewMapper, DisplayProduct } from "@/lib/mappers/product.mapper";
@@ -14,7 +14,6 @@ const backendSortMap: Record<SortOption, string> = {
 export function useShopProducts(limit = 12) {
   const searchParams = useSearchParams();
 
-  // Derived values from URL parameters (single source of truth)
   const pageParam = searchParams ? searchParams.get("page") : null;
   const page = pageParam ? parseInt(pageParam, 10) : 1;
 
@@ -26,37 +25,49 @@ export function useShopProducts(limit = 12) {
 
   const [products, setProducts] = useState<DisplayProduct[]>([]);
   const [categories, setCategories] = useState<BackendCategory[]>([]);
+  /** True only until the first successful catalog load (skeletons). */
   const [loading, setLoading] = useState(true);
+  /** True while refetching after filters/page change (no full-page skeleton). */
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<{ title: string; message: string } | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
 
+  const hasLoadedOnce = useRef(false);
+  const categoriesRef = useRef<BackendCategory[]>([]);
+
+  useEffect(() => {
+    categoriesRef.current = categories;
+  }, [categories]);
+
   useEffect(() => {
     let activeRequest = true;
 
     async function loadData() {
+      const isInitial = !hasLoadedOnce.current;
+
       try {
-        if (!isRetrying) {
+        if (isInitial || isRetrying) {
           setLoading(true);
+        } else {
+          setIsFetching(true);
         }
-        
-        // 1. Fetch categories if not loaded yet
-        let cats = categories;
-        if (categories.length === 0) {
+
+        let cats = categoriesRef.current;
+        if (cats.length === 0) {
           cats = await productService.getCategories();
           if (activeRequest) {
             setCategories(cats);
+            categoriesRef.current = cats;
           }
         }
 
-        // 2. Map category name to database ID
         const matchedCat = cats.find(
           (c) => c.name.toLowerCase() === selectedCategory?.toLowerCase()
         );
         const categoryId = matchedCat ? matchedCat.id : null;
 
-        // 3. Query paginated products from backend
         const response = await productService.getProducts({
           page,
           limit,
@@ -73,6 +84,7 @@ export function useShopProducts(limit = 12) {
         setProducts(mapped);
         setTotalItems(response.total);
         setError(null);
+        hasLoadedOnce.current = true;
       } catch (err) {
         if (!activeRequest) return;
         console.error("Failed to load shop products:", err);
@@ -87,6 +99,7 @@ export function useShopProducts(limit = 12) {
       } finally {
         if (activeRequest) {
           setLoading(false);
+          setIsFetching(false);
           setIsRetrying(false);
         }
       }
@@ -110,18 +123,19 @@ export function useShopProducts(limit = 12) {
   return {
     products,
     categories,
+    /** Initial load only — use for skeletons (sidebar + grid). */
     loading,
+    /** Background refetch after category/sort/page — keep existing UI. */
+    isFetching,
     error,
     isRetrying,
     handleRetry,
     catalogIsEmpty: totalItems === 0 && selectedCategory === null && searchQuery === null,
 
-    // Pagination
     page,
     totalPages,
     totalItems,
 
-    // Filter & Sort
     sort,
     selectedCategory,
     search: searchQuery,

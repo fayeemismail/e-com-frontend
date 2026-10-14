@@ -44,7 +44,7 @@ function recalculateCartTotals(items: CartValidationItem[]): CartValidationRespo
   const errors: string[] = [];
   const isValid = updatedItems.every((item) => item.inStock);
   if (updatedItems.length === 0) {
-    errors.push("Your cart is empty");
+    errors.push("Your requisition cart is empty");
   } else {
     updatedItems.forEach((item) => {
       if (!item.inStock) {

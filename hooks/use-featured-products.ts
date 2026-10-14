@@ -3,8 +3,9 @@ import { productService } from "@/lib/api/product.service";
 import { ProductViewMapper, DisplayProduct } from "@/lib/mappers/product.mapper";
 import { ApiError } from "@/lib/api/api-client";
 
-export function useFeaturedProducts(limit = 8) {
+export function useFeaturedProducts(limit = 24) {
   const [products, setProducts] = useState<DisplayProduct[]>([]);
+  const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ title: string; message: string } | null>(null);
   const [active, setActive] = useState("All");
@@ -24,8 +25,11 @@ export function useFeaturedProducts(limit = 8) {
         if (!activeRequest) return;
 
         const categoryMap = new Map(backendCategories.map((c) => [c.id, c.name]));
-        const mapped = ProductViewMapper.toDisplayProductList(backendProducts, categoryMap);
+        // Prefer API category order for home pills (all featured cats), not the
+        // subset that happens to appear in the first N featured products.
+        setCategoryNames(backendCategories.map((c) => c.name));
 
+        const mapped = ProductViewMapper.toDisplayProductList(backendProducts, categoryMap);
         setProducts(mapped);
         setError(null);
 
@@ -54,14 +58,22 @@ export function useFeaturedProducts(limit = 8) {
                 (defaultSku as any)?.unit_name ||
                 (defaultSku as any)?.unit ||
                 defaultSku?.attributes?.unitName ||
-                defaultSku?.attributes?.['Unit Name'] ||
+                defaultSku?.attributes?.["Unit Name"] ||
                 defaultSku?.attributes?.unit ||
                 defaultSku?.attributes?.Unit;
               let unit = prod.unit;
               if (skuUnit) {
                 const u = String(skuUnit).trim();
                 const lower = u.toLowerCase();
-                if (u === "-" || u === "--" || u === "—" || u === "–" || lower === "none" || lower === "n/a" || lower === "single") {
+                if (
+                  u === "-" ||
+                  u === "--" ||
+                  u === "—" ||
+                  u === "–" ||
+                  lower === "none" ||
+                  lower === "n/a" ||
+                  lower === "single"
+                ) {
                   unit = undefined;
                 } else if (lower === "dz" || lower === "dozen" || lower === "doz") {
                   unit = "DZ";
@@ -109,12 +121,13 @@ export function useFeaturedProducts(limit = 8) {
     setRetryCount((prev) => prev + 1);
   };
 
-  const categories = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
+  const categories =
+    categoryNames.length > 0
+      ? ["All", ...categoryNames]
+      : ["All", ...Array.from(new Set(products.map((p) => p.category)))];
 
   const filtered =
-    active === "All"
-      ? products
-      : products.filter((p) => p.category === active);
+    active === "All" ? products : products.filter((p) => p.category === active);
 
   return {
     products: filtered,

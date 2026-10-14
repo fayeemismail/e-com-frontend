@@ -30,7 +30,7 @@ export default function Categories() {
     return (
       <section className="bg-[#ffffff] border-y border-[#e8e4de] py-6 sm:py-8 px-4 sm:px-6 md:px-10">
         <p className="text-[9px] tracking-[0.22em] uppercase text-black mb-4 sm:mb-5">
-          Shop by Category
+          Categories
         </p>
         <div className="flex gap-2 justify-center items-center sm:gap-3 overflow-x-auto no-scrollbar pb-0.5 animate-pulse">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -52,7 +52,7 @@ export default function Categories() {
     <section className="bg-[#ffffff] border-y border-[#e8e4de] py-6 sm:py-8 px-4 sm:px-6 md:px-10">
       {/* Label */}
       <p className="text-[9px] tracking-[0.22em] uppercase text-black shadow-4xl mb-4 sm:mb-5">
-        Shop by Category
+        Categories
       </p>
 
       {/* Strip */}

@@ -1,11 +1,25 @@
 import Link from "next/link";
-import { Loader2, Package } from "lucide-react";
+import { Package } from "lucide-react";
+import { Skeleton } from "@/components/common/Skeleton";
 
-// Small spinner shown while the orders request is in flight.
+/** Order list placeholders while the request is in flight. */
 export function LoadingState() {
   return (
-    <div className="flex items-center justify-center py-24">
-      <Loader2 className="animate-spin h-4 w-4 text-[#9a9a94]" strokeWidth={1.5} />
+    <div className="max-w-4xl space-y-3" aria-busy="true" aria-label="Loading orders">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-white border border-[#e2e8f0] rounded-md p-4 sm:p-5 flex gap-4 items-start"
+        >
+          <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 shrink-0" rounded="md" />
+          <div className="flex-1 min-w-0 space-y-2.5">
+            <Skeleton className="h-2.5 w-24" />
+            <Skeleton className="h-3.5 w-2/3 max-w-xs" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+          <Skeleton className="h-4 w-16 shrink-0 hidden sm:block" />
+        </div>
+      ))}
     </div>
   );
 }

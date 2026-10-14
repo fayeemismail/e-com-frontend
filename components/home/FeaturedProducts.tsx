@@ -4,8 +4,11 @@ import { useRef } from "react";
 import Link from "next/link";
 import { useFeaturedProducts } from "@/hooks/use-featured-products";
 import ErrorState from "@/components/common/ErrorState";
+import {
+  CategoryPillSkeleton,
+  ProductCardSkeleton,
+} from "@/components/common/Skeleton";
 import FeaturedProductCard from "./FeaturedProductCard";
-import CardSkeleton from "./CardSkeleton";
 
 export default function FeaturedProducts() {
   const {
@@ -17,7 +20,7 @@ export default function FeaturedProducts() {
     setActiveCategory: setActive,
     categories,
     handleRetry,
-  } = useFeaturedProducts(8);
+  } = useFeaturedProducts(24);
 
   const tabsRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
@@ -48,67 +51,79 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="bg-[#faf9f6] py-6 sm:py-8 md:py-12 lg:py-14 px-3 sm:px-4 md:px-8 lg:px-10 min-h-100">
-      {/* Section Header: On reduced screens (< xl), heading is top-left, View All is top-right, tabs are below and swipeable */}
-      <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-2.5 sm:gap-3 xl:gap-4 mb-4 sm:mb-5 md:mb-6 border-b border-[#e8e4de] pb-3 sm:pb-4 md:pb-5">
-        {/* On < xl, this renders Heading on top-left and View All on top-right */}
-        <div className="flex items-center justify-between w-full xl:w-auto">
-          <h2 className="text-[10px] tracking-[0.22em] uppercase text-[#111] font-normal m-0 shrink-0">
-            Shop By category
+    <section className="bg-[#f5f7fb] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 lg:px-10 min-h-100 font-nav">
+      {/* Section header + category filters */}
+      <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-5">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold tracking-tight text-[#0a1f3d] m-0 leading-tight min-w-0">
+            Categories
           </h2>
 
           <Link
             href="/shop"
-            className="xl:hidden text-[9px] sm:text-[10px] tracking-[0.12em] uppercase text-[#0f2e5a] hover:text-[#0b2447] no-underline border-b border-[#0f2e5a] hover:border-[#0b2447] pb-0.5 transition-colors shrink-0"
+            className="shrink-0 inline-flex items-center justify-center h-9 px-3.5 sm:px-4 rounded-full bg-[#0a1f3d] text-white text-[12.5px] font-medium no-underline hover:bg-[#0f2e5a] transition-colors"
           >
-            View All
+            View all
           </Link>
         </div>
 
-        {/* Category tabs: below on < xl across full width; horizontally swipeable without scrollbar */}
-        {!loading && !error && categories.length > 1 && (
+        {loading && (
           <div
-            ref={tabsRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUpOrLeave}
-            onMouseLeave={handleMouseUpOrLeave}
-            className="flex items-center gap-1.5 overflow-x-auto -mx-3 px-3 sm:-mx-4 sm:px-4 md:-mx-8 md:px-8 xl:mx-0 xl:px-0 py-0.5 no-scrollbar select-none cursor-grab active:cursor-grabbing w-full xl:w-auto xl:flex-1 xl:justify-center"
+            className="flex items-center gap-2 overflow-hidden pb-1"
+            aria-hidden
           >
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => {
-                  if (hasDraggedRef.current) return;
-                  setActive(cat);
-                }}
-                className={`text-[8.5px] sm:text-[9px] tracking-[0.12em] uppercase px-2.5 sm:px-3 py-1.5 border bg-transparent cursor-pointer transition-all duration-200 whitespace-nowrap shrink-0 rounded-xs ${
-                  active === cat
-                    ? "border-[#0f2e5a] text-[#0f2e5a] bg-blue-50/50 font-semibold"
-                    : "border-transparent text-[#64748b] hover:text-[#0f2e5a] hover:border-[#cbd5e1]"
-                }`}
-              >
-                {cat}
-              </button>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <CategoryPillSkeleton key={i} />
             ))}
           </div>
         )}
 
-        {/* View All button on wide desktop (xl: and above) on the far right */}
-        <Link
-          href="/shop"
-          className="hidden xl:inline-block text-[10px] tracking-[0.12em] uppercase text-[#0f2e5a] hover:text-[#0b2447] no-underline border-b border-[#0f2e5a] hover:border-[#0b2447] pb-0.5 transition-colors shrink-0"
-        >
-          View All
-        </Link>
+        {!loading && !error && categories.length > 1 && (
+          <div
+            ref={tabsRef}
+            role="tablist"
+            aria-label="Product categories"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUpOrLeave}
+            onMouseLeave={handleMouseUpOrLeave}
+            className="flex items-center gap-2 overflow-x-auto -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 pb-1 no-scrollbar select-none cursor-grab active:cursor-grabbing"
+          >
+            {categories.map((cat) => {
+              const isActive = active === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => {
+                    if (hasDraggedRef.current) return;
+                    setActive(cat);
+                  }}
+                  className={`min-h-8 px-3 sm:px-3.5 rounded-full text-[12px] sm:text-[12.5px] font-medium whitespace-nowrap shrink-0 cursor-pointer transition-all duration-200 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e6bb8] ${
+                    isActive
+                      ? "bg-[#0a1f3d] border-[#0a1f3d] text-white shadow-sm"
+                      : "bg-white border-[#d7dee8] text-[#334155] hover:border-[#1e6bb8] hover:text-[#0a1f3d]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Loading state */}
       {loading && (
-        <div className="grid grid-cols-2 min-[600px]:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start"
+          aria-busy="true"
+          aria-label="Loading products"
+        >
           {Array.from({ length: 4 }).map((_, index) => (
-            <CardSkeleton key={index} />
+            <ProductCardSkeleton key={index} />
           ))}
         </div>
       )}
@@ -143,9 +158,8 @@ export default function FeaturedProducts() {
         </div>
       )}
 
-      {/* Responsive product grid: 2 cols on mobile (< 600px), 4 cols on half-screen/55% and desktop (>= 600px) */}
       {!loading && !error && filtered.length > 0 && (
-        <div className="grid grid-cols-2 min-[600px]:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start">
           {filtered.map((p) => (
             <FeaturedProductCard key={p.id} product={p} />
           ))}

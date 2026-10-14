@@ -235,7 +235,7 @@ export default function ProductActions({ product }: { product: Product }) {
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#f5f4f0] text-[#1a1a1a] rounded-xs text-[10px] sm:text-[11px] font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c4a882]" />
             <span>
-              In Cart: <strong className="text-[#1a1a1a] font-semibold">{inCartQty}</strong>
+              In requisition: <strong className="text-[#1a1a1a] font-semibold">{inCartQty}</strong>
               {unitLabel ? ` ${unitLabel}` : ""}
             </span>
           </div>
@@ -315,7 +315,7 @@ export default function ProductActions({ product }: { product: Product }) {
               >
                 <div className="flex items-center gap-1.5 sm:gap-2 truncate">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#c4a882] shrink-0 animate-pulse" />
-                  <span className="truncate">In Cart · View Bag</span>
+                  <span className="truncate">In requisition · View cart</span>
                 </div>
                 <span className="font-mono text-[#c4a882] font-semibold text-[11px] sm:text-[12px] shrink-0 ml-2">
                   ₹{formatPrice(calculatedPrice * inCartQty)}
@@ -341,7 +341,7 @@ export default function ProductActions({ product }: { product: Product }) {
                   </>
                 ) : selectedType === "buy" ? (
                   <span className="truncate">
-                    Add to Cart — ₹{formatPrice(calculatedPrice * localQty)}
+                    Add to requisition — ₹{formatPrice(calculatedPrice * localQty)}
                   </span>
                 ) : (
                   <span className="truncate">

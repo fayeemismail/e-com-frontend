@@ -9,35 +9,34 @@ import ProductGrid from "@/components/shop/ProductGrid";
 import { useShopProducts } from "@/hooks/use-shop-products";
 import { SortOption } from "@/types/shop/types";
 import ErrorState from "@/components/common/ErrorState";
+import {
+  ProductCardSkeleton,
+  ProductListRowSkeleton,
+} from "@/components/common/Skeleton";
 
 function SkeletonGrid({ view }: { view: "grid" | "list" }) {
   if (view === "list") {
     return (
-      <div className="divide-y divide-[#e8e6e2]">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div key={index} className="flex items-center gap-4 py-4 animate-pulse">
-            <div className="w-16 h-16 shrink-0 bg-[#f0eeea] rounded" />
-            <div className="flex-1 min-w-0 space-y-2">
-              <div className="h-3 bg-[#e8e6e2] w-1/3 rounded" />
-              <div className="h-2.5 bg-[#e8e6e2] w-1/4 rounded" />
-            </div>
-            <div className="w-10 h-3 bg-[#e8e6e2] shrink-0 rounded" />
-          </div>
+      <div
+        className="divide-y divide-[#e2e8f0] bg-white border border-[#e2e8f0] rounded-md"
+        aria-busy="true"
+        aria-label="Loading products"
+      >
+        {Array.from({ length: 6 }).map((_, index) => (
+          <ProductListRowSkeleton key={index} />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start"
+      aria-busy="true"
+      aria-label="Loading products"
+    >
       {Array.from({ length: 8 }).map((_, index) => (
-        <div key={index} className="animate-pulse">
-          <div className="bg-[#f0eeea] w-full relative overflow-hidden mb-2 aspect-square rounded" style={{ paddingBottom: "100%" }} />
-          <div className="flex items-center justify-between pt-2 gap-2">
-            <div className="h-3 bg-[#e8e6e2] w-1/2 rounded" />
-            <div className="h-3 bg-[#e8e6e2] w-1/5 rounded" />
-          </div>
-        </div>
+        <ProductCardSkeleton key={index} />
       ))}
     </div>
   );
@@ -100,6 +99,7 @@ export default function ShopClient() {
     products: filtered,
     categories,
     loading,
+    isFetching,
     error,
     isRetrying,
     handleRetry,
@@ -108,6 +108,7 @@ export default function ShopClient() {
     // Pagination
     page,
     totalPages,
+    totalItems,
 
     // Filter & Sort
     sort,
@@ -117,6 +118,7 @@ export default function ShopClient() {
 
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [filtersVisible, setFiltersVisible] = useState(true);
 
   const handleCategorySelect = (categoryName: string | null) => {
     if (!searchParams) return;
@@ -159,36 +161,23 @@ export default function ShopClient() {
 
   const activeFilterCount = (selectedCategory ? 1 : 0) + (search ? 1 : 0);
 
-  // Render Dynamic Header Info
-  const getHeaderInfo = () => {
-    if (search) {
-      return {
-        label: "Search Results",
-        title: `“${search}”`,
-      };
-    }
-    if (selectedCategory) {
-      return {
-        label: "Category",
-        title: selectedCategory,
-      };
-    }
-    return {
-      label: "Collection",
-      title: "All Products",
-    };
-  };
-
-  const { label, title } = getHeaderInfo();
+  const title = search
+    ? `“${search}”`
+    : selectedCategory
+      ? selectedCategory
+      : "All Products";
 
   return (
     <>
-      {/* Page Header */}
-      <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2]">
-        <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">
-          {label}
-        </p>
-        <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">
+      {/* Page title — mobile always; desktop when panel is closed */}
+      <div
+        className={`px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] overflow-hidden transition-[max-height,opacity,padding,border-color] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          filtersVisible
+            ? "md:max-h-0 md:opacity-0 md:pt-0 md:pb-0 md:border-transparent"
+            : "md:max-h-32 md:opacity-100"
+        }`}
+      >
+        <h1 className="text-2xl font-semibold tracking-tight text-[#0a1f3d] break-words m-0">
           {title}
         </h1>
       </div>
@@ -198,21 +187,32 @@ export default function ShopClient() {
         onSortChange={handleSortChange}
         view={view}
         onViewChange={setView}
-        resultCount={loading ? 0 : filtered.length}
+        resultCount={loading ? 0 : totalItems}
         activeFilterCount={activeFilterCount}
         onFilterOpen={() => setFilterOpen(true)}
+        filtersVisible={filtersVisible}
+        onToggleFilters={() => setFiltersVisible((v) => !v)}
       />
 
-      <div className="px-5 sm:px-8 md:px-12 py-6 flex gap-8">
-        {/* Desktop sidebar */}
-        <div className="hidden md:block w-44 shrink-0">
-          <FilterSidebar
-            selectedCategory={selectedCategory}
-            onCategorySelect={handleCategorySelect}
-            onReset={resetFilters}
-            dynamicCategories={categories}
-            isLoading={loading}
-          />
+      <div className="px-5 sm:px-8 md:px-12 py-6 flex">
+        <div
+          id="shop-filter-rail"
+          className={`hidden md:block shrink-0 overflow-hidden transition-[width,margin,opacity] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[width,margin,opacity] ${
+            filtersVisible
+              ? "w-64 lg:w-72 mr-8 lg:mr-10 opacity-100"
+              : "w-0 mr-0 opacity-0 pointer-events-none"
+          }`}
+          aria-hidden={!filtersVisible}
+        >
+          <div className="w-64 lg:w-72">
+            <FilterSidebar
+              selectedCategory={selectedCategory}
+              onCategorySelect={handleCategorySelect}
+              onReset={resetFilters}
+              dynamicCategories={categories}
+              isLoading={loading && categories.length === 0}
+            />
+          </div>
         </div>
 
         <div className="flex-1 min-w-0">
@@ -229,36 +229,43 @@ export default function ShopClient() {
           )}
           {!loading && !error && !catalogIsEmpty && (
             <>
-              <ProductGrid products={filtered} view={view} onReset={resetFilters} />
+              <div className={isFetching ? "opacity-60 pointer-events-none transition-opacity duration-150" : "transition-opacity duration-150"}>
+                <ProductGrid products={filtered} view={view} onReset={resetFilters} />
+              </div>
               {totalPages > 1 && filtered.length > 0 && (
-                <div className="flex items-center justify-center gap-2 mt-12 pt-8 border-t border-[#e8e6e2]">
-                  <button 
+                <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-12 pt-8 border-t border-[#e2e8f0] font-nav">
+                  <button
+                    type="button"
                     disabled={page === 1}
                     onClick={() => handlePageChange(page - 1)}
-                    className="px-4 py-2 border border-[#e8e6e2] text-[10px] text-[#1a1a1a] tracking-widest uppercase disabled:opacity-35 hover:bg-[#1a1a1a] hover:text-white transition-colors duration-200"
+                    className="h-9 px-3.5 rounded-full border border-[#dbe3ef] bg-white text-[10px] sm:text-[11px] font-semibold tracking-[0.1em] uppercase text-[#0a1f3d] disabled:opacity-35 disabled:pointer-events-none hover:border-[#0a1f3d] hover:bg-[#f5f7fb] transition-colors duration-200 cursor-pointer"
                   >
                     Prev
                   </button>
                   {Array.from({ length: totalPages }).map((_, index) => {
                     const pNum = index + 1;
+                    const active = page === pNum;
                     return (
                       <button
                         key={pNum}
+                        type="button"
                         onClick={() => handlePageChange(pNum)}
-                        className={`w-9 h-9 flex items-center justify-center border text-[11px] transition-colors duration-200 ${
-                          page === pNum
-                            ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
-                            : "border-[#e8e6e2] text-[#1a1a1a] hover:bg-[#f5f4f0]"
+                        aria-current={active ? "page" : undefined}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center border text-[12px] font-semibold tabular-nums transition-colors duration-200 cursor-pointer ${
+                          active
+                            ? "bg-[#0a1f3d] text-white border-[#0a1f3d]"
+                            : "bg-white border-[#dbe3ef] text-[#475569] hover:border-[#0a1f3d] hover:text-[#0a1f3d] hover:bg-[#f5f7fb]"
                         }`}
                       >
                         {pNum}
                       </button>
                     );
                   })}
-                  <button 
+                  <button
+                    type="button"
                     disabled={page === totalPages}
                     onClick={() => handlePageChange(page + 1)}
-                    className="px-4 py-2 border border-[#e8e6e2] text-[10px] text-[#1a1a1a] tracking-widest uppercase disabled:opacity-35 hover:bg-[#1a1a1a] hover:text-white transition-colors duration-200"
+                    className="h-9 px-3.5 rounded-full border border-[#dbe3ef] bg-white text-[10px] sm:text-[11px] font-semibold tracking-[0.1em] uppercase text-[#0a1f3d] disabled:opacity-35 disabled:pointer-events-none hover:border-[#0a1f3d] hover:bg-[#f5f7fb] transition-colors duration-200 cursor-pointer"
                   >
                     Next
                   </button>
@@ -305,14 +312,14 @@ export default function ShopClient() {
               onCategorySelect={handleCategorySelect}
               onReset={resetFilters}
               dynamicCategories={categories}
-              isLoading={loading}
+              isLoading={loading && categories.length === 0}
             />
             <button
               onClick={() => setFilterOpen(false)}
               className="mt-6 w-full py-3 bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase border-none 
               cursor-pointer"
             >
-              Show {filtered.length} Results
+              Show {totalItems} Results
             </button>
           </div>
         </div>

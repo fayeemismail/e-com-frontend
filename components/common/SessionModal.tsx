@@ -101,10 +101,10 @@ export default function SessionModal({ isOpen, onClose, onSubmit }: SessionModal
           </div>
 
           <h2 className="text-center text-xl font-light tracking-[0.02em] font-serif text-[#1a1a1a] mb-2.5">
-            Continue to Cart
+            Continue to Requisition Cart
           </h2>
           <p className="text-center text-[12px] font-light leading-relaxed text-[#6a6a65] tracking-[0.01em] max-w-75 mx-auto mb-7">
-            Enter your email to secure your shopping bag. We&apos;ll save your progress and keep your items ready for you.
+            Enter your email to secure your requisition cart. We&apos;ll save your progress and keep your items ready for you.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">

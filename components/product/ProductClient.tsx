@@ -7,6 +7,7 @@ import ProductDetails from "@/components/product/ProductDetails";
 import ProductCard from "@/components/shop/ProductCard";
 import Link from "next/link";
 import ErrorState from "@/components/common/ErrorState";
+import { Skeleton, ProductCardSkeleton } from "@/components/common/Skeleton";
 
 interface ProductClientProps {
   id: string;
@@ -14,40 +15,48 @@ interface ProductClientProps {
 
 function ProductSkeleton() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Breadcrumb Skeleton */}
-      <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-[#ebebeb]">
-        <div className="h-3 bg-[#f0eeea] w-48 rounded animate-pulse" />
+    <div className="min-h-screen bg-[#f5f7fb]" aria-busy="true" aria-label="Loading product">
+      <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-[#e2e8f0] bg-white">
+        <Skeleton className="h-3 w-48" />
       </div>
 
-      {/* Main product section Skeleton */}
       <div className="px-5 sm:px-8 md:px-12 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 lg:gap-24 items-start">
-          {/* Gallery image block */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
           <div className="flex flex-col-reverse sm:flex-row gap-3">
             <div className="flex flex-row sm:flex-col gap-2">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="w-14 h-14 sm:w-16 sm:h-16 bg-[#f0eeea] rounded animate-pulse" />
+                <Skeleton key={i} className="w-14 h-14 sm:w-16 sm:h-16" rounded="md" />
               ))}
             </div>
-            <div className="flex-1 bg-[#f0eeea] aspect-square sm:aspect-4/5 rounded animate-pulse" />
+            <Skeleton className="flex-1 aspect-square sm:aspect-4/5 min-h-[240px]" rounded="md" />
           </div>
 
-          {/* Product Info Block */}
-          <div className="space-y-6">
+          <div className="space-y-6 bg-white border border-[#e2e8f0] rounded-md p-5 sm:p-6">
             <div>
-              <div className="h-3.5 bg-[#f0eeea] w-1/4 rounded animate-pulse mb-3" />
-              <div className="h-7 bg-[#f0eeea] w-3/4 rounded animate-pulse mb-4" />
-              <div className="h-4 bg-[#f0eeea] w-full rounded animate-pulse mb-2" />
-              <div className="h-4 bg-[#f0eeea] w-5/6 rounded animate-pulse" />
+              <Skeleton className="h-3 w-24 mb-3" />
+              <Skeleton className="h-6 w-4/5 mb-4" />
+              <Skeleton className="h-3.5 w-full mb-2" />
+              <Skeleton className="h-3.5 w-5/6 mb-2" />
+              <Skeleton className="h-3.5 w-2/3" />
             </div>
 
-            {/* Actions Panel Skeleton */}
-            <div className="space-y-4 pt-4 border-t border-[#ebebeb]">
-              <div className="h-4 bg-[#f0eeea] w-1/3 rounded animate-pulse" />
-              <div className="h-12 bg-[#f0eeea] w-full rounded animate-pulse" />
-              <div className="h-12 bg-[#f0eeea] w-full rounded animate-pulse" />
+            <div className="space-y-3 pt-4 border-t border-[#eef2f7]">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-5 w-32" />
+              <div className="flex gap-2 pt-1">
+                <Skeleton className="h-10 w-24" rounded="sm" />
+                <Skeleton className="h-10 flex-1" rounded="sm" />
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-[#e2e8f0]">
+          <Skeleton className="h-4 w-36 mb-5" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
           </div>
         </div>
       </div>
