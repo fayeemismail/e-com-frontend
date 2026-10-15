@@ -8,6 +8,7 @@ import { useCart } from "@/context/CartContext";
 import { productService, BackendSku } from "@/lib/api/product.service";
 import { getUnitLabel, getAvailableUnits } from "@/lib/utils/unit.util";
 import { formatPrice } from "@/lib/utils/format.util";
+import { ShoppingCart } from "lucide-react";
 
 interface FeaturedProductCardProps {
   product: DisplayProduct;
@@ -188,199 +189,203 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
 
   return (
     <Link href={`/shop/${product.id}`} className="cursor-pointer group no-underline block h-full">
-      <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-[#0f2e5a] transition-all duration-200 rounded-md shadow-2xs hover:shadow-xs overflow-hidden">
-        <div className="flex flex-col p-3 sm:p-3.5 gap-2.5">
-          {/* First section — roomy reserved bands; image matches content height */}
-          <div className="flex items-stretch gap-3">
-            <div className="relative shrink-0 w-[7.5rem] sm:w-32 lg:w-36 min-h-[7.5rem] sm:min-h-32 self-stretch bg-[#f5f7fb] rounded-sm overflow-hidden">
-              <Image
-                src={imageSrc}
-                alt={product.name}
-                fill
-                unoptimized
-                sizes="144px"
-                onError={() => setImgFailed(true)}
-                className={`select-none transition-transform duration-200 group-hover:scale-[1.03] ${
-                  useProductPhoto
-                    ? "object-cover object-center"
-                    : "object-contain object-center p-3"
-                }`}
-              />
+      <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-[#0a1f3d] transition-all duration-200 rounded-xl shadow-2xs hover:shadow-md overflow-hidden group">
+        {/* Top Image Stage — edge-to-edge canvas with zero side gutters */}
+        <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 overflow-hidden">
+          <Image
+            src={imageSrc}
+            alt={product.name}
+            fill
+            unoptimized
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            onError={() => setImgFailed(true)}
+            className={`select-none w-full h-full ${
+              useProductPhoto
+                ? "object-cover object-center"
+                : "object-contain object-center p-6"
+            }`}
+          />
+        </div>
+
+        {/* Bottom Details Section */}
+        <div className="flex-1 p-3.5 sm:p-4 flex flex-col justify-between gap-3 bg-white">
+          <div className="flex flex-col gap-2">
+            {/* Category & In-Stock Status Row */}
+            <div className="flex items-center justify-between gap-2 h-4">
+              <span className="text-[10px] sm:text-[10.5px] font-semibold text-slate-400 uppercase tracking-wider truncate">
+                {product.category || "General"}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[10.5px] font-medium text-emerald-600 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden />
+                In stock
+              </span>
             </div>
 
-            <div className="flex-1 min-w-0 flex flex-col gap-2">
-              {/* 1 — Identity */}
-              <div className="min-w-0">
-                <div className="flex items-center justify-between gap-2 mb-1 h-4">
-                  <p className="text-[9px] sm:text-[9.5px] uppercase tracking-[0.08em] text-[#64748b] font-normal truncate m-0">
-                    {product.category || "—"}
-                  </p>
-                  <span className="shrink-0 inline-flex items-center gap-1 text-[8.5px] font-medium tracking-[0.04em] uppercase text-emerald-700 whitespace-nowrap">
-                    <span className="w-1 h-1 rounded-[1px] bg-emerald-600 shrink-0" aria-hidden />
-                    In stock
-                  </span>
-                </div>
-                <h3
-                  title={product.name}
-                  className="text-[12.5px] sm:text-[13px] lg:text-[13.5px] font-medium text-[#0f172a] group-hover:text-[#0f2e5a] transition-colors leading-snug m-0 line-clamp-2 min-h-[2.6em]"
-                >
-                  {product.name}
-                </h3>
-              </div>
+            {/* Title */}
+            <h3
+              title={product.name}
+              className="text-[13px] sm:text-[13.5px] font-semibold text-[#0a1f3d] group-hover:text-[#00a6e0] transition-colors leading-snug line-clamp-2 min-h-[2.6em] m-0"
+            >
+              {product.name}
+            </h3>
 
-              {/* 2 — Specs */}
-              <div className="flex flex-col justify-center gap-0.5 h-[2.75rem] sm:h-[3rem]">
-                <p className="text-[11px] sm:text-[12px] text-[#475569] m-0 leading-tight truncate">
-                  <span className="text-[#64748b]">Unit:</span>{" "}
-                  <span className="uppercase text-[#0f172a] font-semibold">
-                    {unitLabel || "—"}
-                  </span>
-                </p>
-                <p className="text-[11px] sm:text-[12px] text-[#475569] m-0 leading-tight truncate">
-                  <span className="text-[#64748b]">SAP ID:</span>{" "}
-                  <span className="font-mono text-[#0f172a] font-semibold">
-                    {skuString || "—"}
-                  </span>
-                </p>
-              </div>
-
-              {/* 3 — Price + dispatch */}
-              <div className="flex flex-col justify-end min-h-[2.75rem] sm:min-h-[3rem]">
-                <div className="flex items-baseline gap-1 flex-wrap min-h-[1.25rem]">
-                  <span className="text-[14px] sm:text-[15px] lg:text-[16px] text-[#0f172a] font-semibold tracking-tight">
-                    {formatPrice(currentPrice)} SAR
-                  </span>
-                  <span className="text-[9.5px] sm:text-[10px] text-[#64748b] uppercase font-normal">
-                    /{unitLabel || "—"}
-                  </span>
-                  <span
-                    className={`text-[9.5px] sm:text-[10px] text-[#94a3b8] line-through font-normal ${
-                      product.compareAtPrice ? "" : "invisible"
-                    }`}
-                    aria-hidden={!product.compareAtPrice}
-                  >
-                    {product.compareAtPrice
-                      ? `${formatPrice(product.compareAtPrice)} SAR`
-                      : "0.00 SAR"}
-                  </span>
-                </div>
-                <div className="text-[10px] sm:text-[10.5px] text-[#64748b] font-normal flex items-center gap-1.5 mt-1 min-h-[1rem]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="truncate">{dispatchDate}</span>
-                </div>
-              </div>
+            {/* Specifications: SAP ID and Unit (Clean unboxed hairline row) */}
+            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-100">
+              <span className="inline-flex items-center gap-1.5 text-slate-500">
+                <span className="text-[10px] uppercase tracking-wider font-mono text-slate-400">SAP:</span>
+                <span className="font-mono font-semibold text-slate-800">#{skuString || "—"}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-slate-500">
+                <span className="text-[10px] uppercase tracking-wider text-slate-400">Unit:</span>
+                <span className="uppercase font-semibold text-slate-800">{unitLabel || "Each"}</span>
+              </span>
             </div>
+
+            {/* Unit Selector (if multiple options available) */}
+            {availableUnits.length > 1 && (
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5"
+              >
+                {availableUnits.map((u) => {
+                  const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
+                  return (
+                    <button
+                      key={u.sku}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setSelectedSku(u.skuObj);
+                      }}
+                      className={`text-[9.5px] uppercase tracking-wider px-2 py-0.5 border cursor-pointer transition-colors rounded font-semibold whitespace-nowrap ${
+                        isSel
+                          ? "bg-[#0a1f3d] text-white border-[#0a1f3d]"
+                          : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      {u.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Bottom section — sits directly under the first block */}
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-            className="flex flex-col gap-1.5 font-nav"
-          >
-          {availableUnits.length > 1 && (
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-              {availableUnits.map((u) => {
-                const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
-                return (
-                  <button
-                    key={u.sku}
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setSelectedSku(u.skuObj);
-                    }}
-                    className={`text-[9px] sm:text-[9.5px] uppercase tracking-[0.06em] px-2 py-0.5 border cursor-pointer transition-colors rounded-xs whitespace-nowrap font-medium ${
-                      isSel
-                        ? "bg-[#0f2e5a] text-white border-[#0f2e5a]"
-                        : "bg-transparent text-[#64748b] border-[#cbd5e1] hover:border-[#94a3b8]"
-                    }`}
-                  >
-                    {u.label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {inCartQty > 0 ? (
-            <div className="flex items-center gap-1.5 h-8 sm:h-9 w-full">
-              <div className="flex items-center border border-[#0f2e5a] bg-white rounded-xs h-full shrink-0">
-                <button
-                  type="button"
-                  onClick={handleDecrementInCart}
-                  disabled={isProcessing}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#0f2e5a] hover:bg-blue-50 bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
-                  aria-label="Decrease quantity"
-                >
-                  −
-                </button>
-                <span className="min-w-6 px-0.5 h-full flex items-center justify-center text-[12px] sm:text-[13px] font-semibold tabular-nums text-[#0f2e5a] select-none">
-                  {inCartQty}
+          {/* Pricing & Requisition Action */}
+          <div className="flex flex-col gap-2.5 pt-2 border-t border-slate-100">
+            {/* Price + Dispatch */}
+            <div className="flex items-baseline justify-between gap-2">
+              <div className="flex items-baseline gap-1.5 flex-wrap">
+                <span className="text-[15.5px] sm:text-[16.5px] font-bold text-[#0a1f3d] tracking-tight">
+                  {formatPrice(currentPrice)} SAR
                 </span>
-                <button
-                  type="button"
-                  onClick={handleIncrementInCart}
-                  disabled={isProcessing}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#0f2e5a] hover:bg-blue-50 bg-transparent border-none cursor-pointer select-none disabled:opacity-40"
-                  aria-label="Increase quantity"
-                >
-                  +
-                </button>
-              </div>
-              <div className="flex-1 h-full bg-blue-50/70 border border-[#0f2e5a] rounded-xs px-2 flex items-center justify-center min-w-0">
-                <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.06em] font-semibold text-[#0f2e5a] whitespace-nowrap select-none">
-                  In requisition
+                <span className="text-[10px] text-slate-400 uppercase font-medium">
+                  /{unitLabel || "each"}
                 </span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 h-8 sm:h-9 w-full">
-              <div className="flex items-center border border-[#cbd5e1] bg-white rounded-xs h-full shrink-0">
-                <button
-                  type="button"
-                  onClick={handleLocalDecrement}
-                  disabled={localQty <= 1 || isProcessing}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#334155] hover:bg-slate-100 disabled:opacity-30 bg-transparent border-none cursor-pointer select-none"
-                  aria-label="Decrease quantity"
-                >
-                  −
-                </button>
-                <span className="min-w-6 px-0.5 h-full flex items-center justify-center text-[12px] sm:text-[13px] font-semibold tabular-nums text-[#0f2e5a] select-none">
-                  {localQty}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleLocalIncrement}
-                  disabled={isProcessing}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] sm:text-[16px] font-medium leading-none text-[#334155] hover:bg-slate-100 bg-transparent border-none cursor-pointer select-none"
-                  aria-label="Increase quantity"
-                >
-                  +
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={handleQuickAdd}
-                disabled={isProcessing}
-                className="flex-1 min-w-0 h-full bg-[#0f2e5a] hover:bg-[#0b2447] text-white text-[10px] sm:text-[11px] tracking-[0.05em] uppercase font-semibold transition-colors flex items-center justify-center rounded-xs cursor-pointer border-none disabled:opacity-75 select-none px-2"
-              >
-                {isProcessing ? (
-                  <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                ) : (
-                  <span className="whitespace-nowrap leading-none">Add to requisition</span>
+                {product.compareAtPrice && product.compareAtPrice > currentPrice && (
+                  <span className="text-[11px] text-slate-400 line-through">
+                    {formatPrice(product.compareAtPrice)} SAR
+                  </span>
                 )}
-              </button>
+              </div>
+              <div className="text-[10.5px] text-slate-500 font-medium flex items-center gap-1 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="truncate">{dispatchDate}</span>
+              </div>
             </div>
-          )}
+
+            {/* Action Bar (Prevent card navigation) */}
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchEnd={(e) => e.stopPropagation()}
+              className="w-full"
+            >
+              {inCartQty > 0 ? (
+                <div className="flex items-center gap-1.5 h-9 w-full">
+                  <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-full shrink-0 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={handleDecrementInCart}
+                      disabled={isProcessing}
+                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="min-w-6 px-1 h-full flex items-center justify-center text-[12.5px] font-bold tabular-nums text-[#0a1f3d] select-none">
+                      {inCartQty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleIncrementInCart}
+                      disabled={isProcessing}
+                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="flex-1 h-full bg-[#f0f9ff] border border-[#00a6e0]/40 rounded-lg px-2 flex items-center justify-center min-w-0">
+                    <span className="text-[11px] font-semibold text-[#0077b6] whitespace-nowrap select-none flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a6e0]" />
+                      In cart ({inCartQty})
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 h-9 w-full">
+                  <div className="flex items-center border border-slate-200 bg-white rounded-lg h-full shrink-0 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={handleLocalDecrement}
+                      disabled={localQty <= 1 || isProcessing}
+                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-30 bg-transparent border-none cursor-pointer select-none transition-colors"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="min-w-6 px-1 h-full flex items-center justify-center text-[12px] sm:text-[12.5px] font-semibold tabular-nums text-[#0a1f3d] select-none">
+                      {localQty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleLocalIncrement}
+                      disabled={isProcessing}
+                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-medium text-slate-600 hover:bg-slate-100 bg-transparent border-none cursor-pointer select-none transition-colors"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleQuickAdd}
+                    disabled={isProcessing}
+                    className="flex-1 min-w-0 h-full bg-[#0a1f3d] hover:bg-[#00a6e0] active:scale-[0.98] text-white text-[11px] sm:text-[11.5px] font-semibold transition-all duration-150 flex items-center justify-center rounded-lg cursor-pointer border-none shadow-xs disabled:opacity-75 select-none px-2.5 gap-1.5"
+                  >
+                    {isProcessing ? (
+                      <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                    ) : (
+                      <>
+                        <ShoppingCart size={13} strokeWidth={2.2} />
+                        <span className="whitespace-nowrap">Add to cart</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </article>
