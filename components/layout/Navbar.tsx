@@ -13,19 +13,14 @@ import {
   Menu,
   Search,
   X,
+  Phone,
+  Mail,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils/format.util";
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-];
-
-const infoChips = [
-  "Consignment store",
-  "Outline Agreement 46000",
-  "Vendor 455853",
-  "Prices in SAR",
 ];
 
 function SearchBox({
@@ -54,10 +49,10 @@ function SearchBox({
   mobile?: boolean;
 }) {
   return (
-    <div ref={containerRef} className={`relative ${mobile ? "w-full" : "w-full max-w-xl"}`}>
+    <div ref={containerRef} className={`relative ${mobile ? "w-full" : "w-full"}`}>
       <form
         onSubmit={onSubmit}
-        className="flex items-center w-full h-11 bg-[#ececec] rounded-full px-5 gap-2 border border-transparent transition-[box-shadow,border-color] focus-within:border-[#0a1f3d] focus-within:ring-2 focus-within:ring-[#0a1f3d]/30"
+        className="flex items-center w-full h-10 sm:h-11 bg-[#ececec] rounded-full px-5 gap-2 border border-transparent transition-[box-shadow,border-color] focus-within:border-[#0a1f3d] focus-within:ring-2 focus-within:ring-[#0a1f3d]/25"
       >
         <input
           type="text"
@@ -69,7 +64,7 @@ function SearchBox({
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="flex-1 bg-transparent border-none outline-none text-[13.5px] text-[#1e293b] placeholder:text-[#94a3b8]"
+          className="flex-1 bg-transparent border-none outline-none text-[13px] sm:text-[13.5px] text-[#1e293b] placeholder:text-[#8e9aa8]"
         />
         {query ? (
           <button
@@ -81,7 +76,7 @@ function SearchBox({
             <X size={16} strokeWidth={2} />
           </button>
         ) : (
-          <Search size={18} strokeWidth={1.8} className="text-[#6b7280] shrink-0" aria-hidden />
+          <Search size={17} strokeWidth={2} className="text-[#0a1f3d] shrink-0" aria-hidden />
         )}
       </form>
 
@@ -185,160 +180,148 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm font-nav tracking-normal antialiased">
-        {/* ── Top row: logo · nav · search · contact ─────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-xs font-nav tracking-normal antialiased">
+        {/* ── Row 1: Logo · Search · Contact info · Cart ─────────────── */}
         <div className="bg-white border-b border-[#eef0f3]">
-          <div className="w-full h-[80px] sm:h-[92px] flex items-center gap-3 sm:gap-4 px-4 sm:px-6 md:px-8 lg:px-10">
-            {/* Aligned with page content / Categories */}
-            <div className="flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md border border-[#dbe3ef] bg-[#f5f7fb] text-[11px] sm:text-[12px] font-medium tracking-wide text-[#0a1f3d] whitespace-nowrap shrink-0">
-              Client Name
-            </div>
+          <div className="max-w-[1440px] mx-auto h-[76px] sm:h-[86px] flex items-center justify-between gap-4 sm:gap-6 px-4 sm:px-6 md:px-8 lg:px-10">
+            {/* Logo */}
+            <Link href="/" className="flex items-center shrink-0 leading-none">
+              <Image
+                src="/images/logo-nav.webp"
+                alt="Office Care — Lowest Price & Fastest Delivery"
+                width={564}
+                height={103}
+                unoptimized
+                priority
+                className="h-10 sm:h-12 md:h-13 w-auto object-contain block"
+              />
+            </Link>
 
-            <div className="flex-1 min-w-0 max-w-[1400px] mx-auto flex items-center gap-5 lg:gap-8">
-              <Link href="/" className="flex items-center shrink-0 leading-none">
-                <Image
-                  src="/images/logo-nav.webp"
-                  alt="Office Care — Lowest Price & Fastest Delivery"
-                  width={564}
-                  height={103}
-                  unoptimized
-                  priority
-                  className="h-12 sm:h-14 md:h-[3.75rem] w-auto object-contain block"
+            {/* Centered Search Bar */}
+            {!isAdminAuthenticated && (
+              <div className="hidden md:block flex-1 max-w-sm lg:max-w-md xl:max-w-lg mx-auto">
+                <SearchBox
+                  {...search}
+                  onSubmit={handleSearchSubmit}
+                  onSelectSuggestion={() => {}}
                 />
-              </Link>
-
-              {/* Nav links with enterprise sliding active indicator */}
-              {(() => {
-                const isHome = pathname === "/";
-                const isShop = pathname === "/shop" || pathname.startsWith("/shop/");
-                const activeIndex = isHome ? 0 : isShop ? 1 : -1;
-
-                return (
-                  <nav
-                    className="hidden md:inline-flex items-center p-1 rounded-full bg-[#f1f4f9] border border-[#dbe3ef] relative shrink-0 select-none"
-                    aria-label="Primary"
-                  >
-                    {/* Sliding active pill indicator */}
-                    <div
-                      className={`absolute top-1 bottom-1 rounded-full bg-[#0a1f3d] transition-all duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${
-                        activeIndex === -1 ? "opacity-0" : "opacity-100"
-                      }`}
-                      style={{
-                        left: "4px",
-                        width: "calc(50% - 4px)",
-                        transform: activeIndex === 1 ? "translateX(100%)" : "translateX(0)",
-                      }}
-                    />
-
-                    {navLinks.map((link, idx) => {
-                      const isActive = activeIndex === idx;
-                      return (
-                        <Link
-                          key={link.label}
-                          href={link.href}
-                          className={`relative z-10 w-18 lg:w-20 text-center py-1.5 text-[13px] font-medium tracking-[0.02em] no-underline rounded-full transition-colors duration-200 ${
-                            isActive
-                              ? "text-white font-semibold"
-                              : "text-[#52637a] hover:text-[#0a1f3d]"
-                          }`}
-                        >
-                          {link.label}
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                );
-              })()}
-
-              {/* Right cluster: search + cart */}
-              <div className="flex items-center gap-3 sm:gap-4 shrink-0 ml-auto">
-                {!isAdminAuthenticated && (
-                  <div className="hidden md:block w-[min(100%,280px)] lg:w-[320px] xl:w-[380px]">
-                    <SearchBox
-                      {...search}
-                      onSubmit={handleSearchSubmit}
-                      onSelectSuggestion={() => {}}
-                    />
-                  </div>
-                )}
-
-                {!isAdminAuthenticated && (
-                  <button
-                    aria-label="Search"
-                    onClick={() => setMobileSearchOpen((o) => !o)}
-                    className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0f2e5a]"
-                  >
-                    <Search size={20} strokeWidth={1.8} />
-                  </button>
-                )}
-
-                {!isAdminAuthenticated && (
-                  <Link
-                    href="/cart"
-                    aria-label="Requisition cart"
-                    className="relative inline-flex items-center gap-2 h-10 px-3 sm:px-3.5 rounded-full border border-[#dbe3ef] text-[#0f2e5a] hover:bg-[#f3f6fb] transition-colors no-underline"
-                  >
-                    <ShoppingCart size={17} strokeWidth={1.8} className="shrink-0" />
-                    <span className="text-[12px] font-medium hidden sm:inline tracking-[0.02em] whitespace-nowrap">
-                      Requisition cart
-                    </span>
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 rounded-full bg-[#1e6bb8] text-white text-[10px] font-bold flex items-center justify-center leading-none">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Link>
-                )}
-
-                <button
-                  aria-label="Toggle menu"
-                  onClick={() => setMobileOpen((o) => !o)}
-                  className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0f2e5a]"
-                >
-                  {mobileOpen ? <X size={22} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}
-                </button>
-
-                {isAdminAuthenticated && (
-                  <div className="hidden sm:flex items-center gap-3">
-                    <Link
-                      href="/admin/dashboard"
-                      className="text-[12.5px] font-medium text-[#0f2e5a] hover:text-[#1e6bb8] no-underline"
-                    >
-                      Admin
-                    </Link>
-                    <button
-                      onClick={async () => {
-                        await adminLogout();
-                        router.push("/admin/login");
-                      }}
-                      className="text-[12.5px] font-medium text-red-500 bg-transparent border-none cursor-pointer"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
               </div>
+            )}
+
+            {/* Right cluster: Contact Details + Cart */}
+            <div className="flex items-center gap-3.5 sm:gap-5 lg:gap-6 shrink-0">
+              {/* Contact Information (Desktop) */}
+              <div className="hidden lg:flex items-center gap-4 text-[#0a1f3d] select-text">
+                <a
+                  href="tel:+966558749150"
+                  className="flex items-center gap-1.5 hover:text-[#00a6e0] transition-colors no-underline text-[#0a1f3d] text-[12px] font-semibold"
+                >
+                  <Phone size={13} className="text-[#00a6e0] fill-[#00a6e0] shrink-0" />
+                  <span>+966 55 8749150</span>
+                </a>
+                <a
+                  href="mailto:info@officecares.com"
+                  className="flex items-center gap-1.5 hover:text-[#00a6e0] transition-colors no-underline text-[#0a1f3d] text-[12px] font-semibold"
+                >
+                  <Mail size={13} className="text-[#00a6e0] shrink-0" />
+                  <span>info@officecares.com</span>
+                </a>
+              </div>
+
+              {/* Mobile search button */}
+              {!isAdminAuthenticated && (
+                <button
+                  aria-label="Search"
+                  onClick={() => setMobileSearchOpen((o) => !o)}
+                  className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0a1f3d]"
+                >
+                  <Search size={20} strokeWidth={1.8} />
+                </button>
+              )}
+
+              {/* Requisition Cart Button */}
+              {!isAdminAuthenticated && (
+                <Link
+                  href="/cart"
+                  aria-label="Requisition cart"
+                  className="relative inline-flex items-center gap-2 h-9 sm:h-9.5 px-3 sm:px-3.5 rounded-full border border-[#dbe3ef] text-[#0a1f3d] hover:bg-[#f3f6fb] transition-colors no-underline shrink-0"
+                >
+                  <ShoppingCart size={16} strokeWidth={1.8} className="shrink-0 text-[#0a1f3d]" />
+                  <span className="text-[12px] font-semibold hidden xl:inline tracking-[0.01em] whitespace-nowrap">
+                    Requisition cart
+                  </span>
+                  {cartCount > 0 && (
+                    <span className="min-w-4.5 h-4.5 px-1 rounded-full bg-[#00a6e0] text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              {/* Mobile menu toggle button */}
+              <button
+                aria-label="Toggle menu"
+                onClick={() => setMobileOpen((o) => !o)}
+                className="md:hidden flex items-center bg-transparent border-none cursor-pointer p-1.5 text-[#0a1f3d]"
+              >
+                {mobileOpen ? <X size={22} strokeWidth={1.8} /> : <Menu size={22} strokeWidth={1.8} />}
+              </button>
+
+              {/* Admin shortcut */}
+              {isAdminAuthenticated && (
+                <div className="hidden sm:flex items-center gap-3">
+                  <Link
+                    href="/admin/dashboard"
+                    className="text-[12.5px] font-semibold text-[#0a1f3d] hover:text-[#00a6e0] no-underline"
+                  >
+                    Admin
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      await adminLogout();
+                      router.push("/admin/login");
+                    }}
+                    className="text-[12.5px] font-medium text-red-500 bg-transparent border-none cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* ── Section bar: info chips ────────────────────────────── */}
+        {/* ── Row 2: Dark Navy Bar with Navlinks ── */}
         <div className="bg-[#0a1f3d]">
-          <div className="px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center">
-            <div className="flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto whitespace-nowrap scrollbar-none min-w-0 w-full">
-              {infoChips.map((chip, i) => (
-                <span key={chip} className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
-                  {i > 0 && (
-                    <span className="text-white/35 select-none text-[10px]" aria-hidden>
-                      •
-                    </span>
-                  )}
-                  <span className="inline-flex items-center px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white/12 border border-white/20 text-[12.5px] sm:text-[13px] font-medium tracking-[0.01em] text-white">
-                    {chip}
-                  </span>
-                </span>
-              ))}
-            </div>
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center justify-center">
+            {/* Nav links */}
+            <nav className="flex items-center justify-center gap-6 lg:gap-8 select-none" aria-label="Main Navigation">
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : link.href === "/shop"
+                    ? pathname === "/shop" || pathname.startsWith("/shop/")
+                    : false;
+
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className={`relative inline-flex items-center text-[12.5px] lg:text-[13px] tracking-wide transition-colors no-underline py-0.5 ${
+                      isActive
+                        ? "text-white font-semibold"
+                        : "text-white/80 hover:text-white font-medium"
+                    }`}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <span className="absolute -bottom-[2px] left-0 right-0 h-[2px] bg-[#00a6e0] rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </div>
       </header>
@@ -346,7 +329,7 @@ export default function Navbar() {
       {/* Mobile search overlay */}
       {!isAdminAuthenticated && (
         <div
-          className={`fixed top-[80px] sm:top-[92px] left-0 right-0 z-40 md:hidden bg-white border-b border-[#eef0f3] px-4 py-3 transition-all duration-300 ${
+          className={`fixed top-[76px] sm:top-[86px] left-0 right-0 z-40 md:hidden bg-white border-b border-[#eef0f3] px-4 py-3 transition-all duration-300 ${
             mobileSearchOpen
               ? "max-h-24 opacity-100 overflow-visible"
               : "max-h-0 opacity-0 overflow-hidden pointer-events-none py-0"
@@ -374,13 +357,31 @@ export default function Navbar() {
           }`}
         />
         <div
-          className={`absolute top-[124px] sm:top-[140px] left-0 right-0 bg-[#0a1f3d] text-white transition-all duration-300 overflow-hidden shadow-2xl ${
-            mobileOpen ? "max-h-[80vh] opacity-100 py-2 overflow-y-auto" : "max-h-0 opacity-0 py-0"
+          className={`absolute top-[120px] sm:top-[134px] left-0 right-0 bg-[#0a1f3d] text-white transition-all duration-300 overflow-hidden shadow-2xl ${
+            mobileOpen ? "max-h-[82vh] opacity-100 py-3 overflow-y-auto" : "max-h-0 opacity-0 py-0"
           }`}
         >
+          {/* Contact block in mobile drawer */}
+          <div className="px-6 py-3 border-b border-white/10 space-y-1.5 text-[12px]">
+            <a href="tel:+966558749150" className="flex items-center gap-2 text-white/95 no-underline">
+              <Phone size={13} className="text-[#00a6e0]" />
+              <span>+966 55 8749150</span>
+            </a>
+            <a href="mailto:info@officecares.com" className="flex items-center gap-2 text-white/95 no-underline">
+              <Mail size={13} className="text-[#00a6e0]" />
+              <span>info@officecares.com</span>
+            </a>
+          </div>
+
           <ul className="list-none m-0 p-0">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : link.href === "/shop"
+                  ? pathname === "/shop" || pathname.startsWith("/shop/")
+                  : false;
+
               return (
                 <li key={link.label}>
                   <Link
@@ -436,8 +437,8 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Spacer for fixed header (top + section bar) */}
-      <div className="h-[124px] sm:h-[140px]" />
+      {/* Spacer for fixed header (Row 1 + Row 2) */}
+      <div className="h-[120px] sm:h-[134px]" />
     </>
   );
 }

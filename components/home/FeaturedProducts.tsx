@@ -83,9 +83,6 @@ export default function FeaturedProducts() {
             <h2 className="text-[18px] sm:text-[20px] md:text-[22px] font-semibold tracking-tight text-[#0a1f3d] m-0 leading-tight min-w-0">
               Categories
             </h2>
-            <p className="text-[12px] sm:text-[12.5px] text-[#64748b] mt-1 m-0">
-              Select a category to filter contract stationery and office essentials
-            </p>
           </div>
 
           <Link
