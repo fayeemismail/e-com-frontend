@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PackageOpen, Briefcase, Sparkles, SlidersHorizontal, Zap, LayoutGrid, Aperture, Table, PanelLeft } from "lucide-react";
 import { useFeaturedProducts } from "@/hooks/use-featured-products";
+import { useDesignSettings } from "@/context/DesignSettingsContext";
 import ErrorState from "@/components/common/ErrorState";
 import { ProductCardSkeleton } from "@/components/common/Skeleton";
 import FeaturedProductCard from "./FeaturedProductCard";
@@ -16,7 +17,7 @@ import FeaturedProductQuickOrderMatrix from "./FeaturedProductQuickOrderMatrix";
 import FeaturedProductCardClassic from "./FeaturedProductCardClassic";
 
 export default function FeaturedProducts() {
-  const [cardStyle, setCardStyle] = useState<"corporate" | "minimalist" | "structured" | "floating" | "architectural" | "studio" | "matrix" | "classic">("floating");
+  const { cardStyle, setCardStyle, isDevMode, showInlineSwitchers } = useDesignSettings();
   const {
     products: filtered,
     loading,
@@ -87,140 +88,142 @@ export default function FeaturedProducts() {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            {/* Design Layout Switcher (Icon-only) */}
-            <div
-              className="h-8.5 inline-flex items-center p-0.5 bg-slate-200/80 rounded-full border border-slate-300/60 shadow-2xs gap-0.5"
-              role="radiogroup"
-              aria-label="Product card design switcher"
-            >
-              <button
-                type="button"
-                onClick={() => setCardStyle("corporate")}
-                aria-checked={cardStyle === "corporate"}
-                aria-label="Corporate Clean layout"
-                title="Corporate Clean"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "corporate"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
+            {/* Design Layout Switcher (Icon-only) - only visible in Dev Mode with inline switchers enabled */}
+            {isDevMode && showInlineSwitchers && (
+              <div
+                className="h-8.5 inline-flex items-center p-0.5 bg-slate-200/80 rounded-full border border-slate-300/60 shadow-2xs gap-0.5"
+                role="radiogroup"
+                aria-label="Product card design switcher"
               >
-                <Briefcase size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("corporate")}
+                  aria-checked={cardStyle === "corporate"}
+                  aria-label="Corporate Clean layout"
+                  title="Corporate Clean"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "corporate"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <Briefcase size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("minimalist")}
-                aria-checked={cardStyle === "minimalist"}
-                aria-label="Minimalist Retail layout"
-                title="Minimalist Retail"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "minimalist"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <Sparkles size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("minimalist")}
+                  aria-checked={cardStyle === "minimalist"}
+                  aria-label="Minimalist Retail layout"
+                  title="Minimalist Retail"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "minimalist"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <Sparkles size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("structured")}
-                aria-checked={cardStyle === "structured"}
-                aria-label="Structured Catalog layout"
-                title="Structured Catalog"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "structured"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <SlidersHorizontal size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("structured")}
+                  aria-checked={cardStyle === "structured"}
+                  aria-label="Structured Catalog layout"
+                  title="Structured Catalog"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "structured"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <SlidersHorizontal size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("floating")}
-                aria-checked={cardStyle === "floating"}
-                aria-label="Floating Action layout"
-                title="Floating Action"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "floating"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <Zap size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("floating")}
+                  aria-checked={cardStyle === "floating"}
+                  aria-label="Floating Action layout"
+                  title="Floating Action"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "floating"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <Zap size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("architectural")}
-                aria-checked={cardStyle === "architectural"}
-                aria-label="Hairline Architectural Grid layout (No cards)"
-                title="Architectural Grid (No Cards)"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "architectural"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <LayoutGrid size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("architectural")}
+                  aria-checked={cardStyle === "architectural"}
+                  aria-label="Hairline Architectural Grid layout (No cards)"
+                  title="Architectural Grid (No Cards)"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "architectural"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <LayoutGrid size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("studio")}
-                aria-checked={cardStyle === "studio"}
-                aria-label="Borderless Studio Canvas layout (Scandinavian)"
-                title="Borderless Studio Canvas"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "studio"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <Aperture size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("studio")}
+                  aria-checked={cardStyle === "studio"}
+                  aria-label="Borderless Studio Canvas layout (Scandinavian)"
+                  title="Borderless Studio Canvas"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "studio"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <Aperture size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("matrix")}
-                aria-checked={cardStyle === "matrix"}
-                aria-label="Enterprise Quick-Order Matrix (McMaster-Carr / SAP Ariba)"
-                title="Quick-Order Matrix (Dense Table)"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "matrix"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <Table size={14} strokeWidth={2.2} />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("matrix")}
+                  aria-checked={cardStyle === "matrix"}
+                  aria-label="Enterprise Quick-Order Matrix (McMaster-Carr / SAP Ariba)"
+                  title="Quick-Order Matrix (Dense Table)"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "matrix"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <Table size={14} strokeWidth={2.2} />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setCardStyle("classic")}
-                aria-checked={cardStyle === "classic"}
-                aria-label="Original Horizontal Split Card (Classic)"
-                title="Original Horizontal Split (Classic)"
-                role="radio"
-                className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
-                  cardStyle === "classic"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
-                }`}
-              >
-                <PanelLeft size={14} strokeWidth={2.2} />
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setCardStyle("classic")}
+                  aria-checked={cardStyle === "classic"}
+                  aria-label="Original Horizontal Split Card (Classic)"
+                  title="Original Horizontal Split (Classic)"
+                  role="radio"
+                  className={`w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border-none shrink-0 ${
+                    cardStyle === "classic"
+                      ? "bg-[#0a1f3d] text-white shadow-xs"
+                      : "bg-transparent text-slate-600 hover:text-[#0a1f3d] hover:bg-slate-300/50"
+                  }`}
+                >
+                  <PanelLeft size={14} strokeWidth={2.2} />
+                </button>
+              </div>
+            )}
 
             <Link
               href="/shop"

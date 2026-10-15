@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useSearchAutosuggest } from "@/hooks/use-search-autosuggest";
 import { useAdminAuth } from "@/context/AdminAuthContext";
+import { useDesignSettings } from "@/context/DesignSettingsContext";
 import {
   ShoppingCart,
   LogOut,
@@ -196,7 +197,7 @@ export default function Navbar() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
-  const [secondBarLayout, setSecondBarLayout] = useState<"spread" | "classic">("spread");
+  const { secondBarLayout, setSecondBarLayout, isDevMode, showInlineSwitchers } = useDesignSettings();
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const isHomePage = pathname === "/";
   const isShopPage = pathname === "/shop" || pathname.startsWith("/shop/");
@@ -627,39 +628,41 @@ export default function Navbar() {
 
             {/* Right: Switcher toggle pill + Get A Quote button + Social Icons */}
             <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
-              {/* Layout Switcher Pill */}
-              <div
-                className="inline-flex items-center p-0.5 bg-white/10 rounded-full border border-white/15 shadow-2xs"
-                role="radiogroup"
-                aria-label="Navbar second row layout switcher"
-              >
-                <button
-                  type="button"
-                  onClick={() => setSecondBarLayout("spread")}
-                  aria-checked={secondBarLayout === "spread"}
-                  title="Spread categories across navbar"
-                  className={`h-6 sm:h-6.5 px-2.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
-                    secondBarLayout === "spread"
-                      ? "bg-white text-[#0a1f3d] shadow-xs"
-                      : "bg-transparent text-white/70 hover:text-white"
-                  }`}
+              {/* Layout Switcher Pill (only shown when in dev mode & inline switchers enabled) */}
+              {isDevMode && showInlineSwitchers && (
+                <div
+                  className="inline-flex items-center p-0.5 bg-white/10 rounded-full border border-white/15 shadow-2xs"
+                  role="radiogroup"
+                  aria-label="Navbar second row layout switcher"
                 >
-                  <span>Spread</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSecondBarLayout("classic")}
-                  aria-checked={secondBarLayout === "classic"}
-                  title="Dropdown menu & centered navlinks"
-                  className={`h-6 sm:h-6.5 px-2.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
-                    secondBarLayout === "classic"
-                      ? "bg-white text-[#0a1f3d] shadow-xs"
-                      : "bg-transparent text-white/70 hover:text-white"
-                  }`}
-                >
-                  <span>Dropdown</span>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => setSecondBarLayout("spread")}
+                    aria-checked={secondBarLayout === "spread"}
+                    title="Spread categories across navbar"
+                    className={`h-6 sm:h-6.5 px-2.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
+                      secondBarLayout === "spread"
+                        ? "bg-white text-[#0a1f3d] shadow-xs"
+                        : "bg-transparent text-white/70 hover:text-white"
+                    }`}
+                  >
+                    <span>Spread</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSecondBarLayout("classic")}
+                    aria-checked={secondBarLayout === "classic"}
+                    title="Dropdown menu & centered navlinks"
+                    className={`h-6 sm:h-6.5 px-2.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
+                      secondBarLayout === "classic"
+                        ? "bg-white text-[#0a1f3d] shadow-xs"
+                        : "bg-transparent text-white/70 hover:text-white"
+                    }`}
+                  >
+                    <span>Dropdown</span>
+                  </button>
+                </div>
+              )}
 
               {/* Get A Quote button */}
               <a

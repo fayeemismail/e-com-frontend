@@ -189,55 +189,61 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
 
   return (
     <Link href={`/shop/${product.id}`} className="cursor-pointer group no-underline block h-full">
-      <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-[#0a1f3d] transition-all duration-200 rounded-xl shadow-2xs hover:shadow-md overflow-hidden group">
-        {/* Top Image Stage — edge-to-edge canvas with zero side gutters */}
-        <div className="relative w-full aspect-[4/3] bg-white border-b border-slate-100 overflow-hidden">
-          <Image
-            src={imageSrc}
-            alt={product.name}
-            fill
-            unoptimized
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            onError={() => setImgFailed(true)}
-            className={`select-none w-full h-full ${
-              useProductPhoto
-                ? "object-cover object-center"
-                : "object-contain object-center p-6"
-            }`}
-          />
+      <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-slate-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-6px_rgba(10,31,61,0.08),0_2px_6px_-1px_rgba(10,31,61,0.03)] transition-all duration-200 ease-out rounded-xl shadow-2xs overflow-hidden group">
+        {/* Top Image Stage — framed with small padding around the image */}
+        <div className="p-2.5 sm:p-3 pb-0">
+          <div className="relative w-full aspect-[4/3] bg-slate-50/70 rounded-lg overflow-hidden border border-slate-100/90">
+            {/* Floating In-Stock compact pill */}
+            <div className="absolute top-2 left-2 z-10 pointer-events-none">
+              <span className="inline-flex items-center gap-1 h-5 px-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold leading-none shadow-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" aria-hidden />
+                <span>In Stock</span>
+              </span>
+            </div>
+
+            <Image
+              src={imageSrc}
+              alt={product.name}
+              fill
+              unoptimized
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              onError={() => setImgFailed(true)}
+              className={`select-none w-full h-full ${
+                useProductPhoto
+                  ? "object-cover object-center"
+                  : "object-contain object-center p-5"
+              }`}
+            />
+          </div>
         </div>
 
         {/* Bottom Details Section */}
-        <div className="flex-1 p-3.5 sm:p-4 flex flex-col justify-between gap-3 bg-white">
-          <div className="flex flex-col gap-2">
-            {/* Category & In-Stock Status Row */}
-            <div className="flex items-center justify-between gap-2 h-4">
-              <span className="text-[10px] sm:text-[10.5px] font-semibold text-slate-400 uppercase tracking-wider truncate">
+        <div className="flex-1 p-3.5 sm:p-4 pt-2.5 sm:pt-3 flex flex-col justify-between gap-3 bg-white">
+          <div className="flex flex-col">
+            {/* Category Row */}
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <span className="text-[9px] sm:text-[9.5px] font-semibold text-slate-400 uppercase tracking-wider truncate leading-none">
                 {product.category || "General"}
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[10.5px] font-medium text-emerald-600 shrink-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" aria-hidden />
-                In stock
               </span>
             </div>
 
             {/* Title */}
             <h3
               title={product.name}
-              className="text-[13px] sm:text-[13.5px] font-semibold text-[#0a1f3d] group-hover:text-[#00a6e0] transition-colors leading-snug line-clamp-2 min-h-[2.6em] m-0"
+              className="text-[12px] sm:text-[12.5px] font-semibold text-[#0a1f3d] group-hover:text-[#00a6e0] transition-colors leading-[1.3] line-clamp-2 min-h-[2.4em] m-0"
             >
               {product.name}
             </h3>
 
-            {/* Specifications: SAP ID and Unit (Clean unboxed hairline row) */}
-            <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-100">
+            {/* Specifications: SAP ID and Unit (Tight gap beneath title) */}
+            <div className="flex items-center justify-between text-[10.5px] mt-1">
               <span className="inline-flex items-center gap-1.5 text-slate-500">
-                <span className="text-[10px] uppercase tracking-wider font-mono text-slate-400">SAP:</span>
-                <span className="font-mono font-semibold text-slate-800">#{skuString || "—"}</span>
+                <span className="text-[9.5px] uppercase tracking-wider font-mono text-slate-400">SAP:</span>
+                <span className="font-mono font-semibold text-slate-700">#{skuString || "—"}</span>
               </span>
               <span className="inline-flex items-center gap-1.5 text-slate-500">
-                <span className="text-[10px] uppercase tracking-wider text-slate-400">Unit:</span>
-                <span className="uppercase font-semibold text-slate-800">{unitLabel || "Each"}</span>
+                <span className="text-[9.5px] uppercase tracking-wider text-slate-400">Unit:</span>
+                <span className="uppercase font-semibold text-slate-700">{unitLabel || "Each"}</span>
               </span>
             </div>
 
@@ -248,7 +254,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-0.5"
+                className="flex items-center gap-1 overflow-x-auto no-scrollbar mt-1.5"
               >
                 {availableUnits.map((u) => {
                   const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
