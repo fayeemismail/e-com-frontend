@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useSearchAutosuggest } from "@/hooks/use-search-autosuggest";
@@ -15,12 +15,42 @@ import {
   X,
   Phone,
   Mail,
+  List,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils/format.util";
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
+];
+
+const categoryList = [
+  {
+    name: "Writing Instruments",
+    href: "/shop?category=Writing%20Instruments",
+    desc: "Pens, markers, highlighters & writing tools",
+    icon: "/images/categories/writing-pen.svg",
+  },
+  {
+    name: "Paper & Print",
+    href: "/shop?category=Paper%20%26%20Print",
+    desc: "Copy paper, notebooks & print supplies",
+    icon: "/images/categories/paper-print.svg",
+  },
+  {
+    name: "Desk & Filing",
+    href: "/shop?category=Desk%20%26%20Filing",
+    desc: "Folders, files, trays & desk organizers",
+    icon: "/images/categories/desk-filing.svg",
+  },
+  {
+    name: "Toner & Cartridges",
+    href: "/shop?category=Toner%20%26%20Cartridges",
+    desc: "Printer toner, ink cartridges & imaging",
+    icon: "/images/categories/toner-cartridge.svg",
+  },
 ];
 
 function SearchBox({
@@ -164,6 +194,35 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+  const isHomePage = pathname === "/";
+  const isShopPage = pathname === "/shop" || pathname.startsWith("/shop/");
+
+  useEffect(() => {
+    setCategoryDropdownOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!categoryDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(e.target as Node)
+      ) {
+        setCategoryDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setCategoryDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [categoryDropdownOpen]);
 
   const { cartCount } = useCart();
   const { isAdminAuthenticated, logout: adminLogout } = useAdminAuth();
@@ -291,11 +350,101 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ── Row 2: Dark Navy Bar with Navlinks ── */}
+        {/* ── Row 2: Dark Navy Bar with Browse Categories · Navlinks · Quote · Socials ── */}
         <div className="bg-[#0a1f3d]">
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center justify-center">
-            {/* Nav links */}
-            <nav className="flex items-center justify-center gap-6 lg:gap-8 select-none" aria-label="Main Navigation">
+          <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center justify-between gap-4">
+            {/* Left: Browse Categories (hidden on shop page) */}
+            <div ref={categoryDropdownRef} className="relative shrink-0 flex items-center min-w-0">
+              {!isShopPage && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setCategoryDropdownOpen((o) => !o)}
+                    aria-expanded={categoryDropdownOpen}
+                    aria-haspopup="menu"
+                    className="inline-flex items-center gap-2 text-white hover:text-white/90 text-[12.5px] sm:text-[13px] font-medium tracking-wide transition-colors bg-transparent border-none cursor-pointer p-0 select-none"
+                  >
+                    <List size={16} strokeWidth={2.4} className="text-white" />
+                    <span>Browse Categories</span>
+                    <ChevronDown
+                      size={13}
+                      className={`text-white/80 transition-transform duration-200 ${
+                        categoryDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown Menu on / page */}
+                  {categoryDropdownOpen && (
+                    <div
+                      className="dropdown-enter absolute top-full left-0 mt-2.5 w-[280px] sm:w-[300px] bg-white rounded-2xl shadow-[0_22px_60px_-15px_rgba(10,31,61,0.22),0_0_0_1px_rgba(10,31,61,0.07)] border border-slate-100/90 p-2 z-50 select-none"
+                      role="menu"
+                      aria-label="Categories menu"
+                    >
+                      {/* Subtle top header bar */}
+                      <div className="px-3 pt-1.5 pb-2 flex items-center justify-between border-b border-slate-100">
+                        <span className="text-[10px] font-bold text-slate-400 tracking-[0.14em] uppercase">
+                          Categories
+                        </span>
+                        <span className="text-[10.5px] font-medium text-slate-500 bg-slate-100/90 px-2 py-0.5 rounded-full">
+                          {categoryList.length} categories
+                        </span>
+                      </div>
+
+                      {/* Category cards list */}
+                      <div className="py-1.5 space-y-1" role="none">
+                        {categoryList.map((cat, index) => (
+                          <Link
+                            key={cat.name}
+                            href={cat.href}
+                            onClick={() => setCategoryDropdownOpen(false)}
+                            style={{ animationDelay: `${index * 40}ms` }}
+                            className="dropdown-item-enter group flex items-center gap-3 p-2 rounded-xl hover:bg-[#f4f7fc] border border-transparent hover:border-slate-200/60 transition-all duration-180 no-underline"
+                            role="menuitem"
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-slate-50 group-hover:bg-white border border-slate-100 group-hover:border-slate-200/80 flex items-center justify-center p-1.5 shrink-0 transition-all duration-200 group-hover:scale-105 group-hover:shadow-2xs">
+                              <Image
+                                src={cat.icon}
+                                alt=""
+                                width={20}
+                                height={20}
+                                className="w-5 h-5 object-contain"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0 text-left">
+                              <p className="text-[13px] font-semibold text-[#0a1f3d] group-hover:text-[#00a6e0] transition-colors m-0 truncate">
+                                {cat.name}
+                              </p>
+                            </div>
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center text-slate-300 group-hover:text-[#00a6e0] group-hover:translate-x-0.5 transition-all shrink-0">
+                              <ChevronRight size={14} strokeWidth={2.4} />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Bottom shop button */}
+                      <div className="pt-2 border-t border-slate-100">
+                        <Link
+                          href="/shop"
+                          onClick={() => setCategoryDropdownOpen(false)}
+                          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-[#0a1f3d] hover:bg-[#00a6e0] text-white text-[12px] font-semibold transition-colors no-underline shadow-xs"
+                        >
+                          <span>View all in Shop</span>
+                          <ChevronRight size={13} />
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Center: Nav links in second bar (dead-center on desktop) */}
+            <nav
+              className="hidden md:flex items-center gap-6 lg:gap-8 select-none md:absolute md:left-1/2 md:-translate-x-1/2"
+              aria-label="Main Navigation"
+            >
               {navLinks.map((link) => {
                 const isActive =
                   link.href === "/"
@@ -316,12 +465,63 @@ export default function Navbar() {
                   >
                     {link.label}
                     {isActive && (
-                      <span className="absolute -bottom-[2px] left-0 right-0 h-[2px] bg-[#00a6e0] rounded-full" />
+                      <span className="absolute -bottom-[2px] left-0 right-0 h-[2px] bg-white rounded-full" />
                     )}
                   </Link>
                 );
               })}
             </nav>
+
+            {/* Right: Get A Quote button + Social Icons */}
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+              <a
+                href="https://wa.me/966558749150?text=Hello%20Office%20Care%2C%20I%20would%20like%20to%20get%20a%20quote"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center bg-white text-[#0a1f3d] hover:bg-gray-100 active:scale-95 transition-all text-[11.5px] sm:text-[12px] font-semibold px-3.5 sm:px-4 py-1.5 rounded-full no-underline shadow-xs"
+              >
+                Get A Quote
+              </a>
+
+              {/* Social icons */}
+              <div className="hidden sm:flex items-center gap-2.5 text-white/90">
+                <a
+                  href="https://wa.me/966558749150"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp"
+                  className="p-1 text-white hover:text-[#25D366] transition-colors flex items-center"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12.031 2C6.505 2 2.012 6.493 2.012 12.019c0 1.954.564 3.784 1.543 5.334L2 22.5l5.318-1.512c1.488.895 3.228 1.411 5.088 1.411 5.526 0 10.019-4.493 10.019-10.019C22.05 6.493 17.557 2 12.031 2zm0 18.257c-1.637 0-3.181-.462-4.508-1.266l-.323-.197-3.342.951.96-3.239-.214-.336c-.888-1.393-1.36-3.023-1.36-4.707 0-4.549 3.701-8.25 8.25-8.25s8.25 3.701 8.25 8.25-3.701 8.249-8.25 8.249zm4.526-6.177c-.248-.124-1.467-.724-1.694-.807-.228-.083-.393-.124-.559.124-.165.248-.642.807-.787.972-.145.166-.29.186-.538.062-.248-.124-1.047-.386-1.995-1.231-.738-.658-1.236-1.472-1.381-1.72-.145-.248-.016-.382.108-.506.112-.111.248-.29.373-.435.124-.145.166-.248.248-.414.083-.166.041-.311-.021-.435-.062-.124-.559-1.346-.766-1.844-.201-.486-.406-.42-.559-.428l-.476-.008c-.165 0-.435.062-.663.311-.228.248-.87 0.85-.87 2.073 0 1.223.89 2.406 1.014 2.571.124.166 1.751 2.673 4.242 3.748.593.256 1.056.409 1.417.524.596.189 1.138.163 1.567.098.479-.072 1.467-.6 1.674-1.18.207-.58.207-1.077.145-1.18-.062-.104-.228-.166-.476-.29z"/>
+                  </svg>
+                </a>
+                <a
+                  href="https://www.facebook.com/people/Office-Cares/100063205872889/?mibextid=D4KYlr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="p-1 text-white hover:text-[#1877F2] transition-colors flex items-center"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </a>
+                <a
+                  href="https://instagram.com/officecares"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="p-1 text-white hover:text-[#E4405F] transition-colors flex items-center"
+                >
+                  <svg className="w-3.5 h-3.5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -374,6 +574,18 @@ export default function Navbar() {
           </div>
 
           <ul className="list-none m-0 p-0">
+            {!isShopPage && (
+              <li>
+                <Link
+                  href="/shop"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2.5 px-6 py-3 text-[13.5px] font-semibold text-white no-underline border-b border-white/10 hover:bg-white/5"
+                >
+                  <List size={16} strokeWidth={2.4} className="text-white" />
+                  <span>Browse Categories</span>
+                </Link>
+              </li>
+            )}
             {navLinks.map((link) => {
               const isActive =
                 link.href === "/"
@@ -408,6 +620,17 @@ export default function Navbar() {
                 </Link>
               </li>
             )}
+            <li className="p-4 border-b border-white/10">
+              <a
+                href="https://wa.me/966558749150?text=Hello%20Office%20Care%2C%20I%20would%20like%20to%20get%20a%20quote"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center w-full bg-white text-[#0a1f3d] font-semibold text-[13px] py-2.5 rounded-full no-underline"
+              >
+                Get A Quote
+              </a>
+            </li>
             {isAdminAuthenticated && (
               <>
                 <li>

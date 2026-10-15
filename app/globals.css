@@ -158,3 +158,45 @@ body {
   }
 }
 
+/* Polished dropdown menu animations — high-end spring/fade curve */
+@keyframes dropdownEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.975);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdownItemEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-enter {
+  animation: dropdownEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top left;
+}
+
+.dropdown-item-enter {
+  animation: dropdownItemEnter 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-enter,
+  .dropdown-item-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+
