@@ -153,7 +153,7 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
   return (
     <Link
       href={`/shop/${product.id}`}
-      className="group flex flex-col justify-between bg-transparent no-underline h-full select-none"
+      className="group flex flex-col justify-between bg-transparent no-underline h-full select-none w-full max-w-[225px] mx-auto"
     >
       <div className="flex flex-col flex-1">
         {/* Amazon-style Floating Image on Canvas (No Card Borders) */}

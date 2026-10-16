@@ -10,7 +10,6 @@ import FeaturedProductCard from "./FeaturedProductCard";
 import FeaturedProductCardArchitectural from "./FeaturedProductCardArchitectural";
 
 export default function FeaturedProducts() {
-  const [columns, setColumns] = useState<4 | 5>(5);
   const [layoutStyle, setLayoutStyle] = useState<"card" | "cardless">("card");
 
   const {
@@ -25,11 +24,6 @@ export default function FeaturedProducts() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedCols = localStorage.getItem("officecare_feat_cols");
-      if (savedCols === "4" || savedCols === "5") {
-        setColumns(Number(savedCols) as 4 | 5);
-      }
-
       const savedLayout = localStorage.getItem("officecare_feat_layout");
       if (savedLayout === "card" || savedLayout === "cardless") {
         setLayoutStyle(savedLayout as "card" | "cardless");
@@ -63,13 +57,6 @@ export default function FeaturedProducts() {
     };
   }, [setActiveCategory]);
 
-  const handleToggleColumns = (val: 4 | 5) => {
-    setColumns(val);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("officecare_feat_cols", String(val));
-    }
-  };
-
   const handleToggleLayoutStyle = (val: "card" | "cardless") => {
     setLayoutStyle(val);
     if (typeof window !== "undefined") {
@@ -77,18 +64,11 @@ export default function FeaturedProducts() {
     }
   };
 
-  const colClass =
-    columns === 5
-      ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+  const cardGridClassName =
+    "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-4.5 items-stretch";
 
-  const cardGridClassName = `grid ${colClass} ${
-    columns === 5
-      ? "gap-3.5 sm:gap-4 lg:gap-4.5"
-      : "gap-4 sm:gap-4.5 lg:gap-5"
-  } items-stretch`;
-
-  const cardlessGridClassName = `grid ${colClass} gap-x-4 sm:gap-x-5 lg:gap-x-6 gap-y-7 sm:gap-y-9 items-stretch`;
+  const cardlessGridClassName =
+    "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-x-3.5 sm:gap-x-4 lg:gap-x-5 gap-y-6 sm:gap-y-8 items-stretch justify-items-center";
 
   return (
     <section
@@ -159,39 +139,6 @@ export default function FeaturedProducts() {
               </button>
             </div>
 
-            {/* 4 vs 5 Products per Row Switcher */}
-            <div
-              className="inline-flex items-center p-0.5 bg-white rounded-full border border-slate-200/90 shadow-2xs"
-              role="radiogroup"
-              aria-label="Products per row"
-            >
-              <button
-                type="button"
-                onClick={() => handleToggleColumns(4)}
-                aria-checked={columns === 4}
-                title="4 products per row"
-                className={`w-7 h-7 rounded-full text-[12px] font-semibold transition-all cursor-pointer border-none flex items-center justify-center select-none ${
-                  columns === 4
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>4</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleToggleColumns(5)}
-                aria-checked={columns === 5}
-                title="5 products per row"
-                className={`w-7 h-7 rounded-full text-[12px] font-semibold transition-all cursor-pointer border-none flex items-center justify-center select-none ${
-                  columns === 5
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>5</span>
-              </button>
-            </div>
 
             <Link
               href="/shop"
@@ -205,11 +152,11 @@ export default function FeaturedProducts() {
         {/* Loading state */}
         {loading && (
           <div
-            className={cardGridClassName}
+            className={layoutStyle === "cardless" ? cardlessGridClassName : cardGridClassName}
             aria-busy="true"
             aria-label="Loading products"
           >
-            {Array.from({ length: columns }).map((_, index) => (
+            {Array.from({ length: 5 }).map((_, index) => (
               <ProductCardSkeleton key={index} />
             ))}
           </div>
@@ -271,7 +218,7 @@ export default function FeaturedProducts() {
               {filtered.map((p, index) => (
                 <div
                   key={`cardless-${p.id}`}
-                  className="category-card-enter h-full"
+                  className="category-card-enter h-full w-full flex justify-center"
                   style={{
                     animationDelay: `${Math.min(index * 30, 240)}ms`,
                   }}
