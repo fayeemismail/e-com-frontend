@@ -153,11 +153,11 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
   return (
     <Link
       href={`/shop/${product.id}`}
-      className="group flex flex-col justify-between bg-transparent no-underline h-full select-none w-full max-w-[225px] mx-auto"
+      className="group flex flex-col justify-between bg-transparent no-underline h-full select-none w-full"
     >
       <div className="flex flex-col flex-1">
         {/* Amazon-style Floating Image on Canvas (No Card Borders) */}
-        <div className="relative w-full aspect-[16/10] flex items-center justify-center overflow-hidden rounded-lg bg-slate-100/75 border border-slate-200/50 mb-1.5">
+        <div className="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-lg bg-slate-50 border border-slate-200/60 mb-2">
           <Image
             src={imageSrc}
             alt={product.name}
@@ -167,7 +167,7 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
             onError={() => setImgFailed(true)}
             className={
               useProductPhoto
-                ? "select-none w-full h-full object-cover object-center"
+                ? "select-none w-full h-full object-contain object-center p-2.5"
                 : "select-none w-full h-full object-contain object-center p-4"
             }
           />
@@ -213,11 +213,10 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
                     e.stopPropagation();
                     if (u.skuObj) setSelectedSku(u.skuObj);
                   }}
-                  className={`text-[10.5px] capitalize px-2 py-0.5 border cursor-pointer transition-colors rounded-md font-medium whitespace-nowrap ${
-                    isSel
+                  className={`text-[10.5px] capitalize px-2 py-0.5 border cursor-pointer transition-colors rounded-md font-medium whitespace-nowrap ${isSel
                       ? "bg-[#0f1111] text-white border-[#0f1111]"
                       : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
-                  }`}
+                    }`}
                 >
                   {u.label}
                 </button>

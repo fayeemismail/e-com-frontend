@@ -68,7 +68,7 @@ export default function FeaturedProducts() {
     "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-4.5 items-stretch";
 
   const cardlessGridClassName =
-    "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-x-3.5 sm:gap-x-4 lg:gap-x-5 gap-y-6 sm:gap-y-8 items-stretch justify-items-center";
+    "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-x-4 sm:gap-x-4.5 lg:gap-x-5 gap-y-6 sm:gap-y-7 items-stretch";
 
   return (
     <section
@@ -77,7 +77,7 @@ export default function FeaturedProducts() {
         layoutStyle === "cardless" ? "bg-white border-t border-b border-slate-100" : "bg-[#f5f7fb]"
       } py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 lg:px-10 min-h-100 font-nav scroll-mt-36 transition-colors duration-200`}
     >
-      <div className="max-w-[1440px] mx-auto">
+      <div className={`${layoutStyle === "cardless" ? "max-w-[1240px]" : "max-w-[1440px]"} mx-auto transition-all duration-200`}>
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 sm:mb-8">
           <div className="flex items-center gap-2.5 flex-wrap">
@@ -218,7 +218,7 @@ export default function FeaturedProducts() {
               {filtered.map((p, index) => (
                 <div
                   key={`cardless-${p.id}`}
-                  className="category-card-enter h-full w-full flex justify-center"
+                  className="category-card-enter h-full w-full"
                   style={{
                     animationDelay: `${Math.min(index * 30, 240)}ms`,
                   }}
