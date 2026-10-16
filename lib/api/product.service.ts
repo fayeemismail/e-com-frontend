@@ -58,7 +58,7 @@ export interface ProductsResponse {
 }
 
 export const productService = {
-  getFeaturedProducts: async (limit = 8): Promise<BackendProduct[]> => {
+  getFeaturedProducts: async (limit = 100): Promise<BackendProduct[]> => {
     const data = await apiClient.get<ProductsResponse>(
       `/products?isFeatured=true&limit=${limit}`
     );

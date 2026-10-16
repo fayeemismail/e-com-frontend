@@ -3,7 +3,7 @@ import { productService } from "@/lib/api/product.service";
 import { ProductViewMapper, DisplayProduct } from "@/lib/mappers/product.mapper";
 import { ApiError } from "@/lib/api/api-client";
 
-export function useFeaturedProducts(limit = 24) {
+export function useFeaturedProducts(limit = 100) {
   const [products, setProducts] = useState<DisplayProduct[]>([]);
   const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);

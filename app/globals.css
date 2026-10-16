@@ -87,7 +87,7 @@ body {
   font-family: var(--font-nav);
 }
 
-/* Polished loading bones — soft shimmer over Office Care chrome */
+/* Conventional loading bones — soft neutral slate tone */
 @keyframes skeleton-shimmer {
   100% {
     transform: translateX(100%);
@@ -97,7 +97,7 @@ body {
 .skeleton-bone {
   position: relative;
   overflow: hidden;
-  background-color: #e8edf4;
+  background-color: #f1f5f9;
 }
 
 .skeleton-bone::after {
@@ -108,10 +108,10 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.65),
+    rgba(255, 255, 255, 0.45),
     transparent
   );
-  animation: skeleton-shimmer 1.25s ease-in-out infinite;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

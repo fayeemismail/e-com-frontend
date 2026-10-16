@@ -18,35 +18,36 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils/format.util";
+import { productService } from "@/lib/api/product.service";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Shop", href: "/shop" },
+  // { label: "Shop", href: "/shop" },
 ];
 
 const categoryList = [
   {
     name: "Writing Instruments",
-    href: "/shop?category=Writing%20Instruments",
+    href: "/?category=Writing%20Instruments",
     desc: "Pens, markers, highlighters & writing tools",
     icon: "/images/categories/writing-pen.svg",
   },
   {
-    name: "Paper & Print",
-    href: "/shop?category=Paper%20%26%20Print",
-    desc: "Copy paper, notebooks & print supplies",
+    name: "Paper Products",
+    href: "/?category=Paper%20Products",
+    desc: "Office paper, record books, sticky notes & journals",
     icon: "/images/categories/paper-print.svg",
   },
   {
-    name: "Desk & Filing",
-    href: "/shop?category=Desk%20%26%20Filing",
-    desc: "Folders, files, trays & desk organizers",
+    name: "Filing System",
+    href: "/?category=Filing%20System",
+    desc: "Box files, ring binders, clear document bags & folders",
     icon: "/images/categories/desk-filing.svg",
   },
   {
-    name: "Toner & Cartridges",
-    href: "/shop?category=Toner%20%26%20Cartridges",
-    desc: "Printer toner, ink cartridges & imaging",
+    name: "Desk Accessories",
+    href: "/?category=Desk%20Accessories",
+    desc: "Calculators, staplers, punchers, pen cups & scissors",
     icon: "/images/categories/toner-cartridge.svg",
   },
 ];
@@ -193,8 +194,34 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [categories, setCategories] = useState(categoryList);
   const isHomePage = pathname === "/";
   const isShopPage = pathname === "/shop" || pathname.startsWith("/shop/");
+
+  // Fetch backend-driven categories for secondary nav bar
+  useEffect(() => {
+    let isMounted = true;
+    productService
+      .getCategories({ featured: true })
+      .then((cats) => {
+        if (!isMounted || !cats || cats.length === 0) return;
+        setCategories(
+          cats.map((c) => ({
+            name: c.name,
+            href: `/?category=${encodeURIComponent(c.name)}`,
+            desc: c.description || c.name,
+            icon: c.images?.[0] || "/images/categories/writing-pen.svg",
+          }))
+        );
+      })
+      .catch((err) => {
+        console.error("Failed to load backend categories for Navbar:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Sync active category with URL param and custom event
   useEffect(() => {
@@ -238,31 +265,22 @@ export default function Navbar() {
     categoryName: string
   ) => {
     const targetCategory = categoryName === "All Products" ? "All" : categoryName;
+    setActiveCategory(targetCategory);
+    e.preventDefault();
 
-    if (pathname === "/") {
-      e.preventDefault();
-      setActiveCategory(targetCategory);
-
-      // Update URL query string without reloading page
-      const url = new URL(window.location.href);
-      if (targetCategory === "All") {
-        url.searchParams.delete("category");
-      } else {
-        url.searchParams.set("category", targetCategory);
-      }
-      window.history.pushState({}, "", url.pathname + (url.search ? url.search : ""));
-
-      // Notify FeaturedProducts component
-      window.dispatchEvent(
-        new CustomEvent("featuredCategoryChange", { detail: targetCategory })
-      );
-
-      // Smoothly scroll down to Featured Products
-      const featElement = document.getElementById("featured-products");
-      if (featElement) {
-        featElement.scrollIntoView({ behavior: "smooth" });
-      }
+    // Update URL query string without reloading page
+    const url = new URL(window.location.href);
+    if (targetCategory === "All") {
+      url.searchParams.delete("category");
+    } else {
+      url.searchParams.set("category", targetCategory);
     }
+    window.history.pushState({}, "", url.pathname + (url.search ? url.search : ""));
+
+    // Notify FeaturedProducts component
+    window.dispatchEvent(
+      new CustomEvent("featuredCategoryChange", { detail: targetCategory })
+    );
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -392,25 +410,27 @@ export default function Navbar() {
           <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center justify-between gap-4">
             {/* Spread Categories across second navbar */}
             <nav
-              className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 overflow-x-auto no-scrollbar py-1 min-w-0 flex-1 select-none"
+              className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1.5 min-w-0 flex-1 select-none"
               aria-label="Categories Navigation"
             >
               {/* All Products — First filter chip */}
               {(() => {
-                const isAllActive = pathname === "/" && (activeCategory === "All" || !activeCategory);
+                const isAllActive =
+                  (isHomePage || isShopPage) &&
+                  (activeCategory === "All" || !activeCategory);
                 return (
                   <Link
-                    href="/shop"
+                    href="/"
                     onClick={(e) => handleCategoryClick(e, "All")}
-                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] lg:text-[13px] font-medium transition-all no-underline whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] no-underline whitespace-nowrap shrink-0 cursor-pointer ${
                       isAllActive
-                        ? "bg-white text-[#0a1f3d] font-semibold shadow-xs"
-                        : "text-white/85 hover:text-white hover:bg-white/10"
+                        ? "bg-white text-[#0a1f3d] font-semibold"
+                        : "text-white/80 hover:text-white hover:bg-white/10 font-normal"
                     }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
-                        isAllActive ? "bg-[#00a6e0]" : "bg-[#00a6e0]/70"
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                        isAllActive ? "bg-[#00a6e0]" : "bg-white/40"
                       }`}
                     />
                     <span>All Products</span>
@@ -418,22 +438,24 @@ export default function Navbar() {
                 );
               })()}
 
-              {categoryList.map((cat) => {
-                const isCatActive = pathname === "/" && activeCategory === cat.name;
+              {categories.map((cat) => {
+                const isCatActive =
+                  (isHomePage || isShopPage) &&
+                  activeCategory.toLowerCase() === cat.name.toLowerCase();
                 return (
                   <Link
                     key={cat.name}
                     href={cat.href}
                     onClick={(e) => handleCategoryClick(e, cat.name)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] lg:text-[13px] font-medium transition-all no-underline whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] no-underline whitespace-nowrap shrink-0 cursor-pointer ${
                       isCatActive
-                        ? "bg-white text-[#0a1f3d] font-semibold shadow-xs"
-                        : "text-white/85 hover:text-white hover:bg-white/10"
+                        ? "bg-white text-[#0a1f3d] font-semibold"
+                        : "text-white/80 hover:text-white hover:bg-white/10 font-normal"
                     }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
-                        isCatActive ? "bg-[#00a6e0]" : "bg-[#00a6e0]/70"
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                        isCatActive ? "bg-[#00a6e0]" : "bg-white/40"
                       }`}
                     />
                     <span>{cat.name}</span>
@@ -450,7 +472,7 @@ export default function Navbar() {
                 href="https://wa.me/966558749150?text=Hello%20Office%20Care%2C%20I%20would%20like%20to%20get%20a%20quote"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center bg-white text-[#0a1f3d] hover:bg-gray-100 active:scale-95 transition-all text-[11px] sm:text-[11.5px] font-semibold px-3 sm:px-3.5 py-1.5 rounded-full no-underline shadow-xs shrink-0 whitespace-nowrap"
+                className="inline-flex items-center justify-center bg-white text-[#0a1f3d] hover:bg-gray-100 text-[11px] sm:text-[11.5px] font-semibold px-3 sm:px-3.5 py-1.5 rounded-full no-underline shadow-xs shrink-0 whitespace-nowrap"
               >
                 Get A Quote
               </a>
@@ -573,18 +595,18 @@ export default function Navbar() {
                       handleCategoryClick(e, "All");
                       setMobileOpen(false);
                     }}
-                    className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-[13px] border-none cursor-pointer text-left transition-colors ${
-                      pathname === "/" && (activeCategory === "All" || !activeCategory)
+                    className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-[13px] border-none cursor-pointer text-left ${
+                      (isHomePage || isShopPage) && (activeCategory === "All" || !activeCategory)
                         ? "bg-white text-[#0a1f3d] font-semibold"
                         : "bg-white/5 text-white/90 hover:bg-white/10"
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
                       <span
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          pathname === "/" && (activeCategory === "All" || !activeCategory)
+                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                          (isHomePage || isShopPage) && (activeCategory === "All" || !activeCategory)
                             ? "bg-[#00a6e0]"
-                            : "bg-[#00a6e0]/70"
+                            : "bg-white/40"
                         }`}
                       />
                       <span>All Products</span>
@@ -592,8 +614,10 @@ export default function Navbar() {
                     <ChevronRight size={13} className="opacity-60" />
                   </button>
 
-                  {categoryList.map((cat) => {
-                    const isCatActive = pathname === "/" && activeCategory === cat.name;
+                  {categories.map((cat) => {
+                    const isCatActive =
+                      (isHomePage || isShopPage) &&
+                      activeCategory.toLowerCase() === cat.name.toLowerCase();
                     return (
                       <button
                         key={cat.name}
@@ -602,7 +626,7 @@ export default function Navbar() {
                           handleCategoryClick(e, cat.name);
                           setMobileOpen(false);
                         }}
-                        className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-[13px] border-none cursor-pointer text-left transition-colors ${
+                        className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-[13px] border-none cursor-pointer text-left ${
                           isCatActive
                             ? "bg-white text-[#0a1f3d] font-semibold"
                             : "bg-white/5 text-white/90 hover:bg-white/10"
@@ -610,8 +634,8 @@ export default function Navbar() {
                       >
                         <div className="flex items-center gap-2.5">
                           <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isCatActive ? "bg-[#00a6e0]" : "bg-[#00a6e0]/70"
+                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                              isCatActive ? "bg-[#00a6e0]" : "bg-white/40"
                             }`}
                           />
                           <span>{cat.name}</span>

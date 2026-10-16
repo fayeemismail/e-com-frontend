@@ -11,7 +11,7 @@ const backendSortMap: Record<SortOption, string> = {
   "name-desc": "title:desc",
 };
 
-export function useShopProducts(limit = 12) {
+export function useShopProducts(limit = 20) {
   const searchParams = useSearchParams();
 
   const pageParam = searchParams ? searchParams.get("page") : null;

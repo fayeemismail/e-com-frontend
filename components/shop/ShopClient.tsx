@@ -31,11 +31,11 @@ function SkeletonGrid({ view }: { view: "grid" | "list" }) {
 
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start"
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-x-4 sm:gap-x-4.5 lg:gap-x-5 gap-y-6 sm:gap-y-7 items-stretch"
       aria-busy="true"
       aria-label="Loading products"
     >
-      {Array.from({ length: 8 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <ProductCardSkeleton key={index} />
       ))}
     </div>

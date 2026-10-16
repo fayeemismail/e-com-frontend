@@ -1,4 +1,5 @@
-import Shop from "@/components/shop/Shop";
+import { redirect } from "next/navigation";
+// import Shop from "@/components/shop/Shop";
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | undefined }>;
@@ -6,9 +7,10 @@ interface PageProps {
 
 export default async function ShopPage({ searchParams }: PageProps) {
   await searchParams; // Awaiting searchParams opts the page into dynamic rendering at runtime
-  return (
-    <>
-      <Shop />
-    </>
-  );
+  redirect("/");
+  // return (
+  //   <>
+  //     <Shop />
+  //   </>
+  // );
 }

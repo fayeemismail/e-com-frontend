@@ -156,8 +156,8 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
       className="group flex flex-col justify-between bg-transparent no-underline h-full select-none w-full"
     >
       <div className="flex flex-col flex-1">
-        {/* Amazon-style Floating Image on Canvas (No Card Borders) */}
-        <div className="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-lg bg-slate-50 border border-slate-200/60 mb-2">
+        {/* Amazon-style Floating Image on Canvas (grounded & sharp border transition) */}
+        <div className="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-lg bg-slate-50 border border-slate-200/90 group-hover:border-slate-400 transition-colors duration-200 mb-2">
           <Image
             src={imageSrc}
             alt={product.name}
@@ -165,11 +165,11 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
             unoptimized
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
             onError={() => setImgFailed(true)}
-            className={
+            className={`select-none w-full h-full ${
               useProductPhoto
-                ? "select-none w-full h-full object-contain object-center p-2.5"
-                : "select-none w-full h-full object-contain object-center p-4"
-            }
+                ? "object-cover object-center"
+                : "object-contain object-center p-4"
+            }`}
           />
         </div>
 
@@ -181,7 +181,7 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
         {/* Title */}
         <h3
           title={product.name}
-          className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
+          className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors duration-150 leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
         >
           {product.name}
         </h3>
@@ -242,7 +242,7 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
         </div>
       </div>
 
-      {/* Action: Add to Cart / In-Cart Stepper */}
+      {/* Action: Add to Requisition Cart / In-Requisition Stepper */}
       <div
         onClick={(e) => {
           e.preventDefault();
@@ -279,10 +279,10 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
             </div>
             <Link
               href="/cart"
-              className="flex-1 h-8 bg-[#f0f9ff] hover:bg-[#e0f2fe] border border-[#00a6e0]/35 rounded-lg flex items-center justify-center gap-1.5 text-[11.5px] font-semibold text-[#0077b6] no-underline select-none transition-colors"
+              className="flex-1 h-8 bg-[#f0f9ff] hover:bg-[#e0f2fe] border border-[#00a6e0]/35 rounded-lg flex items-center justify-center gap-1.5 text-[11px] sm:text-[11.5px] font-semibold text-[#0077b6] no-underline select-none transition-colors px-2"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#00a6e0]" />
-              <span>In cart ({inCartQty})</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00a6e0] shrink-0" />
+              <span className="truncate">In requisition cart ({inCartQty})</span>
             </Link>
           </div>
         ) : (
@@ -290,7 +290,7 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
             type="button"
             onClick={handleQuickAdd}
             disabled={isProcessing}
-            className="w-full h-8 sm:h-8.5 bg-[#0a1f3d] hover:bg-[#00a6e0] active:scale-[0.98] text-white text-[11.5px] font-semibold transition-all duration-150 flex items-center justify-center rounded-lg cursor-pointer border-none shadow-xs disabled:opacity-75 select-none px-3 gap-1.5"
+            className="w-full h-8 sm:h-8.5 bg-[#0a1f3d] hover:bg-[#00a6e0] text-white text-[11px] sm:text-[11.5px] font-semibold transition-colors flex items-center justify-center rounded-lg cursor-pointer border-none shadow-xs disabled:opacity-75 select-none px-2.5 gap-1.5"
           >
             {isProcessing ? (
               <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
@@ -299,8 +299,8 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
               </svg>
             ) : (
               <>
-                <ShoppingCart size={13} strokeWidth={2.2} />
-                <span>Add to cart</span>
+                <ShoppingCart size={13} strokeWidth={2.2} className="shrink-0" />
+                <span className="truncate">Add to requisition cart</span>
               </>
             )}
           </button>

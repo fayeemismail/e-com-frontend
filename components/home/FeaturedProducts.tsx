@@ -1,17 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { PackageOpen } from "lucide-react";
 import { useFeaturedProducts } from "@/hooks/use-featured-products";
 import ErrorState from "@/components/common/ErrorState";
 import { ProductCardSkeleton } from "@/components/common/Skeleton";
-import FeaturedProductCard from "./FeaturedProductCard";
 import FeaturedProductCardArchitectural from "./FeaturedProductCardArchitectural";
 
 export default function FeaturedProducts() {
-  const [layoutStyle, setLayoutStyle] = useState<"card" | "cardless">("card");
-
   const {
     products: filtered,
     loading,
@@ -20,15 +17,10 @@ export default function FeaturedProducts() {
     handleRetry,
     activeCategory,
     setActiveCategory,
-  } = useFeaturedProducts(24);
+  } = useFeaturedProducts(100);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedLayout = localStorage.getItem("officecare_feat_layout");
-      if (savedLayout === "card" || savedLayout === "cardless") {
-        setLayoutStyle(savedLayout as "card" | "cardless");
-      }
-
       const params = new URLSearchParams(window.location.search);
       const cat = params.get("category");
       if (cat) {
@@ -57,27 +49,15 @@ export default function FeaturedProducts() {
     };
   }, [setActiveCategory]);
 
-  const handleToggleLayoutStyle = (val: "card" | "cardless") => {
-    setLayoutStyle(val);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("officecare_feat_layout", val);
-    }
-  };
-
-  const cardGridClassName =
-    "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-4.5 items-stretch";
-
-  const cardlessGridClassName =
+  const gridClassName =
     "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-x-4 sm:gap-x-4.5 lg:gap-x-5 gap-y-6 sm:gap-y-7 items-stretch";
 
   return (
     <section
       id="featured-products"
-      className={`${
-        layoutStyle === "cardless" ? "bg-white border-t border-b border-slate-100" : "bg-[#f5f7fb]"
-      } py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 lg:px-10 min-h-100 font-nav scroll-mt-36 transition-colors duration-200`}
+      className="bg-white border-t border-b border-slate-100 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 md:px-8 lg:px-10 min-h-100 font-nav scroll-mt-36"
     >
-      <div className={`${layoutStyle === "cardless" ? "max-w-[1240px]" : "max-w-[1440px]"} mx-auto transition-all duration-200`}>
+      <div className="max-w-[1240px] mx-auto">
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 sm:mb-8">
           <div className="flex items-center gap-2.5 flex-wrap">
@@ -85,7 +65,7 @@ export default function FeaturedProducts() {
               Featured Products
             </h2>
             {activeCategory && activeCategory !== "All" && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#0a1f3d]/10 text-[#0a1f3d] text-[11.5px] font-medium animate-fadeIn">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#0a1f3d]/10 text-[#0a1f3d] text-[11.5px] font-medium">
                 <span>{activeCategory}</span>
                 <button
                   type="button"
@@ -104,59 +84,20 @@ export default function FeaturedProducts() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-            {/* Layout Style Switcher: Card vs Cardless */}
-            <div
-              className="inline-flex items-center p-0.5 bg-white rounded-full border border-slate-200/90 shadow-2xs"
-              role="radiogroup"
-              aria-label="Layout style"
-            >
-              <button
-                type="button"
-                onClick={() => handleToggleLayoutStyle("card")}
-                aria-checked={layoutStyle === "card"}
-                title="Card Layout (Individual recessed cards)"
-                className={`h-7 px-2.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
-                  layoutStyle === "card"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>Card</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleToggleLayoutStyle("cardless")}
-                aria-checked={layoutStyle === "cardless"}
-                title="Cardless Architectural Grid (Continuous 1px matrix)"
-                className={`h-7 px-2.5 rounded-full text-[11px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
-                  layoutStyle === "cardless"
-                    ? "bg-[#0a1f3d] text-white shadow-xs"
-                    : "bg-transparent text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                <span>Cardless</span>
-              </button>
-            </div>
-
-
+          {/* <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             <Link
               href="/shop"
-              className="shrink-0 inline-flex items-center justify-center h-8 sm:h-8.5 px-3.5 sm:px-4 rounded-full bg-[#0a1f3d] text-white text-[12px] font-semibold no-underline hover:bg-[#0f2e5a] transition-colors shadow-2xs"
+              className="shrink-0 inline-flex items-center justify-center h-8 sm:h-8.5 px-3.5 sm:px-4 rounded-full bg-[#0a1f3d] text-white text-[12px] font-semibold no-underline hover:bg-[#00a6e0] transition-colors shadow-2xs"
             >
               View all
             </Link>
-          </div>
+          </div> */}
         </div>
 
         {/* Loading state */}
         {loading && (
-          <div
-            className={layoutStyle === "cardless" ? cardlessGridClassName : cardGridClassName}
-            aria-busy="true"
-            aria-label="Loading products"
-          >
-            {Array.from({ length: 5 }).map((_, index) => (
+          <div className={gridClassName} aria-busy="true" aria-label="Loading products">
+            {Array.from({ length: 10 }).map((_, index) => (
               <ProductCardSkeleton key={index} />
             ))}
           </div>
@@ -212,37 +153,19 @@ export default function FeaturedProducts() {
         )}
 
         {!loading && !error && filtered.length > 0 && (
-          layoutStyle === "cardless" ? (
-            /* Amazon / Retail Canvas: completely cardless, floating products on page canvas */
-            <div className={cardlessGridClassName}>
-              {filtered.map((p, index) => (
-                <div
-                  key={`cardless-${p.id}`}
-                  className="category-card-enter h-full w-full"
-                  style={{
-                    animationDelay: `${Math.min(index * 30, 240)}ms`,
-                  }}
-                >
-                  <FeaturedProductCardArchitectural product={p} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            /* Card layout with clean spacing */
-            <div className={cardGridClassName}>
-              {filtered.map((p, index) => (
-                <div
-                  key={p.id}
-                  className="category-card-enter h-full"
-                  style={{
-                    animationDelay: `${Math.min(index * 35, 280)}ms`,
-                  }}
-                >
-                  <FeaturedProductCard product={p} />
-                </div>
-              ))}
-            </div>
-          )
+          <div className={gridClassName}>
+            {filtered.map((p, index) => (
+              <div
+                key={p.id}
+                className="category-card-enter h-full w-full"
+                style={{
+                  animationDelay: `${Math.min(index * 30, 240)}ms`,
+                }}
+              >
+                <FeaturedProductCardArchitectural product={p} />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </section>

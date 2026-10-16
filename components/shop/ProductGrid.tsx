@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DisplayProduct } from "@/lib/mappers/product.mapper";
-import ProductCard from "./ProductCard";
+import FeaturedProductCardArchitectural from "@/components/home/FeaturedProductCardArchitectural";
 import { formatPrice } from "@/lib/utils/format.util";
 
 type Props = {
@@ -172,15 +172,15 @@ export default function ProductGrid({ products, view, onReset }: Props) {
   return (
     <div
       key={`grid-${gridKey}`}
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 items-start"
+      className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-x-4 sm:gap-x-4.5 lg:gap-x-5 gap-y-6 sm:gap-y-7 items-stretch"
     >
       {products.map((p, index) => (
         <div
           key={p.id}
-          className="category-card-enter h-full"
+          className="category-card-enter h-full w-full"
           style={{ animationDelay: `${Math.min(index * 28, 220)}ms` }}
         >
-          <ProductCard product={p} />
+          <FeaturedProductCardArchitectural product={p} />
         </div>
       ))}
     </div>

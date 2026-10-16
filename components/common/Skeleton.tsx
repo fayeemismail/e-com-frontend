@@ -25,50 +25,45 @@ type ProductCardSkeletonProps = {
   className?: string;
 };
 
-/** Matches vertical ProductCard / FeaturedProductCard chrome. */
+/** Matches vertical cardless product card chrome with conventional calm pulse. */
 export function ProductCardSkeleton({ className = "" }: ProductCardSkeletonProps) {
   return (
     <div
-      className={`flex flex-col h-full bg-white border border-[#e2e8f0] rounded-xl overflow-hidden ${className}`}
+      className={`animate-pulse flex flex-col justify-between h-full bg-transparent w-full select-none ${className}`}
       aria-hidden
     >
-      {/* Top Image Stage */}
-      <Skeleton className="w-full aspect-[16/10] rounded-none" rounded="none" />
-
-      {/* Bottom Details Section */}
-      <div className="p-3.5 sm:p-4 flex flex-col justify-between gap-3 flex-1 bg-white">
-        <div className="flex flex-col gap-2">
-          {/* Category & in-stock row */}
-          <div className="flex items-center justify-between gap-2 h-4">
-            <Skeleton className="h-2.5 w-16" rounded="sm" />
-            <Skeleton className="h-2.5 w-12" rounded="sm" />
-          </div>
-
-          {/* Title */}
-          <div className="space-y-1.5 min-h-[2.6em]">
-            <Skeleton className="h-3.5 w-full" />
-            <Skeleton className="h-3.5 w-3/4" />
-          </div>
-
-          {/* Spec pills */}
-          <div className="flex items-center gap-1.5">
-            <Skeleton className="h-5 w-20" rounded="sm" />
-            <Skeleton className="h-5 w-24" rounded="sm" />
-          </div>
+      <div className="flex flex-col flex-1">
+        {/* Square Image Stage (matches real card border & rounded-lg) */}
+        <div className="w-full aspect-square rounded-lg bg-slate-100 border border-slate-200/90 mb-2 overflow-hidden flex items-center justify-center">
+          <div className="w-full h-full bg-slate-200/60" />
         </div>
 
-        {/* Pricing & action bar */}
-        <div className="flex flex-col gap-2.5 pt-2 border-t border-slate-100">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-3 w-20" />
-          </div>
+        {/* Category / Brand */}
+        <div className="h-2.5 w-16 bg-slate-200/80 rounded-sm mb-1" />
 
-          <div className="flex items-center gap-1.5 h-9">
-            <Skeleton className="h-full w-[4.5rem] shrink-0 rounded-lg" rounded="md" />
-            <Skeleton className="h-full flex-1 rounded-lg" rounded="md" />
-          </div>
+        {/* Title (2 lines matching conventional 2.6em height) */}
+        <div className="space-y-1.5 min-h-[2.6em] mb-1">
+          <div className="h-3.5 w-full bg-slate-200/80 rounded-sm" />
+          <div className="h-3.5 w-3/4 bg-slate-200/70 rounded-sm" />
         </div>
+
+        {/* Spec: SAP ID & Unit */}
+        <div className="flex items-center gap-2 mt-0.5 mb-1">
+          <div className="h-2.5 w-20 bg-slate-200/60 rounded-sm" />
+          <div className="h-2.5 w-16 bg-slate-200/60 rounded-sm" />
+        </div>
+
+        {/* Price (Amazon style SAR first, then number, then /unit) */}
+        <div className="flex items-baseline gap-1 mt-1">
+          <div className="h-3 w-6 bg-slate-200/70 rounded-sm" />
+          <div className="h-5 w-20 bg-slate-200/90 rounded-sm" />
+          <div className="h-3 w-10 bg-slate-200/60 rounded-sm" />
+        </div>
+      </div>
+
+      {/* Button (Add to requisition cart) */}
+      <div className="w-full mt-2">
+        <div className="h-8 sm:h-8.5 w-full rounded-lg bg-slate-200/90" />
       </div>
     </div>
   );
@@ -77,14 +72,14 @@ export function ProductCardSkeleton({ className = "" }: ProductCardSkeletonProps
 /** Compact list-row skeleton for shop list view. */
 export function ProductListRowSkeleton() {
   return (
-    <div className="flex items-center gap-4 py-4 px-3" aria-hidden>
-      <Skeleton className="w-14 h-14 sm:w-16 sm:h-16 shrink-0" rounded="sm" />
+    <div className="animate-pulse flex items-center gap-4 py-4 px-3 select-none" aria-hidden>
+      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-md bg-slate-200/80 shrink-0" />
       <div className="flex-1 min-w-0 space-y-2">
-        <Skeleton className="h-2.5 w-16" />
-        <Skeleton className="h-3.5 w-2/3 max-w-xs" />
-        <Skeleton className="h-2.5 w-24" />
+        <div className="h-2.5 w-16 bg-slate-200/80 rounded-sm" />
+        <div className="h-3.5 w-2/3 max-w-xs bg-slate-200/70 rounded-sm" />
+        <div className="h-2.5 w-24 bg-slate-200/60 rounded-sm" />
       </div>
-      <Skeleton className="h-4 w-14 shrink-0" />
+      <div className="h-4 w-14 bg-slate-200/80 rounded-sm shrink-0" />
     </div>
   );
 }
