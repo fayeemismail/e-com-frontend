@@ -33,7 +33,7 @@ export function ProductCardSkeleton({ className = "" }: ProductCardSkeletonProps
       aria-hidden
     >
       {/* Top Image Stage */}
-      <Skeleton className="w-full aspect-[4/3] rounded-none" rounded="none" />
+      <Skeleton className="w-full aspect-[16/10] rounded-none" rounded="none" />
 
       {/* Bottom Details Section */}
       <div className="p-3.5 sm:p-4 flex flex-col justify-between gap-3 flex-1 bg-white">

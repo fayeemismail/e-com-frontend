@@ -39,22 +39,6 @@ function getCategoryVisualPath(cat: string, name?: string): string {
   return "/images/categories/books.svg";
 }
 
-function getDispatchDate(cat: string, name?: string): string {
-  const c = (cat || "").toLowerCase();
-  const n = (name || "").toLowerCase();
-
-  if (c.includes("paper") || c.includes("print") || n.includes("paper") || n.includes("pen") || c.includes("writing") || n.includes("marker")) {
-    return "Next-day dispatch";
-  }
-  if (c.includes("desk") || c.includes("filing") || c.includes("folder") || c.includes("binding") || c.includes("adhesive") || c.includes("fastener") || c.includes("stationery") || c.includes("office")) {
-    return "2-3 days dispatch";
-  }
-  if (c.includes("toner") || c.includes("cartridge") || c.includes("tech") || c.includes("computing") || c.includes("electronic") || c.includes("hardware")) {
-    return "3-5 days dispatch";
-  }
-  return "2-3 days dispatch";
-}
-
 function isPlaceholderImage(src?: string) {
   if (!src) return true;
   // Category illustration SVGs / explicit placeholders — not real product photos
@@ -95,7 +79,6 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
     (product as any).sku ||
     (product.skus && product.skus[0]?.sku) ||
     "";
-  const dispatchDate = getDispatchDate(product.category, product.name);
 
   const cartItem = cart?.items.find((item) => item.sku === currentSku?.sku);
   const inCartQty = cartItem?.quantity || 0;
@@ -190,39 +173,33 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
   return (
     <Link href={`/shop/${product.id}`} className="cursor-pointer group no-underline block h-full">
       <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-slate-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-6px_rgba(10,31,61,0.08),0_2px_6px_-1px_rgba(10,31,61,0.03)] transition-all duration-200 ease-out rounded-xl shadow-2xs overflow-hidden group">
-        {/* Top Image Stage — framed with small padding around the image */}
+        {/* Top Image Stage — Recessed Inset Tray */}
         <div className="p-2.5 sm:p-3 pb-0">
-          <div className="relative w-full aspect-[4/3] bg-slate-50/70 rounded-lg overflow-hidden border border-slate-100/90">
-            {/* Floating In-Stock compact pill */}
-            <div className="absolute top-2 left-2 z-10 pointer-events-none">
-              <span className="inline-flex items-center gap-1 h-5 px-2 rounded-full bg-emerald-600 text-white text-[10px] font-semibold leading-none shadow-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" aria-hidden />
-                <span>In Stock</span>
-              </span>
-            </div>
-
+          <div className="relative w-full aspect-[16/10] bg-slate-100/75 rounded-lg overflow-hidden border border-slate-200/60">
             <Image
               src={imageSrc}
               alt={product.name}
               fill
               unoptimized
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
               onError={() => setImgFailed(true)}
-              className={`select-none w-full h-full ${
+              className={
                 useProductPhoto
-                  ? "object-cover object-center"
-                  : "object-contain object-center p-5"
-              }`}
+                  ? "select-none w-full h-full object-cover object-center"
+                  : "select-none w-full h-full object-contain object-center p-4"
+              }
             />
+            {/* Inner shadow overlay so the carved bevel effect casts over the image stage */}
+            <div className="pointer-events-none absolute inset-0 rounded-lg shadow-[inset_0_2px_5px_rgba(10,31,61,0.08),inset_0_1px_2px_rgba(10,31,61,0.03)]" />
           </div>
         </div>
 
         {/* Bottom Details Section */}
-        <div className="flex-1 p-3.5 sm:p-4 pt-2.5 sm:pt-3 flex flex-col justify-between gap-3 bg-white">
+        <div className="flex-1 p-3 sm:p-3.5 pt-2 sm:pt-2.5 flex flex-col justify-between gap-2 bg-white">
           <div className="flex flex-col">
             {/* Category Row */}
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="text-[9px] sm:text-[9.5px] font-semibold text-slate-400 uppercase tracking-wider truncate leading-none">
+            <div className="flex items-center justify-between gap-2 mb-0.5">
+              <span className="text-[11px] text-[#565959] font-normal capitalize truncate leading-none">
                 {product.category || "General"}
               </span>
             </div>
@@ -230,21 +207,16 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
             {/* Title */}
             <h3
               title={product.name}
-              className="text-[12px] sm:text-[12.5px] font-semibold text-[#0a1f3d] group-hover:text-[#00a6e0] transition-colors leading-[1.3] line-clamp-2 min-h-[2.4em] m-0"
+              className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
             >
               {product.name}
             </h3>
 
-            {/* Specifications: SAP ID and Unit (Tight gap beneath title) */}
-            <div className="flex items-center justify-between text-[10.5px] mt-1">
-              <span className="inline-flex items-center gap-1.5 text-slate-500">
-                <span className="text-[9.5px] uppercase tracking-wider font-mono text-slate-400">SAP:</span>
-                <span className="font-mono font-semibold text-slate-700">#{skuString || "—"}</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-slate-500">
-                <span className="text-[9.5px] uppercase tracking-wider text-slate-400">Unit:</span>
-                <span className="uppercase font-semibold text-slate-700">{unitLabel || "Each"}</span>
-              </span>
+            {/* Specifications: SAP ID and Unit grouped side-by-side */}
+            <div className="flex items-center gap-1.5 text-[11px] text-[#565959] mt-0.5">
+              <span>SAP: <span className="font-medium text-slate-700">#{skuString || "—"}</span></span>
+              <span className="text-slate-300">•</span>
+              <span>Unit: <span className="font-medium text-slate-700 capitalize">{unitLabel || "Each"}</span></span>
             </div>
 
             {/* Unit Selector (if multiple options available) */}
@@ -254,7 +226,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className="flex items-center gap-1 overflow-x-auto no-scrollbar mt-1.5"
+                className="flex items-center gap-1 overflow-x-auto no-scrollbar mt-1"
               >
                 {availableUnits.map((u) => {
                   const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
@@ -267,7 +239,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                         e.stopPropagation();
                         setSelectedSku(u.skuObj);
                       }}
-                      className={`text-[9.5px] uppercase tracking-wider px-2 py-0.5 border cursor-pointer transition-colors rounded font-semibold whitespace-nowrap ${
+                      className={`text-[10px] capitalize px-2 py-0.5 border cursor-pointer transition-colors rounded-md font-medium whitespace-nowrap ${
                         isSel
                           ? "bg-[#0a1f3d] text-white border-[#0a1f3d]"
                           : "bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300"
@@ -282,29 +254,85 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
           </div>
 
           {/* Pricing & Requisition Action */}
-          <div className="flex flex-col gap-2.5 pt-2 border-t border-slate-100">
-            {/* Price + Dispatch */}
-            <div className="flex items-baseline justify-between gap-2">
-              <div className="flex items-baseline gap-1.5 flex-wrap">
-                <span className="text-[15.5px] sm:text-[16.5px] font-bold text-[#0a1f3d] tracking-tight">
-                  {formatPrice(currentPrice)} SAR
+          <div className="flex flex-col gap-2 pt-1.5 border-t border-slate-100/70">
+            {/* Price + Quantity Counter (replaces dispatch date) */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-baseline gap-1 flex-wrap">
+                <span className="text-[11px] font-medium text-[#0f1111]">SAR</span>
+                <span className="text-[16px] sm:text-[17px] font-bold text-[#0f1111] tracking-tight">
+                  {formatPrice(currentPrice)}
                 </span>
-                <span className="text-[10px] text-slate-400 uppercase font-medium">
-                  /{unitLabel || "each"}
+                <span className="text-[11px] text-[#565959] font-normal">
+                  /{unitLabel ? unitLabel.toLowerCase() : "each"}
                 </span>
                 {product.compareAtPrice && product.compareAtPrice > currentPrice && (
-                  <span className="text-[11px] text-slate-400 line-through">
-                    {formatPrice(product.compareAtPrice)} SAR
+                  <span className="text-[11px] text-[#565959] line-through ml-1">
+                    SAR {formatPrice(product.compareAtPrice)}
                   </span>
                 )}
               </div>
-              <div className="text-[10.5px] text-slate-500 font-medium flex items-center gap-1 shrink-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span className="truncate">{dispatchDate}</span>
+
+              {/* Quantity Counter */}
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                className="shrink-0"
+              >
+                {inCartQty > 0 ? (
+                  <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-7 sm:h-7.5 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={handleDecrementInCart}
+                      disabled={isProcessing}
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="min-w-5 sm:min-w-6 px-1 h-full flex items-center justify-center text-[11.5px] sm:text-[12px] font-bold tabular-nums text-[#0a1f3d] select-none">
+                      {inCartQty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleIncrementInCart}
+                      disabled={isProcessing}
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center border border-slate-200 bg-white rounded-lg h-7 sm:h-7.5 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={handleLocalDecrement}
+                      disabled={localQty <= 1 || isProcessing}
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-30 bg-transparent border-none cursor-pointer select-none transition-colors"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="min-w-5 sm:min-w-6 px-1 h-full flex items-center justify-center text-[11.5px] sm:text-[12px] font-semibold tabular-nums text-[#0a1f3d] select-none">
+                      {localQty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleLocalIncrement}
+                      disabled={isProcessing}
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-medium text-slate-600 hover:bg-slate-100 bg-transparent border-none cursor-pointer select-none transition-colors"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Action Bar (Prevent card navigation) */}
+            {/* Action Bar (Full-width Requisition Button) */}
             <div
               onClick={(e) => {
                 e.preventDefault();
@@ -315,81 +343,32 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
               className="w-full"
             >
               {inCartQty > 0 ? (
-                <div className="flex items-center gap-1.5 h-9 w-full">
-                  <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-full shrink-0 shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={handleDecrementInCart}
-                      disabled={isProcessing}
-                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
-                      aria-label="Decrease quantity"
-                    >
-                      −
-                    </button>
-                    <span className="min-w-6 px-1 h-full flex items-center justify-center text-[12.5px] font-bold tabular-nums text-[#0a1f3d] select-none">
-                      {inCartQty}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleIncrementInCart}
-                      disabled={isProcessing}
-                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
-                      aria-label="Increase quantity"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div className="flex-1 h-full bg-[#f0f9ff] border border-[#00a6e0]/40 rounded-lg px-2 flex items-center justify-center min-w-0">
-                    <span className="text-[11px] font-semibold text-[#0077b6] whitespace-nowrap select-none flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#00a6e0]" />
-                      In cart ({inCartQty})
-                    </span>
-                  </div>
-                </div>
+                <Link
+                  href="/cart"
+                  className="w-full h-8 sm:h-8.5 bg-[#f0f9ff] hover:bg-[#e0f2fe] border border-[#00a6e0]/35 rounded-lg flex items-center justify-center gap-1.5 text-[11px] sm:text-[11.5px] font-semibold text-[#0077b6] no-underline select-none transition-colors"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00a6e0]" />
+                  <span>In cart ({inCartQty})</span>
+                </Link>
               ) : (
-                <div className="flex items-center gap-1.5 h-9 w-full">
-                  <div className="flex items-center border border-slate-200 bg-white rounded-lg h-full shrink-0 shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={handleLocalDecrement}
-                      disabled={localQty <= 1 || isProcessing}
-                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-30 bg-transparent border-none cursor-pointer select-none transition-colors"
-                      aria-label="Decrease quantity"
-                    >
-                      −
-                    </button>
-                    <span className="min-w-6 px-1 h-full flex items-center justify-center text-[12px] sm:text-[12.5px] font-semibold tabular-nums text-[#0a1f3d] select-none">
-                      {localQty}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleLocalIncrement}
-                      disabled={isProcessing}
-                      className="w-7 sm:w-8 h-full flex items-center justify-center text-[15px] font-medium text-slate-600 hover:bg-slate-100 bg-transparent border-none cursor-pointer select-none transition-colors"
-                      aria-label="Increase quantity"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleQuickAdd}
-                    disabled={isProcessing}
-                    className="flex-1 min-w-0 h-full bg-[#0a1f3d] hover:bg-[#00a6e0] active:scale-[0.98] text-white text-[11px] sm:text-[11.5px] font-semibold transition-all duration-150 flex items-center justify-center rounded-lg cursor-pointer border-none shadow-xs disabled:opacity-75 select-none px-2.5 gap-1.5"
-                  >
-                    {isProcessing ? (
-                      <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                    ) : (
-                      <>
-                        <ShoppingCart size={13} strokeWidth={2.2} />
-                        <span className="whitespace-nowrap">Add to cart</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleQuickAdd}
+                  disabled={isProcessing}
+                  className="w-full h-8 sm:h-8.5 bg-[#0a1f3d] hover:bg-[#00a6e0] active:scale-[0.98] text-white text-[11px] sm:text-[11.5px] font-semibold transition-all duration-150 flex items-center justify-center rounded-lg cursor-pointer border-none shadow-xs disabled:opacity-75 select-none px-3 gap-1.5"
+                >
+                  {isProcessing ? (
+                    <svg className="animate-spin h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <>
+                      <ShoppingCart size={13} strokeWidth={2.2} />
+                      <span>Add to cart</span>
+                    </>
+                  )}
+                </button>
               )}
             </div>
           </div>

@@ -5,8 +5,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
-import { DesignSettingsProvider } from "@/context/DesignSettingsContext";
-import DesignSettingsPanel from "@/components/common/DesignSettingsPanel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,12 +55,9 @@ export default function RootLayout({
       <body className="min-h-screen">
         <AdminAuthProvider>
           <CartProvider>
-            <DesignSettingsProvider>
-              <Navbar />
-              <main>{children}</main>
-              {/* <Footer /> */}
-              <DesignSettingsPanel />
-            </DesignSettingsProvider>
+            <Navbar />
+            <main>{children}</main>
+            {/* <Footer /> */}
           </CartProvider>
         </AdminAuthProvider>
       </body>

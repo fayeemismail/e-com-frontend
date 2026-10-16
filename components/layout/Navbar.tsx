@@ -7,7 +7,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useSearchAutosuggest } from "@/hooks/use-search-autosuggest";
 import { useAdminAuth } from "@/context/AdminAuthContext";
-import { useDesignSettings } from "@/context/DesignSettingsContext";
 import {
   ShoppingCart,
   LogOut,
@@ -16,8 +15,6 @@ import {
   X,
   Phone,
   Mail,
-  List,
-  ChevronDown,
   ChevronRight,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils/format.util";
@@ -195,16 +192,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
-  const categoryDropdownRef = useRef<HTMLDivElement>(null);
-  const { secondBarLayout, setSecondBarLayout, isDevMode, showInlineSwitchers } = useDesignSettings();
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const isHomePage = pathname === "/";
   const isShopPage = pathname === "/shop" || pathname.startsWith("/shop/");
-
-  useEffect(() => {
-    setCategoryDropdownOpen(false);
-  }, [pathname]);
 
   // Sync active category with URL param and custom event
   useEffect(() => {
@@ -238,27 +228,6 @@ export default function Navbar() {
       window.removeEventListener("popstate", handlePopState);
     };
   }, [pathname]);
-
-  useEffect(() => {
-    if (!categoryDropdownOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        categoryDropdownRef.current &&
-        !categoryDropdownRef.current.contains(e.target as Node)
-      ) {
-        setCategoryDropdownOpen(false);
-      }
-    };
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setCategoryDropdownOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [categoryDropdownOpen]);
 
   const { cartCount } = useCart();
   const { isAdminAuthenticated, logout: adminLogout } = useAdminAuth();
@@ -418,251 +387,63 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* ── Row 2: Dark Navy Bar with Browse Categories · Navlinks · Quote · Socials ── */}
+        {/* ── Row 2: Dark Navy Bar with Spread Categories Chips · Quote · Socials ── */}
         <div className="bg-[#0a1f3d]">
           <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center justify-between gap-4">
-            {secondBarLayout === "spread" ? (
-              /* Spread Categories across second navbar (no dropdown, no center navlinks) */
-              <nav
-                className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 overflow-x-auto no-scrollbar py-1 min-w-0 flex-1 select-none"
-                aria-label="Categories Navigation"
-              >
-                {categoryList.map((cat) => {
-                  const isCatActive = pathname === "/" && activeCategory === cat.name;
-                  return (
-                    <Link
-                      key={cat.name}
-                      href={cat.href}
-                      onClick={(e) => handleCategoryClick(e, cat.name)}
-                      className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] lg:text-[13px] font-medium transition-all no-underline whitespace-nowrap shrink-0 cursor-pointer ${
-                        isCatActive
-                          ? "bg-white text-[#0a1f3d] font-semibold shadow-xs"
-                          : "text-white/85 hover:text-white hover:bg-white/10"
+            {/* Spread Categories across second navbar */}
+            <nav
+              className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 overflow-x-auto no-scrollbar py-1 min-w-0 flex-1 select-none"
+              aria-label="Categories Navigation"
+            >
+              {/* All Products — First filter chip */}
+              {(() => {
+                const isAllActive = pathname === "/" && (activeCategory === "All" || !activeCategory);
+                return (
+                  <Link
+                    href="/shop"
+                    onClick={(e) => handleCategoryClick(e, "All")}
+                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] lg:text-[13px] font-medium transition-all no-underline whitespace-nowrap shrink-0 cursor-pointer ${
+                      isAllActive
+                        ? "bg-white text-[#0a1f3d] font-semibold shadow-xs"
+                        : "text-white/85 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
+                        isAllActive ? "bg-[#00a6e0]" : "bg-[#00a6e0]/70"
                       }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
-                          isCatActive ? "bg-[#00a6e0]" : "bg-[#00a6e0]/70"
-                        }`}
-                      />
-                      <span>{cat.name}</span>
-                    </Link>
-                  );
-                })}
-                <Link
-                  href="/shop"
-                  onClick={(e) => handleCategoryClick(e, "All")}
-                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] lg:text-[13px] font-medium transition-all no-underline whitespace-nowrap shrink-0 cursor-pointer ${
-                    pathname === "/" && (activeCategory === "All" || !activeCategory)
-                      ? "bg-white/20 text-white font-semibold ring-1 ring-white/30"
-                      : "text-white/70 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  <span>All Products</span>
-                </Link>
-              </nav>
-            ) : (
-              /* Classic: Browse Categories Dropdown (left) + Navlinks (center) */
-              <>
-                {/* Left: Browse Categories (hidden on shop page) */}
-                <div ref={categoryDropdownRef} className="relative shrink-0 flex items-center min-w-0">
-                  {!isShopPage && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => setCategoryDropdownOpen((o) => !o)}
-                        aria-expanded={categoryDropdownOpen}
-                        aria-haspopup="menu"
-                        className="inline-flex items-center gap-2 text-white hover:text-white/90 text-[12.5px] sm:text-[13px] font-medium tracking-wide transition-colors bg-transparent border-none cursor-pointer p-0 select-none"
-                      >
-                        <List size={16} strokeWidth={2.4} className="text-white" />
-                        <span>Browse Categories</span>
-                        <ChevronDown
-                          size={13}
-                          className={`text-white/80 transition-transform duration-200 ${
-                            categoryDropdownOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
+                    />
+                    <span>All Products</span>
+                  </Link>
+                );
+              })()}
 
-                      {/* Dropdown Menu on / page */}
-                      {categoryDropdownOpen && (
-                        <div
-                          className="dropdown-enter absolute top-full left-0 mt-2.5 w-[280px] sm:w-[300px] bg-white rounded-2xl shadow-[0_22px_60px_-15px_rgba(10,31,61,0.22),0_0_0_1px_rgba(10,31,61,0.07)] border border-slate-100/90 p-2 z-50 select-none"
-                          role="menu"
-                          aria-label="Categories menu"
-                        >
-                          {/* Subtle top header bar */}
-                          <div className="px-3 pt-1.5 pb-2 flex items-center justify-between border-b border-slate-100">
-                            <span className="text-[10px] font-bold text-slate-400 tracking-[0.14em] uppercase">
-                              Categories
-                            </span>
-                            {activeCategory && activeCategory !== "All" && pathname === "/" ? (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  handleCategoryClick(e, "All");
-                                  setCategoryDropdownOpen(false);
-                                }}
-                                className="text-[10.5px] font-semibold text-[#00a6e0] hover:underline bg-transparent border-none cursor-pointer p-0"
-                              >
-                                Reset Filter
-                              </button>
-                            ) : (
-                              <span className="text-[10.5px] font-medium text-slate-500 bg-slate-100/90 px-2 py-0.5 rounded-full">
-                                {categoryList.length} categories
-                              </span>
-                            )}
-                          </div>
+              {categoryList.map((cat) => {
+                const isCatActive = pathname === "/" && activeCategory === cat.name;
+                return (
+                  <Link
+                    key={cat.name}
+                    href={cat.href}
+                    onClick={(e) => handleCategoryClick(e, cat.name)}
+                    className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] lg:text-[13px] font-medium transition-all no-underline whitespace-nowrap shrink-0 cursor-pointer ${
+                      isCatActive
+                        ? "bg-white text-[#0a1f3d] font-semibold shadow-xs"
+                        : "text-white/85 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${
+                        isCatActive ? "bg-[#00a6e0]" : "bg-[#00a6e0]/70"
+                      }`}
+                    />
+                    <span>{cat.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
 
-                          {/* Category cards list */}
-                          <div className="py-1.5 space-y-1" role="none">
-                            {categoryList.map((cat, index) => {
-                              const isCatActive = pathname === "/" && activeCategory === cat.name;
-                              return (
-                                <Link
-                                  key={cat.name}
-                                  href={cat.href}
-                                  onClick={(e) => {
-                                    handleCategoryClick(e, cat.name);
-                                    setCategoryDropdownOpen(false);
-                                  }}
-                                  style={{ animationDelay: `${index * 40}ms` }}
-                                  className={`dropdown-item-enter group flex items-center gap-3 p-2 rounded-xl transition-all duration-180 no-underline cursor-pointer ${
-                                    isCatActive
-                                      ? "bg-[#0a1f3d]/8 border border-[#0a1f3d]/20"
-                                      : "hover:bg-[#f4f7fc] border border-transparent hover:border-slate-200/60"
-                                  }`}
-                                  role="menuitem"
-                                >
-                                  <div
-                                    className={`w-9 h-9 rounded-xl border flex items-center justify-center p-1.5 shrink-0 transition-all duration-200 ${
-                                      isCatActive
-                                        ? "bg-white border-[#0a1f3d]/30 shadow-xs"
-                                        : "bg-slate-50 group-hover:bg-white border-slate-100 group-hover:border-slate-200/80 group-hover:scale-105"
-                                    }`}
-                                  >
-                                    <Image
-                                      src={cat.icon}
-                                      alt=""
-                                      width={20}
-                                      height={20}
-                                      className="w-5 h-5 object-contain"
-                                    />
-                                  </div>
-                                  <div className="flex-1 min-w-0 text-left">
-                                    <p
-                                      className={`text-[13px] font-semibold transition-colors m-0 truncate ${
-                                        isCatActive
-                                          ? "text-[#00a6e0]"
-                                          : "text-[#0a1f3d] group-hover:text-[#00a6e0]"
-                                      }`}
-                                    >
-                                      {cat.name}
-                                    </p>
-                                  </div>
-                                  <div
-                                    className={`w-5 h-5 rounded-full flex items-center justify-center transition-all shrink-0 ${
-                                      isCatActive
-                                        ? "text-[#00a6e0]"
-                                        : "text-slate-300 group-hover:text-[#00a6e0] group-hover:translate-x-0.5"
-                                    }`}
-                                  >
-                                    <ChevronRight size={14} strokeWidth={2.4} />
-                                  </div>
-                                </Link>
-                              );
-                            })}
-                          </div>
-
-                          {/* Bottom shop button */}
-                          <div className="pt-2 border-t border-slate-100">
-                            <Link
-                              href="/shop"
-                              onClick={() => setCategoryDropdownOpen(false)}
-                              className="flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-[#0a1f3d] hover:bg-[#00a6e0] text-white text-[12px] font-semibold transition-colors no-underline shadow-xs"
-                            >
-                              <span>View all in Shop</span>
-                              <ChevronRight size={13} />
-                            </Link>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-
-                {/* Center: Nav links in second bar (dead-center on desktop) */}
-                <nav
-                  className="hidden md:flex items-center gap-6 lg:gap-8 select-none md:absolute md:left-1/2 md:-translate-x-1/2"
-                  aria-label="Main Navigation"
-                >
-                  {navLinks.map((link) => {
-                    const isActive =
-                      link.href === "/"
-                        ? pathname === "/"
-                        : link.href === "/shop"
-                        ? pathname === "/shop" || pathname.startsWith("/shop/")
-                        : false;
-
-                    return (
-                      <Link
-                        key={link.label}
-                        href={link.href}
-                        className={`relative inline-flex items-center text-[12.5px] lg:text-[13px] tracking-wide transition-colors no-underline py-0.5 ${
-                          isActive
-                            ? "text-white font-semibold"
-                            : "text-white/80 hover:text-white font-medium"
-                        }`}
-                      >
-                        {link.label}
-                        {isActive && (
-                          <span className="absolute -bottom-[2px] left-0 right-0 h-[2px] bg-white rounded-full" />
-                        )}
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </>
-            )}
-
-            {/* Right: Switcher toggle pill + Get A Quote button + Social Icons */}
+            {/* Right: Get A Quote button + Social Icons */}
             <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
-              {/* Layout Switcher Pill (only shown when in dev mode & inline switchers enabled) */}
-              {isDevMode && showInlineSwitchers && (
-                <div
-                  className="inline-flex items-center p-0.5 bg-white/10 rounded-full border border-white/15 shadow-2xs"
-                  role="radiogroup"
-                  aria-label="Navbar second row layout switcher"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setSecondBarLayout("spread")}
-                    aria-checked={secondBarLayout === "spread"}
-                    title="Spread categories across navbar"
-                    className={`h-6 sm:h-6.5 px-2.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
-                      secondBarLayout === "spread"
-                        ? "bg-white text-[#0a1f3d] shadow-xs"
-                        : "bg-transparent text-white/70 hover:text-white"
-                    }`}
-                  >
-                    <span>Spread</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSecondBarLayout("classic")}
-                    aria-checked={secondBarLayout === "classic"}
-                    title="Dropdown menu & centered navlinks"
-                    className={`h-6 sm:h-6.5 px-2.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold transition-all cursor-pointer border-none flex items-center gap-1 select-none ${
-                      secondBarLayout === "classic"
-                        ? "bg-white text-[#0a1f3d] shadow-xs"
-                        : "bg-transparent text-white/70 hover:text-white"
-                    }`}
-                  >
-                    <span>Dropdown</span>
-                  </button>
-                </div>
-              )}
 
               {/* Get A Quote button */}
               <a
@@ -785,6 +566,32 @@ export default function Navbar() {
                   )}
                 </div>
                 <div className="px-4 py-1 flex flex-col gap-1">
+                  {/* All Products — First in Mobile Drawer */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      handleCategoryClick(e, "All");
+                      setMobileOpen(false);
+                    }}
+                    className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-[13px] border-none cursor-pointer text-left transition-colors ${
+                      pathname === "/" && (activeCategory === "All" || !activeCategory)
+                        ? "bg-white text-[#0a1f3d] font-semibold"
+                        : "bg-white/5 text-white/90 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          pathname === "/" && (activeCategory === "All" || !activeCategory)
+                            ? "bg-[#00a6e0]"
+                            : "bg-[#00a6e0]/70"
+                        }`}
+                      />
+                      <span>All Products</span>
+                    </div>
+                    <ChevronRight size={13} className="opacity-60" />
+                  </button>
+
                   {categoryList.map((cat) => {
                     const isCatActive = pathname === "/" && activeCategory === cat.name;
                     return (
