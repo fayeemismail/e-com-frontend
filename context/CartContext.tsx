@@ -156,7 +156,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setSessionEmail(email);
         await loadCartData();
       } else {
-        setLoading(false);
+        // Silently pre-initialize a guest session in background for instant add-to-cart clicks
+        try {
+          const guestEmail = `guest_${Date.now()}@officecare.local`;
+          await cartService.createSession(guestEmail);
+          if (active) {
+            setSessionEmail(guestEmail);
+            localStorage.setItem("cart_email", guestEmail);
+          }
+        } catch (e) {
+          console.warn("Guest session pre-init skipped:", e);
+        } finally {
+          if (active) setLoading(false);
+        }
       }
     };
     init();
@@ -182,8 +194,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       // Auto-retry adding the pending item if one exists
       if (pendingItem) {
-        // Run asynchronously without blocking session completion
-        executeAddToCart(pendingItem);
+        addToCart(pendingItem);
         setPendingItem(null);
       }
     } catch (err) {
@@ -223,45 +234,43 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // Core Add to Cart flow
-  const executeAddToCart = async (item: CartItemInput) => {
+  // Pure Backend-Driven Add to Cart (Option A: waits strictly for backend confirmation)
+  const addToCart = async (item: CartItemInput) => {
     try {
       setIsAddingToCart(true);
+
+      // Ensure active session cookie exists before posting item
+      let activeEmail = sessionEmail || localStorage.getItem("cart_email");
+      if (!activeEmail) {
+        activeEmail = `guest_${Date.now()}@officecare.local`;
+        await cartService.createSession(activeEmail);
+        setSessionEmail(activeEmail);
+        localStorage.setItem("cart_email", activeEmail);
+      }
+
+      // Send to backend MongoDB database
       await cartService.addToCart(item);
+
+      // Fetch verified, complete cart state from backend database
+      const freshData = await cartService.validateCart();
+      setCart(freshData);
+      lastSyncedCartRef.current = freshData;
+      setCartCount(freshData.items.reduce((sum, i) => sum + i.quantity, 0));
+
+      // ONLY on confirmed backend success: show toast notification
       showNotification("Added to cart", {
         type: "success",
         action: { label: "View", href: "/cart" },
       });
-      await loadCartData();
     } catch (err) {
       console.error("Failed to add item to cart:", err);
       showNotification(err instanceof Error ? err.message : "Failed to add item", {
         type: "error",
       });
+      throw err;
     } finally {
       setIsAddingToCart(false);
     }
-  };
-
-  const addToCart = async (item: CartItemInput) => {
-    // If no session exists, prompt email sign-in first
-    // Rule commented down: allow everyone to add to cart without requiring email
-    /*
-    if (!sessionEmail) {
-      setPendingItem(item);
-      setShowSessionModal(true);
-      return;
-    }
-    */
-    if (!sessionEmail) {
-      try {
-        const guestEmail = `guest_${Date.now()}@officecare.local`;
-        await initializeSession(guestEmail);
-      } catch (e) {
-        console.warn("Guest session auto-init skipped:", e);
-      }
-    }
-    await executeAddToCart(item);
   };
 
   // Remove item from cart

@@ -25,7 +25,7 @@ export default function ProductActions({ product }: { product: Product }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const busy = isProcessing || isAddingToCart || isSyncing;
+  const busy = isProcessing || isAddingToCart;
 
   // 4. Derived values based on selected SKU
   const currentSku = selectedSku || (product.skus && product.skus.length > 0 ? product.skus[0] : null);
