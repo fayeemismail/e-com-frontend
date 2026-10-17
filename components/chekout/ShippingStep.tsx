@@ -228,7 +228,7 @@ export default function ShippingStep({
       */}
 
       {/* Complete Requisition Action */}
-      <div className="pt-2">
+      <div className="pt-4 flex justify-end">
         <button
           onClick={onContinue}
           disabled={isPlacing}

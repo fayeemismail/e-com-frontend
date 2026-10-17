@@ -147,7 +147,7 @@ export default function ReviewStep({
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <button
           onClick={onBack}
           disabled={isPlacing}

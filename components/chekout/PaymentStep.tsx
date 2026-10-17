@@ -202,7 +202,7 @@ export default function PaymentStep({
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <button
           onClick={onBack}
           className="sm:w-auto text-[11px] tracking-[0.16em] uppercase px-8 py-4 border border-[#e2e8f0] text-[#64748b] hover:border-[#0f2e5a] hover:text-[#0f2e5a] transition-colors cursor-pointer bg-transparent rounded-xs font-medium"

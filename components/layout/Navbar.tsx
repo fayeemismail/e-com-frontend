@@ -453,12 +453,12 @@ export default function Navbar() {
         {/* ── Row 2: Dark Navy Bar with Spread Categories Chips · Quote · Socials ── */}
         <div className="bg-[#0a1f3d]">
           <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 h-11 sm:h-12 flex items-center justify-between gap-4">
-            {/* Spread Categories across second navbar */}
+            {/* Category Navigation Chips */}
             <nav
               className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1.5 min-w-0 flex-1 select-none"
               aria-label="Categories Navigation"
             >
-              {/* All Products — First filter chip */}
+              {/* All Products */}
               {(() => {
                 const isAllActive =
                   isHomePage && (activeCategory === "All" || !activeCategory);
@@ -466,18 +466,13 @@ export default function Navbar() {
                   <Link
                     href="/"
                     onClick={(e) => handleCategoryClick(e, "All")}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] no-underline whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-[12px] sm:text-[12.5px] font-medium no-underline whitespace-nowrap shrink-0 cursor-pointer transition-colors duration-150 ${
                       isAllActive
-                        ? "bg-white text-[#0a1f3d] font-semibold"
-                        : "text-white/80 hover:text-white hover:bg-white/10 font-normal"
+                        ? "bg-[#00a6e0] text-white shadow-xs"
+                        : "text-white/75 hover:text-white hover:bg-white/10"
                     }`}
                   >
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                        isAllActive ? "bg-[#00a6e0]" : "bg-white/40"
-                      }`}
-                    />
-                    <span>All Products</span>
+                    All Products
                   </Link>
                 );
               })()}
@@ -491,18 +486,13 @@ export default function Navbar() {
                     key={cat.name}
                     href={cat.href}
                     onClick={(e) => handleCategoryClick(e, cat.name)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] sm:text-[12.5px] no-underline whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-[12px] sm:text-[12.5px] font-medium no-underline whitespace-nowrap shrink-0 cursor-pointer transition-colors duration-150 ${
                       isCatActive
-                        ? "bg-white text-[#0a1f3d] font-semibold"
-                        : "text-white/80 hover:text-white hover:bg-white/10 font-normal"
+                        ? "bg-[#00a6e0] text-white shadow-xs"
+                        : "text-white/75 hover:text-white hover:bg-white/10"
                     }`}
                   >
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                        isCatActive ? "bg-[#00a6e0]" : "bg-white/40"
-                      }`}
-                    />
-                    <span>{cat.name}</span>
+                    {cat.name}
                   </Link>
                 );
               })}
@@ -639,23 +629,14 @@ export default function Navbar() {
                       handleCategoryClick(e, "All");
                       setMobileOpen(false);
                     }}
-                    className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-[13px] border-none cursor-pointer text-left ${
+                    className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-lg text-[13px] border-none cursor-pointer text-left transition-colors ${
                       (isHomePage || isShopPage) && (activeCategory === "All" || !activeCategory)
-                        ? "bg-white text-[#0a1f3d] font-semibold"
-                        : "bg-white/5 text-white/90 hover:bg-white/10"
+                        ? "bg-white/15 text-white font-semibold"
+                        : "bg-transparent text-slate-300 hover:bg-white/5 hover:text-white"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                          (isHomePage || isShopPage) && (activeCategory === "All" || !activeCategory)
-                            ? "bg-[#00a6e0]"
-                            : "bg-white/40"
-                        }`}
-                      />
-                      <span>All Products</span>
-                    </div>
-                    <ChevronRight size={13} className="opacity-60" />
+                    <span>All Products</span>
+                    <ChevronRight size={14} className="opacity-60" />
                   </button>
 
                   {categories.map((cat) => {
@@ -670,21 +651,14 @@ export default function Navbar() {
                           handleCategoryClick(e, cat.name);
                           setMobileOpen(false);
                         }}
-                        className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-[13px] border-none cursor-pointer text-left ${
+                        className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-lg text-[13px] border-none cursor-pointer text-left transition-colors ${
                           isCatActive
-                            ? "bg-white text-[#0a1f3d] font-semibold"
-                            : "bg-white/5 text-white/90 hover:bg-white/10"
+                            ? "bg-white/15 text-white font-semibold"
+                            : "bg-transparent text-slate-300 hover:bg-white/5 hover:text-white"
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                              isCatActive ? "bg-[#00a6e0]" : "bg-white/40"
-                            }`}
-                          />
-                          <span>{cat.name}</span>
-                        </div>
-                        <ChevronRight size={13} className="opacity-60" />
+                        <span>{cat.name}</span>
+                        <ChevronRight size={14} className="opacity-60" />
                       </button>
                     );
                   })}
