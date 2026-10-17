@@ -17,6 +17,9 @@ export interface DisplayProduct {
   unitName?: string;
   attributes?: Record<string, string>;
   rawProduct?: any;
+  sapId?: string;
+  brand?: string;
+  description?: string;
 }
 
 export class ProductViewMapper {
@@ -85,6 +88,10 @@ export class ProductViewMapper {
       }
     }
 
+    const sapId = (p as any).sapId || (p as any).sap_id || p.attributes?.sapId || p.attributes?.sap_id || p.attributes?.['SAP ID'];
+    const brand = (p as any).brand || p.attributes?.brand || p.attributes?.Brand;
+    const description = (p as any).description || (p as any).body_html;
+
     return {
       id: p.id,
       slug,
@@ -101,6 +108,9 @@ export class ProductViewMapper {
       unitName: unit,
       attributes: p.attributes,
       rawProduct: p,
+      sapId,
+      brand,
+      description,
     };
   }
 
@@ -124,7 +134,10 @@ export class ProductViewMapper {
     const isbn = p.attributes?.isbn || p.attributes?.ISBN;
     
     // Brand can be author for books, or attributes.brand for other products
-    const brand = author || p.attributes?.brand || p.attributes?.Brand || "Nord Living";
+    const brand = p.attributes?.brand || p.attributes?.Brand || author || "Office Care";
+
+    const sapId = (p as any).sapId || (p as any).sap_id || p.attributes?.sapId || p.attributes?.sap_id || p.attributes?.['SAP ID'] || p.skus?.[0]?.sku;
+    const rawUnit = (p as any).unit || (p as any).unitName || (p as any).unit_name || p.attributes?.unit || p.attributes?.unitName;
 
     const image = p.images?.[0] || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&q=80";
     const hoverImage = p.images?.[1] || p.images?.[0] || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&q=80";
@@ -148,8 +161,10 @@ export class ProductViewMapper {
       securityDeposit: s.securityDeposit !== undefined ? Math.round(s.securityDeposit) : undefined,
     }));
 
-    // Sum total stock from variants
-    const stock = p.skus?.reduce((sum, s) => sum + s.stock, 0) ?? 0;
+    // Sum total stock from variants or root product
+    const stock = p.skus && p.skus.length > 0
+      ? p.skus.reduce((sum, s) => sum + (s.stock || 0), 0)
+      : ((p as any).stock ?? (p.isActive ? 50 : 0));
 
     return {
       id: p.id,
@@ -164,24 +179,24 @@ export class ProductViewMapper {
       tag: p.isFeatured ? "Featured" : null,
       category: categoryName,
       brand,
-      sku: p.skus?.[0]?.sku || "SKU-CODE",
+      sku: sapId || p.skus?.[0]?.sku || "",
       stock,
-      rating: p.attributes?.rating ? parseFloat(p.attributes.rating) : 4.8,
-      reviews: p.attributes?.reviews ? parseInt(p.attributes.reviews, 10) : 128,
-      shortDescription: p.description ? (p.description.substring(0, 160) + "...") : "A premium product.",
-      description: p.description || "No description available.",
+      rating: p.attributes?.rating ? parseFloat(p.attributes.rating) : 0,
+      reviews: p.attributes?.reviews ? parseInt(p.attributes.reviews, 10) : 0,
+      shortDescription: p.description || "",
+      description: p.description || "",
       materials,
       colors: colors.length > 0 ? colors : undefined,
       weight: p.attributes?.weight || p.attributes?.Weight,
       features: p.attributes?.features 
-        ? p.attributes.features.split(",").map((s) => s.trim())
-        : ["Premium build quality", "Secure transaction", "Manufacturer warranty"],
+        ? p.attributes.features.split(",").map((s) => s.trim()).filter(Boolean)
+        : undefined,
       shipping: {
-        freeShipping: true,
-        estimatedDelivery: "3-5 Business Days",
+        freeShipping: Boolean((p as any).shipping?.freeShipping),
+        estimatedDelivery: (p as any).shipping?.estimatedDelivery || "",
       },
-      returnPolicy: "30-Day Returns",
-      warranty: "1 Year Manufacturer Warranty",
+      returnPolicy: (p as any).returnPolicy || "",
+      warranty: (p as any).warranty || "",
       createdAt: p.createdAt,
       author,
       publisher,
@@ -189,6 +204,11 @@ export class ProductViewMapper {
       pages,
       isbn,
       formats: formats.length > 0 ? formats : undefined,
+      sapId,
+      unit: rawUnit,
+      unitName: rawUnit,
+      attributes: p.attributes,
+      rawProduct: p,
     };
   }
 }

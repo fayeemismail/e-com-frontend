@@ -258,28 +258,19 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf9] pb-20">
-      {/* Top bar with Office Blue branding */}
-      <div className="border-b border-[#e2e8f0] px-5 sm:px-8 md:px-12 py-4 flex items-center justify-between bg-[#0f2e5a]">
-        <Link href="/" className="flex items-center shrink-0">
-          <Image
-            src="/images/officecare.png"
-            alt="Office Care"
-            width={130}
-            height={42}
-            unoptimized
-            className="h-7 sm:h-8 w-auto object-contain"
-            priority
-          />
-        </Link>
-        <div className="hidden sm:block text-white/90">
-          <CheckoutSteps steps={STEPS} current={step} onStepClick={setStep} />
+      <div className="px-5 sm:px-8 md:px-12 pt-6 sm:pt-8">
+        <div className="max-w-6xl mx-auto mb-6 flex items-center justify-between gap-4">
+          <Link
+            href="/cart"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0a1f3d] hover:text-[#00a6e0] transition-colors no-underline"
+          >
+            ← Return to cart
+          </Link>
+          <div className="hidden sm:block">
+            <CheckoutSteps steps={STEPS} current={step} onStepClick={setStep} />
+          </div>
         </div>
-        <Link href="/cart" className="text-[11px] tracking-[0.12em] uppercase text-white/90 hover:text-white transition-colors no-underline font-medium">
-          ← Cart
-        </Link>
-      </div>
 
-      <div className="px-5 sm:px-8 md:px-12 pt-8 sm:pt-10">
         <div className="flex flex-col lg:flex-row gap-10 xl:gap-16 max-w-6xl mx-auto">
 
           {/* Steps */}

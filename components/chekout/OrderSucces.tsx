@@ -8,28 +8,7 @@ type Props = { order: OrderResponse };
 export default function OrderSuccess({ order }: Props) {
   return (
     <div className="min-h-screen bg-white pb-20">
-      {/* Top bar */}
-      <div className="border-b border-[#e2e8f0] px-5 sm:px-8 md:px-12 py-4 flex items-center justify-between bg-[#0f2e5a]">
-        <Link href="/" className="flex items-center shrink-0">
-          <Image
-            src="/images/officecare.png"
-            alt="Office Care"
-            width={130}
-            height={42}
-            unoptimized
-            className="h-7 sm:h-8 w-auto object-contain"
-            priority
-          />
-        </Link>
-        <Link
-          href="/"
-          className="text-[11px] tracking-[0.12em] uppercase text-white/90 hover:text-white transition-colors no-underline font-medium"
-        >
-          Return to Home
-        </Link>
-      </div>
-
-      <div className="px-5 sm:px-8 md:px-12 pt-12 sm:pt-16 max-w-2xl mx-auto text-center">
+      <div className="px-5 sm:px-8 md:px-12 pt-8 sm:pt-12 max-w-2xl mx-auto text-center">
         {/* Success Icon */}
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 border border-blue-200 mb-6 shadow-2xs">
           <svg

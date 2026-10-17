@@ -24,10 +24,10 @@ export default function NotFound() {
           Back to Home
         </Link>
         <Link
-          href="/shop"
+          href="/"
           className="text-[11px] tracking-[0.16em] uppercase text-[#1a1a1a] border border-[#1a1a1a] px-6 py-3 no-underline hover:bg-[#1a1a1a] hover:text-white transition-colors duration-200"
         >
-          Continue Shopping
+          Explore Catalog
         </Link>
       </div>
     </div>

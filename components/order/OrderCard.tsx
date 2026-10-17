@@ -64,7 +64,7 @@ function CardHeader({
         <div>
           <p className="text-[9px] tracking-[0.16em] uppercase text-[#9a9a94] mb-1">Total</p>
           <p className="text-[13px] text-[#1a1a1a]">
-            ₹{formatPrice(order.pricingSummary.totalAmount)}
+            {formatPrice(order.pricingSummary.totalAmount)} SAR
           </p>
         </div>
       </div>
@@ -127,11 +127,11 @@ function ItemsList({ order }: { order: OrderResponse }) {
 
             <div className="text-right shrink-0 flex flex-col justify-center">
               <p className="text-[13px] text-[#1a1a1a]">
-                ₹{formatPrice(item.price * item.quantity)}
+                {formatPrice(item.price * item.quantity)} SAR
               </p>
               {item.securityDeposit && item.securityDeposit > 0 && (
                 <p className="text-[10px] text-[#9a9a94] mt-0.5">
-                  + ₹{formatPrice(item.securityDeposit)} deposit
+                  + {formatPrice(item.securityDeposit)} SAR deposit
                 </p>
               )}
             </div>
@@ -186,17 +186,17 @@ function PriceSummary({ order }: { order: OrderResponse }) {
       <div className="space-y-1.5">
         <div className="flex justify-between text-[12px] text-[#9a9a94]">
           <span>Subtotal</span>
-          <span>₹{formatPrice(subtotal)}</span>
+          <span>{formatPrice(subtotal)} SAR</span>
         </div>
         {totalSecurityDeposits > 0 && (
           <div className="flex justify-between text-[12px] text-[#9a9a94]">
             <span>Refundable deposits</span>
-            <span>₹{formatPrice(totalSecurityDeposits)}</span>
+            <span>{formatPrice(totalSecurityDeposits)} SAR</span>
           </div>
         )}
         <div className="flex justify-between text-[13px] text-[#1a1a1a] pt-1.5 mt-1.5 border-t border-[#f2f0eb]">
           <span className="font-serif font-light">Total</span>
-          <span>₹{formatPrice(totalAmount)}</span>
+          <span>{formatPrice(totalAmount)} SAR</span>
         </div>
       </div>
     </div>

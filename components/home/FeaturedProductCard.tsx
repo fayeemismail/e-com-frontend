@@ -171,10 +171,10 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
   };
 
   return (
-    <Link href={`/shop/${product.id}`} className="cursor-pointer group no-underline block h-full">
+    <div className="cursor-pointer group no-underline block h-full">
       <article className="flex flex-col h-full bg-white border border-[#e2e8f0] hover:border-slate-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-6px_rgba(10,31,61,0.08),0_2px_6px_-1px_rgba(10,31,61,0.03)] transition-all duration-200 ease-out rounded-xl shadow-2xs overflow-hidden group">
         {/* Top Image Stage — Recessed Inset Tray */}
-        <div className="p-2.5 sm:p-3 pb-0">
+        <Link href={`/shop/${product.id}`} className="block p-2.5 sm:p-3 pb-0 no-underline">
           <div className="relative w-full aspect-[16/10] bg-slate-100/75 rounded-lg overflow-hidden border border-slate-200/60">
             <Image
               src={imageSrc}
@@ -192,7 +192,7 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
             {/* Inner shadow overlay so the carved bevel effect casts over the image stage */}
             <div className="pointer-events-none absolute inset-0 rounded-lg shadow-[inset_0_2px_5px_rgba(10,31,61,0.08),inset_0_1px_2px_rgba(10,31,61,0.03)]" />
           </div>
-        </div>
+        </Link>
 
         {/* Bottom Details Section */}
         <div className="flex-1 p-3 sm:p-3.5 pt-2 sm:pt-2.5 flex flex-col justify-between gap-2 bg-white">
@@ -205,12 +205,14 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
             </div>
 
             {/* Title */}
-            <h3
-              title={product.name}
-              className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
-            >
-              {product.name}
-            </h3>
+            <Link href={`/shop/${product.id}`} className="no-underline">
+              <h3
+                title={product.name}
+                className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
+              >
+                {product.name}
+              </h3>
+            </Link>
 
             {/* Specifications: SAP ID and Unit grouped side-by-side */}
             <div className="flex items-center gap-1.5 text-[11px] text-[#565959] mt-0.5">
@@ -281,24 +283,24 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
                 className="shrink-0"
               >
                 {inCartQty > 0 ? (
-                  <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-7 sm:h-7.5 shadow-2xs">
+                  <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-7 sm:h-7.5 shadow-2xs overflow-hidden">
                     <button
                       type="button"
                       onClick={handleDecrementInCart}
                       disabled={isProcessing}
-                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-semibold text-[#0a1f3d] hover:bg-[#0a1f3d]/8 active:bg-[#0a1f3d]/15 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
                       aria-label="Decrease quantity"
                     >
                       −
                     </button>
-                    <span className="min-w-5 sm:min-w-6 px-1 h-full flex items-center justify-center text-[11.5px] sm:text-[12px] font-bold tabular-nums text-[#0a1f3d] select-none">
+                    <span className="min-w-5 sm:min-w-6 px-1 h-full flex items-center justify-center text-[11.5px] sm:text-[12px] font-bold tabular-nums text-[#0a1f3d] select-none border-x border-[#0a1f3d]/15">
                       {inCartQty}
                     </span>
                     <button
                       type="button"
                       onClick={handleIncrementInCart}
                       disabled={isProcessing}
-                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-[13px] font-semibold text-[#0a1f3d] hover:bg-[#0a1f3d]/8 active:bg-[#0a1f3d]/15 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
                       aria-label="Increase quantity"
                     >
                       +
@@ -374,6 +376,6 @@ export default function FeaturedProductCard({ product }: FeaturedProductCardProp
           </div>
         </div>
       </article>
-    </Link>
+    </div>
   );
 }

@@ -193,7 +193,7 @@ export default function ProfilePage() {
                   {[
                     { label: "Total Orders", value: loadingOrders ? "—" : totalOrders },
                     { label: "Items Saved", value: loadingOrders ? "—" : totalItemsOrdered },
-                    { label: "Total Spent", value: loadingOrders ? "—" : `₹ ${totalSpent}` },
+                    { label: "Total Spent", value: loadingOrders ? "—" : `${totalSpent} SAR` },
                   ].map(({ label, value }) => (
                     <div key={label} className="border border-[#e8e6e2] p-5">
                       <p className="text-xl font-light font-serif text-[#1a1a1a] mb-1">
@@ -262,7 +262,7 @@ export default function ProfilePage() {
                             {order.orderStatus}
                           </p>
                           <p className="text-xs text-[#1a1a1a] mt-0.5">
-                            ₹{order.pricingSummary?.subtotal || 0}
+                            {order.pricingSummary?.subtotal || 0} SAR
                           </p>
                         </div>
                       </div>
@@ -327,7 +327,7 @@ export default function ProfilePage() {
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-sm font-light text-[#1a1a1a] mb-3">
-                            ₹{order.pricingSummary?.subtotal || 0}
+                            {order.pricingSummary?.subtotal || 0} SAR
                           </p>
                           <button className="text-[10px] tracking-[0.14em] uppercase border border-[#e8e6e2] px-3 py-1.5 text-[#9a9a94] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors">
                             Details
@@ -376,7 +376,7 @@ export default function ProfilePage() {
                       <p className="text-[10px] text-[#9a9a94] tracking-widest uppercase mb-1">
                         {item.variant}
                       </p>
-                      <p className="text-xs text-[#1a1a1a]">₹{item.price}</p>
+                      <p className="text-xs text-[#1a1a1a]">{item.price} SAR</p>
                     </div>
                   ))}
                 </div>

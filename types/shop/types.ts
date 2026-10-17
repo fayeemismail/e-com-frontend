@@ -58,6 +58,11 @@ export type Product = {
   pages?: number;
   isbn?: string;
   formats?: string[];
+  sapId?: string;
+  unit?: string;
+  unitName?: string;
+  attributes?: Record<string, any>;
+  rawProduct?: any;
 };
 
 export const SORT_LABELS: Record<SortOption, string> = {

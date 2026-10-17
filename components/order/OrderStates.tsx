@@ -49,7 +49,7 @@ export function EmptyState() {
         Your order history will appear here once you make a purchase.
       </p>
       <Link
-        href="/shop"
+        href="/"
         className="bg-[#1a1a1a] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-3.5 hover:bg-[#333] transition-colors no-underline"
       >
         Start Shopping

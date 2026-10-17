@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Loader2 } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, Loader2 } from "lucide-react";
 import { formatPrice } from "@/lib/utils/format.util";
 
 export default function CartPage() {
@@ -150,14 +150,20 @@ export default function CartPage() {
   // Case 2: Cart is Empty
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="min-h-screen bg-white pb-16">
-        <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] mb-12">
-          <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Requisition</p>
-          <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Requisition cart</h1>
+      <div className="min-h-screen bg-[#fafaf9] pb-16">
+        <div className="px-5 sm:px-8 md:px-12 pt-6 sm:pt-8">
+          <div className="max-w-6xl mx-auto mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0a1f3d] hover:text-[#00a6e0] transition-colors no-underline"
+            >
+              ← Continue shopping
+            </Link>
+          </div>
         </div>
 
         <div className="px-5 sm:px-8 md:px-12 flex flex-col items-center justify-center py-16 text-center max-w-md mx-auto">
-          <div className="w-14 h-14 bg-[#fafaf9] border border-[#e8e6e2] rounded-full flex items-center justify-center mb-6">
+          <div className="w-14 h-14 bg-white border border-[#e8e6e2] rounded-full flex items-center justify-center mb-6">
             <ShoppingBag className="w-6 h-6 text-[#ccc]" strokeWidth={1} />
           </div>
           <h2 className="text-lg font-light tracking-tight font-serif text-[#1a1a1a] mb-2">
@@ -167,11 +173,11 @@ export default function CartPage() {
             Looks like you haven&apos;t added any items yet. Explore the catalog and build your requisition.
           </p>
           <Link
-            href="/shop"
-            className="inline-block bg-[#0f2e5a] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-3.5 
-            hover:bg-[#0b2447] border border-[#0f2e5a] transition-colors duration-200 rounded-sm"
+            href="/"
+            className="inline-block bg-[#0a1f3d] text-white text-[11px] tracking-[0.16em] uppercase px-8 py-3.5 
+            hover:bg-[#00a6e0] transition-colors duration-200 rounded-sm font-semibold no-underline"
           >
-            Browse Collections
+            Explore Catalog
           </Link>
         </div>
       </div>
@@ -184,17 +190,17 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[#fafaf9] pb-16">
-      {/* Header */}
-      <div className="px-5 sm:px-8 md:px-12 pt-8 pb-5 border-b border-[#e8e6e2] mb-8 bg-white">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 max-w-6xl mx-auto">
-          <div>
-            <p className="text-[10px] tracking-[0.22em] uppercase text-[#9a9a94] mb-1">Requisition</p>
-            <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif">Requisition cart</h1>
-          </div>
-          <Link href="/shop" className="inline-flex items-center gap-2 text-[10px] tracking-[0.14em] uppercase text-[#9a9a94] hover:text-[#0f2e5a] transition-colors">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Continue Shopping
+      <div className="px-5 sm:px-8 md:px-12 pt-6 sm:pt-8">
+        <div className="max-w-6xl mx-auto mb-6 flex items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#0a1f3d] hover:text-[#00a6e0] transition-colors no-underline"
+          >
+            ← Continue shopping
           </Link>
+          <span className="text-[12px] font-medium text-slate-500">
+            {items.length} {items.length === 1 ? "item" : "items"} in requisition
+          </span>
         </div>
       </div>
 
@@ -229,7 +235,7 @@ export default function CartPage() {
                     {/* Item Info */}
                     <div className="min-w-0">
                       <Link
-                        href={item.productId ? `/shop/${item.productId}` : "/shop"}
+                        href={item.productId ? `/shop/${item.productId}` : "/"}
                         className="text-sm font-light font-serif text-[#1a1a1a] hover:text-[#0f2e5a] transition-colors leading-snug block truncate max-w-70"
                       >
                         {item.name}

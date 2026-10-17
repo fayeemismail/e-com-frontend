@@ -77,8 +77,31 @@ function SearchBox({
   onSelectSuggestion: () => void;
   mobile?: boolean;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleViewAllResults = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (!q) return;
+
+    setIsOpen(false);
+    onSelectSuggestion();
+
+    if (pathname === "/") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("search", q);
+      window.history.pushState({}, "", url.pathname + (url.search ? url.search : ""));
+      window.dispatchEvent(
+        new CustomEvent("featuredSearchChange", { detail: q })
+      );
+    } else {
+      router.push(`/?search=${encodeURIComponent(q)}`);
+    }
+  };
+
   return (
-    <div ref={containerRef} className={`relative ${mobile ? "w-full" : "w-full"}`}>
+    <div ref={containerRef} data-search-container="true" className={`relative ${mobile ? "w-full" : "w-full"}`}>
       <form
         onSubmit={onSubmit}
         className="flex items-center w-full h-10 sm:h-11 bg-[#ececec] rounded-full px-5 gap-2 border border-transparent transition-[box-shadow,border-color] focus-within:border-[#0a1f3d] focus-within:ring-2 focus-within:ring-[#0a1f3d]/25"
@@ -110,7 +133,10 @@ function SearchBox({
       </form>
 
       {isOpen && query.trim().length >= 2 && (
-        <div className="absolute top-full mt-2 left-0 right-0 bg-white border border-gray-200 shadow-xl z-50 overflow-hidden py-1.5 rounded-xl text-left">
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          className="absolute top-full mt-2 left-0 right-0 bg-white border border-gray-200 shadow-xl z-50 overflow-hidden py-1.5 rounded-xl text-left"
+        >
           {isLoading ? (
             <div className="divide-y divide-[#eef2f7]" aria-busy="true" aria-label="Loading suggestions">
               {[0, 1, 2].map((i) => (
@@ -137,6 +163,7 @@ function SearchBox({
                   <Link
                     key={item.id}
                     href={`/shop/${item.id}`}
+                    onMouseDown={(e) => e.stopPropagation()}
                     onClick={() => {
                       setIsOpen(false);
                       onSelectSuggestion();
@@ -170,12 +197,10 @@ function SearchBox({
               </div>
               <div className="border-t border-gray-100 pt-1.5 px-4 pb-0.5">
                 <Link
-                  href={`/shop?search=${encodeURIComponent(query.trim())}`}
-                  onClick={() => {
-                    setIsOpen(false);
-                    onSelectSuggestion();
-                  }}
-                  className="block text-center text-[10px] tracking-widest uppercase text-[#0f2e5a] hover:text-[#1e6bb8] font-medium py-1 no-underline"
+                  href={`/?search=${encodeURIComponent(query.trim())}`}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={handleViewAllResults}
+                  className="block text-center text-[10px] tracking-widest uppercase text-[#0f2e5a] hover:text-[#1e6bb8] font-medium py-1 no-underline cursor-pointer"
                 >
                   View All Results
                 </Link>
@@ -268,27 +293,47 @@ export default function Navbar() {
     setActiveCategory(targetCategory);
     e.preventDefault();
 
-    // Update URL query string without reloading page
-    const url = new URL(window.location.href);
-    if (targetCategory === "All") {
-      url.searchParams.delete("category");
-    } else {
-      url.searchParams.set("category", targetCategory);
-    }
-    window.history.pushState({}, "", url.pathname + (url.search ? url.search : ""));
+    if (pathname === "/") {
+      // Update URL query string without reloading page
+      const url = new URL(window.location.href);
+      if (targetCategory === "All") {
+        url.searchParams.delete("category");
+      } else {
+        url.searchParams.set("category", targetCategory);
+      }
+      window.history.pushState({}, "", url.pathname + (url.search ? url.search : ""));
 
-    // Notify FeaturedProducts component
-    window.dispatchEvent(
-      new CustomEvent("featuredCategoryChange", { detail: targetCategory })
-    );
+      // Notify FeaturedProducts component
+      window.dispatchEvent(
+        new CustomEvent("featuredCategoryChange", { detail: targetCategory })
+      );
+    } else {
+      // Navigate to homepage with category filter
+      if (targetCategory === "All") {
+        router.push("/");
+      } else {
+        router.push(`/?category=${encodeURIComponent(targetCategory)}`);
+      }
+    }
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.query.trim().length >= 2) {
-      router.push(`/shop?search=${encodeURIComponent(search.query.trim())}`);
+      const q = search.query.trim();
       search.setIsOpen(false);
       setMobileSearchOpen(false);
+
+      if (pathname === "/") {
+        const url = new URL(window.location.href);
+        url.searchParams.set("search", q);
+        window.history.pushState({}, "", url.pathname + (url.search ? url.search : ""));
+        window.dispatchEvent(
+          new CustomEvent("featuredSearchChange", { detail: q })
+        );
+      } else {
+        router.push(`/?search=${encodeURIComponent(q)}`);
+      }
     }
   };
 
@@ -416,8 +461,7 @@ export default function Navbar() {
               {/* All Products — First filter chip */}
               {(() => {
                 const isAllActive =
-                  (isHomePage || isShopPage) &&
-                  (activeCategory === "All" || !activeCategory);
+                  isHomePage && (activeCategory === "All" || !activeCategory);
                 return (
                   <Link
                     href="/"
@@ -440,7 +484,7 @@ export default function Navbar() {
 
               {categories.map((cat) => {
                 const isCatActive =
-                  (isHomePage || isShopPage) &&
+                  isHomePage &&
                   activeCategory.toLowerCase() === cat.name.toLowerCase();
                 return (
                   <Link

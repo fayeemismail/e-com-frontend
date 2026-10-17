@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { cartService, CartItemInput, CartValidationResponse, CartValidationItem } from "@/lib/api/cart.service";
 import SessionModal from "@/components/common/SessionModal";
+import Toast, { ToastData } from "@/components/common/Toast";
 import { ApiError } from "@/lib/api/api-client";
 
 // Pure client-side helper to recalculate cart totals matching backend business rules
@@ -67,6 +68,8 @@ function recalculateCartTotals(items: CartValidationItem[]): CartValidationRespo
   };
 }
 
+export type ToastNotification = ToastData;
+
 interface CartContextType {
   cart: CartValidationResponse | null;
   cartCount: number;
@@ -75,7 +78,7 @@ interface CartContextType {
   showSessionModal: boolean;
   isAddingToCart: boolean;
   isSyncing: boolean;
-  toast: { visible: boolean; message: string } | null;
+  toast: ToastNotification | null;
   addToCart: (item: CartItemInput) => Promise<void>;
   removeFromCart: (sku: string) => Promise<void>;
   updateQuantity: (sku: string, quantity: number) => Promise<void>;
@@ -83,6 +86,14 @@ interface CartContextType {
   clearSession: () => Promise<void>;
   setShowSessionModal: (open: boolean) => void;
   refreshCart: () => Promise<void>;
+  showNotification: (
+    message: string,
+    options?: {
+      type?: "success" | "error" | "info";
+      action?: { label: string; href: string };
+      duration?: number;
+    }
+  ) => void;
 }
 
 
@@ -103,7 +114,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   
   // Pending action buffer to auto-retry after log-in
   const [pendingItem, setPendingItem] = useState<CartItemInput | null>(null);
-  const [toast, setToast] = useState<{ visible: boolean; message: string } | null>(null);
+  const [toast, setToast] = useState<ToastNotification | null>(null);
 
   const handleLocalSignOut = () => {
     setCart(null);
@@ -189,37 +200,44 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       console.error("Failed to clear backend cart session:", err);
     } finally {
       handleLocalSignOut();
-      showNotification("Signed out of guest session.");
+      showNotification("Signed out", { type: "info" });
     }
   };
 
   // Helper: Triggers a clean floating toast notification
-  const showNotification = (message: string) => {
-    setToast({ visible: true, message });
-    setTimeout(() => {
-      setToast(null);
-    }, 3500);
+  const showNotification = (
+    message: string,
+    options?: {
+      type?: "success" | "error" | "info";
+      action?: { label: string; href: string };
+      duration?: number;
+    }
+  ) => {
+    setToast({
+      id: `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      visible: true,
+      message,
+      type: options?.type || "success",
+      action: options?.action,
+      duration: options?.duration || 2600,
+    });
   };
 
   // Core Add to Cart flow
   const executeAddToCart = async (item: CartItemInput) => {
     try {
       setIsAddingToCart(true);
-      const res = await cartService.addToCart(item);
-      showNotification(`Added item to your bag (${res.itemCount} items).`);
+      await cartService.addToCart(item);
+      showNotification("Added to cart", {
+        type: "success",
+        action: { label: "View", href: "/cart" },
+      });
       await loadCartData();
     } catch (err) {
       console.error("Failed to add item to cart:", err);
-      // Rule requiring email commented down: allow everyone to add to cart without email
-      /*
-      if (err instanceof ApiError && err.status === 401) {
-        setPendingItem(item);
-        setShowSessionModal(true);
-      } else {
-        showNotification(err instanceof Error ? err.message : "Failed to add item.");
-      }
-      */
-      showNotification(err instanceof Error ? err.message : "Failed to add item.");
+      showNotification(err instanceof Error ? err.message : "Failed to add item", {
+        type: "error",
+      });
     } finally {
       setIsAddingToCart(false);
     }
@@ -279,13 +297,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setCart(freshData);
         lastSyncedCartRef.current = freshData;
         setCartCount(freshData.items.reduce((sum, item) => sum + item.quantity, 0));
+        showNotification("Removed from cart", {
+          type: "info",
+        });
       }
     } catch (err) {
       console.error("Failed to remove item from cart:", err);
       if (seq === requestSequenceRef.current) {
         setCart(rollbackCart);
         setCartCount(rollbackCart.items.reduce((sum, item) => sum + item.quantity, 0));
-        showNotification("Failed to remove item.");
+        showNotification("Failed to remove item", {
+          type: "error",
+        });
       }
     } finally {
       // If there are no other pending debounced syncs, set syncing to false
@@ -310,7 +333,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!targetItem) return;
 
     if (quantity > targetItem.availableStock) {
-      showNotification(`Cannot exceed available stock of ${targetItem.availableStock}.`);
+      showNotification(`Max available stock is ${targetItem.availableStock}`, {
+        type: "error",
+      });
       return;
     }
 
@@ -353,7 +378,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           }
           setCart(rollbackCart);
           setCartCount(rollbackCart.items.reduce((sum, item) => sum + item.quantity, 0));
-          showNotification(err instanceof Error ? err.message : "Failed to update quantity.");
+          showNotification(err instanceof Error ? err.message : "Failed to update quantity", {
+            type: "error",
+          });
         }
       } finally {
         delete debounceTimeoutsRef.current[sku];
@@ -383,6 +410,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearSession,
         setShowSessionModal,
         refreshCart: loadCartData,
+        showNotification,
       }}
     >
       {children}
@@ -397,38 +425,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         onSubmit={initializeSession}
       />
 
-      {/* Premium Toast Notification Thingy */}
-      {toast && toast.visible && (
-        <div className="fixed bottom-6 right-6 z-120 bg-[#1a1a1a] text-white border border-[#333] px-5 py-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.15)] rounded-sm flex items-center gap-3 animate-[slideIn_0.3s_ease-out]">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#c4a882"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <span className="text-[12px] tracking-[0.04em] font-light">{toast.message}</span>
-        </div>
-      )}
-
-      {/* SlideIn CSS animation keyframe injected directly */}
-      <style jsx global>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%) translateY(0);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-      `}</style>
+      {/* Polished Toast Notification */}
+      <Toast toast={toast} onClose={() => setToast(null)} />
     </CartContext.Provider>
   );
 }

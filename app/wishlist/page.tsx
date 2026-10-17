@@ -42,7 +42,7 @@ export default function WishlistPage() {
             them later.
           </p>
           <Link
-            href="/shop"
+            href="/"
             className="inline-block bg-[#1a1a1a] text-white  text-[11px] tracking-[0.16em] uppercase px-9 py-4 hover:bg-transparent 
                 hover:text-[#1a1a1a] border border-[#1a1a1a] transition-colors duration-200"
           >

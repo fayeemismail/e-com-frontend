@@ -21,12 +21,11 @@ export function useSearchAutosuggest() {
   // Close suggestion dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
+      const target = event.target as HTMLElement | null;
+      if (target?.closest?.("[data-search-container]")) {
+        return;
       }
+      setIsOpen(false);
     }
 
     document.addEventListener("mousedown", handleClickOutside);

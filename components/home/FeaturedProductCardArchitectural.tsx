@@ -151,13 +151,13 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
   };
 
   return (
-    <Link
-      href={`/shop/${product.id}`}
-      className="group flex flex-col justify-between bg-transparent no-underline h-full select-none w-full"
-    >
+    <div className="group flex flex-col justify-between bg-transparent h-full select-none w-full">
       <div className="flex flex-col flex-1">
         {/* Amazon-style Floating Image on Canvas (grounded & sharp border transition) */}
-        <div className="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-lg bg-slate-50 border border-slate-200/90 group-hover:border-slate-400 transition-colors duration-200 mb-2">
+        <Link
+          href={`/shop/${product.id}`}
+          className="block relative w-full aspect-square overflow-hidden rounded-lg bg-slate-50 border border-slate-200/90 group-hover:border-slate-400 transition-colors duration-200 mb-2"
+        >
           <Image
             src={imageSrc}
             alt={product.name}
@@ -171,7 +171,7 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
                 : "object-contain object-center p-4"
             }`}
           />
-        </div>
+        </Link>
 
         {/* Category / Brand */}
         <span className="text-[11px] text-[#565959] font-normal truncate block mb-0.5 capitalize">
@@ -179,12 +179,14 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
         </span>
 
         {/* Title */}
-        <h3
-          title={product.name}
-          className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors duration-150 leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
-        >
-          {product.name}
-        </h3>
+        <Link href={`/shop/${product.id}`} className="no-underline">
+          <h3
+            title={product.name}
+            className="text-[13px] sm:text-[13.5px] font-normal text-[#0f1111] group-hover:text-[#007185] transition-colors duration-150 leading-[1.3] line-clamp-2 min-h-[2.6em] m-0"
+          >
+            {product.name}
+          </h3>
+        </Link>
 
         {/* Specifications: SAP ID & Unit grouped */}
         <div className="flex items-center gap-1.5 text-[11px] text-[#565959] mt-0.5">
@@ -195,28 +197,21 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
 
         {/* Unit Selector if multi-unit */}
         {availableUnits.length > 1 && (
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            className="flex items-center gap-1 overflow-x-auto no-scrollbar mt-1"
-          >
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mt-1">
             {availableUnits.map((u) => {
               const isSel = selectedSku?.sku === u.sku || (!selectedSku && u.sku === currentSku?.sku);
               return (
                 <button
                   key={u.sku}
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  onClick={() => {
                     if (u.skuObj) setSelectedSku(u.skuObj);
                   }}
-                  className={`text-[10.5px] capitalize px-2 py-0.5 border cursor-pointer transition-colors rounded-md font-medium whitespace-nowrap ${isSel
+                  className={`text-[10.5px] capitalize px-2 py-0.5 border cursor-pointer transition-colors rounded-md font-medium whitespace-nowrap ${
+                    isSel
                       ? "bg-[#0f1111] text-white border-[#0f1111]"
                       : "bg-white text-slate-700 border-slate-300 hover:border-slate-400"
-                    }`}
+                  }`}
                 >
                   {u.label}
                 </button>
@@ -226,52 +221,46 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
         )}
 
         {/* Price (Amazon style: SAR first, then number, then /unit) */}
-        <div className="flex items-baseline gap-1 mt-1">
-          <span className="text-[11px] font-medium text-[#0f1111]">SAR</span>
-          <span className="text-[17px] sm:text-[18px] font-bold text-[#0f1111] tracking-tight">
-            {formatPrice(currentPrice)}
-          </span>
-          <span className="text-[11px] text-[#565959] font-normal">
-            /{unitLabel ? unitLabel.toLowerCase() : "each"}
-          </span>
-          {product.compareAtPrice && product.compareAtPrice > currentPrice && (
-            <span className="text-[11px] text-[#565959] line-through ml-1.5">
-              SAR {formatPrice(product.compareAtPrice)}
+        <Link href={`/shop/${product.id}`} className="no-underline text-inherit block">
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-[11px] font-medium text-[#0f1111]">SAR</span>
+            <span className="text-[17px] sm:text-[18px] font-bold text-[#0f1111] tracking-tight group-hover:text-[#007185] transition-colors">
+              {formatPrice(currentPrice)}
             </span>
-          )}
-        </div>
+            <span className="text-[11px] text-[#565959] font-normal">
+              /{unitLabel ? unitLabel.toLowerCase() : "each"}
+            </span>
+            {product.compareAtPrice && product.compareAtPrice > currentPrice && (
+              <span className="text-[11px] text-[#565959] line-through ml-1.5">
+                SAR {formatPrice(product.compareAtPrice)}
+              </span>
+            )}
+          </div>
+        </Link>
       </div>
 
       {/* Action: Add to Requisition Cart / In-Requisition Stepper */}
-      <div
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchEnd={(e) => e.stopPropagation()}
-        className="w-full mt-2"
-      >
+      <div className="w-full mt-2">
         {inCartQty > 0 ? (
           <div className="flex items-center gap-2 w-full">
-            <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-8 shadow-2xs shrink-0">
+            <div className="flex items-center border border-[#0a1f3d] bg-white rounded-lg h-8 shadow-2xs shrink-0 overflow-hidden">
               <button
                 type="button"
                 onClick={handleDecrementInCart}
                 disabled={isProcessing}
-                className="w-7 h-full flex items-center justify-center text-[14px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                className="w-7 h-full flex items-center justify-center text-[14px] font-semibold text-[#0a1f3d] hover:bg-[#0a1f3d]/8 active:bg-[#0a1f3d]/15 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
                 aria-label="Decrease quantity"
               >
                 −
               </button>
-              <span className="min-w-6 px-1 h-full flex items-center justify-center text-[12px] font-bold tabular-nums text-[#0a1f3d] select-none">
+              <span className="min-w-6 px-1 h-full flex items-center justify-center text-[12px] font-bold tabular-nums text-[#0a1f3d] select-none border-x border-[#0a1f3d]/15">
                 {inCartQty}
               </span>
               <button
                 type="button"
                 onClick={handleIncrementInCart}
                 disabled={isProcessing}
-                className="w-7 h-full flex items-center justify-center text-[14px] font-semibold text-[#0a1f3d] hover:bg-slate-50 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
+                className="w-7 h-full flex items-center justify-center text-[14px] font-semibold text-[#0a1f3d] hover:bg-[#0a1f3d]/8 active:bg-[#0a1f3d]/15 bg-transparent border-none cursor-pointer select-none transition-colors disabled:opacity-40"
                 aria-label="Increase quantity"
               >
                 +
@@ -306,6 +295,6 @@ export default function FeaturedProductCardArchitectural({ product }: FeaturedPr
           </button>
         )}
       </div>
-    </Link>
+    </div>
   );
 }

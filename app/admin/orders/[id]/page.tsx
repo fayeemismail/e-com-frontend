@@ -290,18 +290,18 @@ export default function AdminOrderDetailsPage({ params }: { params: Promise<{ id
                           </span>
                         </td>
                         <td className="px-5 py-4 align-middle text-[12px] text-[#5a5a55]">
-                          <div>₹{formatPrice(item.price)}{item.transactionType === "rent" ? " / day" : ""}</div>
+                          <div>{formatPrice(item.price)} SAR{item.transactionType === "rent" ? " / day" : ""}</div>
                           {item.transactionType === "rent" && item.securityDeposit ? (
-                            <div className="text-[10px] text-[#9a9a94]">+₹{formatPrice(item.securityDeposit)} deposit</div>
+                            <div className="text-[10px] text-[#9a9a94]">+{formatPrice(item.securityDeposit)} SAR deposit</div>
                           ) : null}
                         </td>
                         <td className="px-5 py-4 align-middle text-center text-[12px] text-[#1a1a1a] font-medium">
                           {item.qty}
                         </td>
                         <td className="px-5 py-4 align-middle text-right text-[12px] text-[#1a1a1a] font-semibold">
-                          <div>₹{formatPrice(item.price * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1) * item.qty)}</div>
+                          <div>{formatPrice(item.price * (item.transactionType === "rent" ? (item.rentalDurationDays || 1) : 1) * item.qty)} SAR</div>
                           {item.transactionType === "rent" && item.securityDeposit ? (
-                            <div className="text-[10px] text-[#9a9a94]">+₹{formatPrice(item.securityDeposit * item.qty)} deposit</div>
+                            <div className="text-[10px] text-[#9a9a94]">+{formatPrice(item.securityDeposit * item.qty)} SAR deposit</div>
                           ) : null}
                         </td>
                       </tr>
@@ -312,17 +312,17 @@ export default function AdminOrderDetailsPage({ params }: { params: Promise<{ id
               <div className="px-5 py-4 bg-[#faf9f7] border-t border-[#f0eeea] flex flex-col items-end gap-2">
                 <div className="flex justify-between w-full max-w-50 text-[12px] text-[#5a5a55]">
                   <span>Subtotal</span>
-                  <span>₹{formatPrice(order.pricingSummary?.subtotal || 0)}</span>
+                  <span>{formatPrice(order.pricingSummary?.subtotal || 0)} SAR</span>
                 </div>
                 {order.pricingSummary?.totalSecurityDeposits > 0 && (
                   <div className="flex justify-between w-full max-w-50 text-[12px] text-[#5a5a55]">
                     <span>Security Deposits</span>
-                    <span>₹{formatPrice(order.pricingSummary.totalSecurityDeposits)}</span>
+                    <span>{formatPrice(order.pricingSummary.totalSecurityDeposits)} SAR</span>
                   </div>
                 )}
                 <div className="flex justify-between w-full max-w-50 text-[12px] text-[#1a1a1a] font-bold border-t border-[#e8e6e2] pt-2 mt-1">
                   <span>Total</span>
-                  <span>₹{formatPrice(order.total)}</span>
+                  <span>{formatPrice(order.total)} SAR</span>
                 </div>
               </div>
             </div>

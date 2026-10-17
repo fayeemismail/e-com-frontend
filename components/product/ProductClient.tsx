@@ -4,8 +4,9 @@ import { useProduct } from "@/hooks/use-product";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductActions from "@/components/product/ProductActions";
 import ProductDetails from "@/components/product/ProductDetails";
-import ProductCard from "@/components/shop/ProductCard";
+import FeaturedProductCardArchitectural from "@/components/home/FeaturedProductCardArchitectural";
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import ErrorState from "@/components/common/ErrorState";
 import { Skeleton, ProductCardSkeleton } from "@/components/common/Skeleton";
 
@@ -15,45 +16,44 @@ interface ProductClientProps {
 
 function ProductSkeleton() {
   return (
-    <div className="min-h-screen bg-[#f5f7fb]" aria-busy="true" aria-label="Loading product">
-      <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-[#e2e8f0] bg-white">
-        <Skeleton className="h-3 w-48" />
+    <div className="min-h-screen bg-[#fafaf9] font-nav" aria-busy="true" aria-label="Loading product">
+      {/* Breadcrumb skeleton */}
+      <div className="px-4 sm:px-6 md:px-8 lg:px-10 py-3.5 border-b border-slate-200 bg-white">
+        <div className="max-w-[1240px] mx-auto">
+          <Skeleton className="h-4 w-64" />
+        </div>
       </div>
 
-      <div className="px-5 sm:px-8 md:px-12 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
-          <div className="flex flex-col-reverse sm:flex-row gap-3">
-            <div className="flex flex-row sm:flex-col gap-2">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="w-14 h-14 sm:w-16 sm:h-16" rounded="md" />
-              ))}
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Gallery skeleton */}
+          <div className="lg:col-span-6 space-y-4">
+            <Skeleton className="w-full aspect-square sm:aspect-[4/3] rounded-2xl" />
+            <div className="grid grid-cols-3 gap-2.5">
+              <Skeleton className="h-14 rounded-xl" />
+              <Skeleton className="h-14 rounded-xl" />
+              <Skeleton className="h-14 rounded-xl" />
             </div>
-            <Skeleton className="flex-1 aspect-square sm:aspect-4/5 min-h-[240px]" rounded="md" />
           </div>
 
-          <div className="space-y-6 bg-white border border-[#e2e8f0] rounded-md p-5 sm:p-6">
-            <div>
-              <Skeleton className="h-3 w-24 mb-3" />
-              <Skeleton className="h-6 w-4/5 mb-4" />
-              <Skeleton className="h-3.5 w-full mb-2" />
-              <Skeleton className="h-3.5 w-5/6 mb-2" />
-              <Skeleton className="h-3.5 w-2/3" />
+          {/* Action column skeleton */}
+          <div className="lg:col-span-6 space-y-5">
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
             </div>
+            <Skeleton className="h-8 w-4/5 rounded-lg" />
+            <Skeleton className="h-4 w-full rounded" />
+            <Skeleton className="h-4 w-3/4 rounded" />
 
-            <div className="space-y-3 pt-4 border-t border-[#eef2f7]">
-              <Skeleton className="h-4 w-28" />
-              <Skeleton className="h-5 w-32" />
-              <div className="flex gap-2 pt-1">
-                <Skeleton className="h-10 w-24" rounded="sm" />
-                <Skeleton className="h-10 flex-1" rounded="sm" />
-              </div>
-            </div>
+            <Skeleton className="h-28 w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full rounded-xl" />
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-[#e2e8f0]">
-          <Skeleton className="h-4 w-36 mb-5" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4">
+        <div className="mt-14 pt-8 border-t border-slate-200">
+          <Skeleton className="h-5 w-48 mb-6" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -82,52 +82,136 @@ export default function ProductClient({ id }: ProductClientProps) {
     );
   }
 
+  const categoryName = product.category && product.category !== "General" ? product.category : null;
+  const sapCode = product.sapId || (product as any).rawProduct?.sapId;
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Breadcrumb */}
-      <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-[#ebebeb]">
-        <nav className="flex items-center gap-2 text-[11px] text-[#aaa] tracking-[0.06em]">
-          <Link href="/" className="hover:text-[#1a1a1a] transition-colors duration-150 no-underline text-[#aaa]">Home</Link>
-          <span>/</span>
-          <Link href="/shop" className="hover:text-[#1a1a1a] transition-colors duration-150 no-underline text-[#aaa]">Shop</Link>
-          <span>/</span>
-          <span className="text-[#1a1a1a]">{product.name}</span>
-        </nav>
+    <div className="min-h-screen bg-white font-nav text-[#0a1f3d]">
+      {/* ── BREADCRUMB ── */}
+      <div className="bg-[#fafaf9] border-b border-slate-200/90 py-3 sm:py-3.5 px-4 sm:px-6 md:px-8 lg:px-10">
+        <div className="max-w-[1240px] mx-auto">
+          <nav className="flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[12.5px] text-slate-500 font-medium flex-wrap">
+            <Link
+              href="/"
+              className="text-slate-600 hover:text-[#00a6e0] transition-colors no-underline"
+            >
+              Home
+            </Link>
+            <ChevronRight size={13} className="text-slate-400 shrink-0" />
+            {categoryName && (
+              <>
+                <Link
+                  href={`/?category=${encodeURIComponent(categoryName)}`}
+                  className="text-slate-600 hover:text-[#00a6e0] transition-colors no-underline"
+                >
+                  {categoryName}
+                </Link>
+                <ChevronRight size={13} className="text-slate-400 shrink-0" />
+              </>
+            )}
+            <span className="text-[#0a1f3d] font-semibold truncate max-w-[260px] sm:max-w-md">
+              {product.name}
+            </span>
+          </nav>
+        </div>
       </div>
 
-      {/* Main product section */}
-      <div className="px-5 sm:px-8 md:px-12 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 lg:gap-24 items-start">
-          <ProductGallery images={product.gallery} name={product.name} />
-          <div>
-            <p className="text-[10px] tracking-[0.2em] uppercase text-[#aaa] mb-2">
-              {product.brand} · {product.category}
-            </p>
-            <h1 className="text-2xl md:text-3xl font-light tracking-tight text-[#1a1a1a] font-serif mb-4">
+      {/* ── MAIN PRODUCT SHOWCASE SECTION ── */}
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-10 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-12 items-start">
+          {/* Left Column: Gallery */}
+          <div className="lg:col-span-6 lg:sticky lg:top-28">
+            <ProductGallery images={product.gallery} name={product.name} />
+          </div>
+
+          {/* Right Column: Title, Metadata & Actions */}
+          <div className="lg:col-span-6 flex flex-col justify-start">
+            {/* Category / Brand / SAP Badges */}
+            <div className="flex items-center gap-2 flex-wrap mb-3">
+              {categoryName && (
+                <Link
+                  href={`/?category=${encodeURIComponent(categoryName)}`}
+                  className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#0f2e5a] text-[11px] font-bold border border-blue-200 no-underline hover:bg-blue-100 transition-colors"
+                >
+                  {categoryName}
+                </Link>
+              )}
+              {product.brand && (
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold border border-slate-200">
+                  {product.brand}
+                </span>
+              )}
+              {sapCode && (
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-mono font-bold border border-slate-200">
+                  SAP #{sapCode}
+                </span>
+              )}
+              {(product.stock ?? 0) > 0 ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold border border-emerald-200 ml-auto">
+                  In Stock
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 text-[11px] font-semibold border border-red-200 ml-auto">
+                  Out of Stock
+                </span>
+              )}
+            </div>
+
+            {/* Product Title */}
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0a1f3d] leading-tight mb-3">
               {product.name}
             </h1>
-            <p className="text-[13px] text-[#5a5a55] leading-relaxed mb-6 whitespace-pre-wrap">
-              {product.shortDescription}
-            </p>
+
+            {/* Description (only if provided by backend) */}
+            {product.description && (
+              <p className="text-[13.5px] sm:text-[14px] text-slate-600 leading-relaxed mb-6 whitespace-pre-wrap">
+                {product.description}
+              </p>
+            )}
+
+            {/* Interactive Purchase Console */}
             <ProductActions product={product} />
           </div>
         </div>
-        <ProductDetails product={product} />
-      </div>
 
-      {/* Recommendations */}
-      {relatedProducts.length > 0 && (
-        <div className="px-5 sm:px-8 md:px-12 py-10 border-t border-[#ebebeb]">
-          <p className="text-[11px] tracking-[0.18em] uppercase text-[#1a1a1a] mb-6">
-            You May Also Like
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+        {/* ── DETAILED INFORMATION TABS ── */}
+        <ProductDetails product={product} />
+
+        {/* ── RELATED PRODUCTS ── */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-14 sm:mt-16 pt-10 border-t border-slate-200">
+            <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
+              <div>
+                <h3 className="text-[18px] sm:text-[20px] font-bold text-[#0a1f3d] m-0 tracking-tight">
+                  Related Products
+                </h3>
+                {categoryName && (
+                  <p className="text-[12px] text-slate-500 m-0 mt-0.5">
+                    Products in {categoryName}
+                  </p>
+                )}
+              </div>
+
+              {categoryName && (
+                <Link
+                  href={`/?category=${encodeURIComponent(categoryName)}`}
+                  className="text-[12px] font-semibold text-[#00a6e0] hover:text-[#0a1f3d] transition-colors no-underline shrink-0"
+                >
+                  View all in {categoryName} →
+                </Link>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+              {relatedProducts.map((p) => (
+                <div key={p.id} className="h-full">
+                  <FeaturedProductCardArchitectural product={p} />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
